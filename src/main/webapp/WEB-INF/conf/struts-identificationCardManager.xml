@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC
+      "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+      "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+      <!-- ========== Controller Configuration ================================ -->
+      <controller processorClass="pt.ist.fenixWebFramework.renderers.plugin.SimpleRenderersRequestProcessor"></controller>
+      <!-- ========== Message Resources Definitions ============================ -->
+      <message-resources null="false" key="DEFAULT" parameter="resources.ApplicationResources"></message-resources>
+      <message-resources null="false" key="APPLICATION_RESOURCES" parameter="resources.ApplicationResources"></message-resources>
+      <message-resources null="false" key="MANAGER_RESOURCES" parameter="resources.ManagerResources"></message-resources>
+      <message-resources null="false" key="GLOBAL_RESOURCES" parameter="resources.GlobalResources"></message-resources>
+      <message-resources null="false" key="IMAGE_RESOURCES" parameter="resources.ImageResources"></message-resources>
+      <message-resources null="false" key="HTMLALT_RESOURCES" parameter="resources.HtmlaltResources"></message-resources>
+      <message-resources null="false" key="PORTAL_RESOURCES" parameter="resources.PortalResources"></message-resources>
+      <message-resources null="false" key="ENUMERATION_RESOURCES" parameter="resources.EnumerationResources"></message-resources>
+      <message-resources null="false" key="DOMAIN_EXCEPTION_RESOURCES" parameter="resources.DomainExceptionResources"></message-resources>
+      <message-resources null="false" key="RENDERER_RESOURCES" parameter="resources.RendererResources"></message-resources>
+      <message-resources null="false" key="CARD_GENERATION_RESOURCES" parameter="resources.CardGenerationResources"></message-resources>
+      <message-resources null="false" key="TITLES_RESOURCES" parameter="resources.TitlesResources"></message-resources>
+      <!-- ========== Plug Ins Configuration ================================= -->
+      <plug-in className="pt.ist.fenixWebFramework.struts.plugin.StrutsAnnotationsPlugIn"></plug-in>
+</struts-config>
