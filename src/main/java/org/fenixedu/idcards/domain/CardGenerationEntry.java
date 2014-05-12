@@ -21,7 +21,6 @@ import net.sourceforge.fenixedu.domain.personnelSection.contracts.GiafProfession
 import net.sourceforge.fenixedu.domain.personnelSection.contracts.PersonProfessionalData;
 import net.sourceforge.fenixedu.domain.personnelSection.contracts.ProfessionalCategory;
 import net.sourceforge.fenixedu.domain.phd.PhdIndividualProgramProcess;
-import net.sourceforge.fenixedu.domain.space.Campus;
 import net.sourceforge.fenixedu.domain.student.Registration;
 import net.sourceforge.fenixedu.domain.student.Student;
 import net.sourceforge.fenixedu.domain.teacher.CategoryType;
@@ -30,6 +29,8 @@ import net.sourceforge.fenixedu.domain.util.FactoryExecutor;
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.StringNormalizer;
+import org.fenixedu.spaces.domain.Space;
+import org.fenixedu.spaces.domain.UnavailableException;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
@@ -612,7 +613,7 @@ public class CardGenerationEntry extends CardGenerationEntry_Base {
         final Person person = teacher.getPerson();
 
         final Unit workingUnit = teacher.getCurrentWorkingUnit();
-        final Campus campus = workingUnit.getCampus();
+        final Space campus = workingUnit.getCampus();
 
         final PersonProfessionalData personProfessionalData = person.getPersonProfessionalData();
         final GiafProfessionalData giafProfessionalData =
@@ -672,7 +673,7 @@ public class CardGenerationEntry extends CardGenerationEntry_Base {
         if (giafProfessionalData == null) {
             return null;
         }
-        final Campus campus = giafProfessionalData.getCampus();
+        final Space campus = giafProfessionalData.getCampus();
         final ProfessionalCategory professionalCategory = giafProfessionalData.getProfessionalCategory();
         if (professionalCategory == null) {
             return null;
@@ -739,7 +740,7 @@ public class CardGenerationEntry extends CardGenerationEntry_Base {
         if (giafProfessionalData == null) {
             return null;
         }
-        final Campus campus = giafProfessionalData.getCampus();
+        final Space campus = giafProfessionalData.getCampus();
         final ProfessionalCategory professionalCategory = giafProfessionalData.getProfessionalCategory();
         if (professionalCategory == null) {
             return null;
@@ -786,7 +787,7 @@ public class CardGenerationEntry extends CardGenerationEntry_Base {
         return stringBuilder.toString();
     }
 
-    static public String getUniversityCode(final Campus campus) {
+    static public String getUniversityCode(final Space campus) {
         if (campus == null) {
             return DEFAULT_UNIVERSITY_CODE;
         }
@@ -811,7 +812,7 @@ public class CardGenerationEntry extends CardGenerationEntry_Base {
         if (giafProfessionalData == null) {
             return null;
         }
-        final Campus campus = giafProfessionalData.getCampus();
+        final Space campus = giafProfessionalData.getCampus();
         final ProfessionalCategory professionalCategory = giafProfessionalData.getProfessionalCategory();
         if (professionalCategory == null) {
             return null;

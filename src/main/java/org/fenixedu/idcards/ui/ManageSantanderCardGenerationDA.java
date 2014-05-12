@@ -10,7 +10,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sourceforge.fenixedu.dataTransferObject.research.result.OpenFileBean;
+import net.sourceforge.fenixedu.dataTransferObject.commons.OpenFileBean;
 import net.sourceforge.fenixedu.domain.ExecutionYear;
 import net.sourceforge.fenixedu.domain.Person;
 import net.sourceforge.fenixedu.presentationTier.Action.base.FenixDispatchAction;
@@ -24,6 +24,8 @@ import org.fenixedu.idcards.domain.SantanderBatch;
 import org.fenixedu.idcards.domain.SantanderBatchSender;
 import org.fenixedu.idcards.domain.SantanderCardInformation;
 import org.fenixedu.idcards.domain.SantanderSequenceNumberGenerator;
+import org.fenixedu.idcards.ui.IdCardsApp;
+import org.fenixedu.idcards.ui.ManageSantanderCardGenerationBean;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixWebFramework.struts.annotations.Forward;
