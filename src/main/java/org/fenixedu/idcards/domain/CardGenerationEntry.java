@@ -30,7 +30,6 @@ import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.spaces.domain.Space;
-import org.fenixedu.spaces.domain.UnavailableException;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
