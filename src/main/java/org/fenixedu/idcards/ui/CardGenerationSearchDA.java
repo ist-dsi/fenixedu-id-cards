@@ -1,0 +1,122 @@
+/**
+ * Copyright © 2014 Instituto Superior Técnico
+ *
+ * This file is part of FenixEdu Identification Cards.
+ *
+ * FenixEdu Identification Cards is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * FenixEdu Identification Cards is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with FenixEdu Identification Cards.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.fenixedu.idcards.ui;
+
+import java.util.Collection;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import net.sourceforge.fenixedu.applicationTier.Servico.person.SearchPerson;
+import net.sourceforge.fenixedu.applicationTier.Servico.person.SearchPerson.SearchParameters;
+import net.sourceforge.fenixedu.applicationTier.Servico.person.SearchPerson.SearchPersonPredicate;
+import net.sourceforge.fenixedu.domain.Person;
+import net.sourceforge.fenixedu.presentationTier.Action.base.FenixDispatchAction;
+
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+import org.fenixedu.bennu.portal.EntryPoint;
+import org.fenixedu.bennu.portal.StrutsFunctionality;
+import org.fenixedu.idcards.domain.CardGenerationEntry;
+import org.fenixedu.idcards.service.SearchPersonWithCard;
+
+import pt.ist.fenixWebFramework.struts.annotations.Forward;
+import pt.ist.fenixWebFramework.struts.annotations.Forwards;
+import pt.ist.fenixWebFramework.struts.annotations.Mapping;
+import pt.ist.fenixframework.FenixFramework;
+import pt.utl.ist.fenix.tools.util.CollectionPager;
+
+@StrutsFunctionality(app = IdCardsApp.class, path = "search-people", titleKey = "title.search.people")
+@Mapping(module = "identificationCardManager", path = "/searchPeople")
+@Forwards({ @Forward(name = "viewPersonCards", path = "/identificationCardManager/viewPersonCards.jsp"),
+        @Forward(name = "showSearchPage", path = "/identificationCardManager/searchPeople.jsp") })
+public class CardGenerationSearchDA extends FenixDispatchAction {
+
+    @EntryPoint
+    public ActionForward search(final ActionMapping mapping, final ActionForm actionForm, final HttpServletRequest request,
+            final HttpServletResponse response) throws Exception {
+
+        SearchParameters searchParameters = getRenderedObject();
+        if (searchParameters == null) {
+            searchParameters = new SearchPerson.SearchParameters();
+            final String name = request.getParameter("name");
+            if (name != null && name.length() > 0) {
+                searchParameters.setName(name);
+            }
+            final String email = request.getParameter("email");
+            if (email != null && email.length() > 0) {
+                searchParameters.setEmail(email);
+            }
+            final String username = request.getParameter("username");
+            if (username != null && username.length() > 0) {
+                searchParameters.setUsername(username);
+            }
+            final String documentIdNumber = request.getParameter("documentIdNumber");
+            if (documentIdNumber != null && documentIdNumber.length() > 0) {
+                searchParameters.setDocumentIdNumber(documentIdNumber);
+            }
+            final String mechanoGraphicalNumber = request.getParameter("mechanoGraphicalNumber");
+            if (mechanoGraphicalNumber != null && mechanoGraphicalNumber.length() > 0 && mechanoGraphicalNumber.matches("[0-9]+")) {
+                searchParameters.setMechanoGraphicalNumber(Integer.parseInt(mechanoGraphicalNumber));
+            }
+        }
+        request.setAttribute("searchParameters", searchParameters);
+
+        if (!searchParameters.emptyParameters()) {
+            final SearchPersonPredicate predicate = new SearchPerson.SearchPersonPredicate(searchParameters);
+            final CollectionPager<Person> searchPersonCollectionPager =
+                    SearchPersonWithCard.runSearchPersonWithCard(searchParameters, predicate);
+            request.setAttribute("searchPersonCollectionPager", searchPersonCollectionPager);
+            request.setAttribute("numberOfPages", searchPersonCollectionPager.getNumberOfPages());
+            final String pageNumberString = request.getParameter("pageNumber");
+            final Integer pageNumber =
+                    pageNumberString != null && pageNumberString.length() > 0 ? Integer.valueOf(pageNumberString) : Integer
+                            .valueOf(1);
+            request.setAttribute("pageNumber", pageNumber);
+            final Collection<Person> people = searchPersonCollectionPager.getPage(pageNumber.intValue());
+            request.setAttribute("people", people);
+        }
+
+        return mapping.findForward("showSearchPage");
+    }
+
+    public ActionForward viewPersonCards(final ActionMapping mapping, final ActionForm actionForm,
+            final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+        final String personIdString = request.getParameter("personId");
+        if (personIdString != null) {
+            final Person person = (Person) FenixFramework.getDomainObject(personIdString);
+            request.setAttribute("person", person);
+        }
+        return mapping.findForward("viewPersonCards");
+    }
+
+    public ActionForward viewPersonCard(final ActionMapping mapping, final ActionForm actionForm,
+            final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+        final String cardGenerationEntryIdString = request.getParameter("cardGenerationEntryId");
+        if (cardGenerationEntryIdString != null) {
+            final CardGenerationEntry cardGenerationEntry = FenixFramework.getDomainObject(cardGenerationEntryIdString);
+            request.setAttribute("cardGenerationEntry", cardGenerationEntry);
+            final Person person = cardGenerationEntry.getPerson();
+            request.setAttribute("person", person);
+        }
+        return mapping.findForward("viewPersonCards");
+    }
+
+}

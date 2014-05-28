@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.fenixedu</groupId>
+        <artifactId>fenix-framework-project</artifactId>
+        <version>2.0.1</version>
+    </parent>
+
+    <artifactId>fenixedu-id-cards</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+    <inceptionYear>2014</inceptionYear>
+
+    <name>FenixEdu Identification Cards</name>
+
+    <properties>
+        <version.pt.ist.fenix>3.0.0</version.pt.ist.fenix>
+    </properties>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/FenixEdu/fenixedu-id-cards/issues/</url>
+    </issueManagement>
+
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License v3.0</name>
+            <url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <ciManagement>
+        <system>Travis CI</system>
+        <url>https://travis-ci.org/FenixEdu/fenixedu-id-cards</url>
+    </ciManagement>
+
+    <scm>
+        <connection>scm:git:git@github.com:fenixedu/fenixedu-id-cards.git</connection>
+        <developerConnection>scm:git:git@github.com:fenixedu/fenixedu-id-cards.git</developerConnection>
+        <url>http://fenixedu.org</url>
+        <tag>v1.0.0</tag>
+    </scm>
+
+    <dependencies>
+        <dependency>
+            <groupId>pt.ist</groupId>
+            <artifactId>fenix</artifactId>
+            <version>${version.pt.ist.fenix}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.barbecue</groupId>
+            <artifactId>barbecue</artifactId>
+            <version>1.5-beta1</version>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>fenix-ashes-maven-repository</id>
+            <url>https://fenix-ashes.ist.utl.pt/nexus/content/groups/fenix-ashes-maven-repository</url>
+        </repository>
+    </repositories>
+
+</project>

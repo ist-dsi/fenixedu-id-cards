@@ -1,0 +1,308 @@
+/* GENERATE-IDENTIFICATION-CARDS.DML
+ * Domain Model of the Generation Identification Card module
+ * 
+ */
+
+/*
+ * The Identification Card domain classes are all in the
+ * org.fenixedu.idcards.domain package or some sub-package of
+ * this package.
+ * 
+ */
+package org.fenixedu.idcards.domain;
+
+/*
+ *
+ * Class definitions
+ *
+ */
+ 
+class CardGenerationBatch  {
+    String description;
+    DateTime created;
+    DateTime updated;
+    DateTime sent;
+    String peopleForEntryCreation;
+}
+
+class CardGenerationEntry  {
+    String line;
+    DateTime created;
+    String documentID;
+}
+
+class CardGenerationProblem  {
+    String descriptionKey;
+    String arg;
+}
+
+class CardGenerationRegister  {
+    LocalDate emission;
+    Boolean withAccountInformation;
+    String linePrefix;
+}
+
+class SantanderBatch  {
+	DateTime created;
+	DateTime generated;
+	DateTime sent;
+	Integer sequenceNumber;
+}
+
+class SantanderBatchRequester  {
+}
+
+class SantanderBatchSender  {
+}
+
+class SantanderSequenceNumberGenerator  {
+	Integer sequenceNumber;
+	Integer photoSequenceNumber;
+}
+
+class SantanderEntry  {
+	String line;
+	DateTime created;
+}
+
+class SantanderPhotoEntry {
+	Integer sequenceNumber;
+	DateTime whenGenerated;
+}
+
+class SantanderProblem  {
+	String descriptionKey;
+    String arg;
+}
+
+class SantanderPIN {
+	String encryptedPIN;
+}
+
+class SantanderCardInformation {
+    String dchpRegisteLine;
+}
+ 
+/*
+ * Relations definitions
+ * 
+ */
+ 
+relation RootDomainObjectCardGenerationBatch {
+        .org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
+        CardGenerationBatch playsRole cardGenerationBatches {
+                multiplicity *;
+        }
+}
+
+relation RootDomainObjectCardGenerationEntry {
+        .org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
+        CardGenerationEntry playsRole cardGenerationEntries {
+                multiplicity *;
+        }
+}
+
+relation RootDomainObjectCardGenerationRegister {
+        .org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
+        CardGenerationRegister playsRole cardGenerationRegister {
+                multiplicity *;
+        }
+}
+
+relation RootDomainObjectCardGenerationProblem {
+        .org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
+        CardGenerationProblem playsRole cardGenerationProblem {
+                multiplicity *;
+        }
+}
+
+relation ExecutionYearCardGenerationBatch {
+        .net.sourceforge.fenixedu.domain.ExecutionYear playsRole executionYear;
+        CardGenerationBatch playsRole cardGenerationBatches {
+                multiplicity *;
+        }
+}
+
+relation CardGenerationBatchCardGenerationEntry {
+        CardGenerationBatch playsRole cardGenerationBatch;
+        CardGenerationEntry playsRole cardGenerationEntries {
+                multiplicity *;
+        }
+}
+
+relation CardGenerationBatchCardGenerationProblem {
+        CardGenerationBatch playsRole cardGenerationBatch;
+        CardGenerationProblem playsRole cardGenerationProblems {
+                multiplicity *;
+        }
+}
+
+relation PersonCardGenerationEntry {
+        .net.sourceforge.fenixedu.domain.Person playsRole person;
+        CardGenerationEntry playsRole cardGenerationEntries {
+        multiplicity *;
+    }
+}
+
+relation PersonCardGenerationRegister {
+        .net.sourceforge.fenixedu.domain.Person playsRole person;
+        CardGenerationRegister playsRole cardGenerationRegister {
+        multiplicity *;
+    }
+}
+
+relation RootDomainObjectSantanderBatch {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
+	SantanderBatch playsRole santanderBatches {
+		multiplicity *;
+	}
+}
+    
+relation RootDomainObjectSantanderBatchRequester {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
+	SantanderBatchRequester playsRole santanderBatchRequesters {
+		multiplicity *;
+	}
+}
+
+relation RootDomainObjectSantanderBatchSender {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
+	SantanderBatchSender playsRole santanderBatchSenders {
+		multiplicity *;
+	}
+}
+
+relation RootDomainObjectSantanderSequenceNumberGenerator {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
+	SantanderSequenceNumberGenerator playsRole santanderSequenceNumberGenerators {
+		multiplicity *;
+	}
+}	
+
+relation RootDomainObjectSantanderEntry {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
+	SantanderEntry playsRole santanderEntries {
+		multiplicity *;
+	}
+}
+
+relation RootDomainObjectSantanderCardInformation {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
+	SantanderCardInformation playsRole santanderCardsInformation {
+		multiplicity *;
+	}
+}
+
+relation RootDomainObjectSantanderProblem {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
+	SantanderProblem playsRole santanderProblem {
+		multiplicity *;
+	}
+}
+
+relation ExecutionYearSantanderBatch {
+	.net.sourceforge.fenixedu.domain.ExecutionYear playsRole executionYear;
+	SantanderBatch playsRole santanderBatches {
+		multiplicity *;
+	}
+}
+
+relation SantanderBatchSantanderEntry {
+	SantanderBatch playsRole santanderBatch;
+	SantanderEntry playsRole santanderEntries {
+		multiplicity *;
+	}
+}
+
+relation SantanderBatchSantanderSequenceNumberGenerator {
+	SantanderBatch playsRole santanderBatches {
+		multiplicity *;
+	}
+	SantanderSequenceNumberGenerator playsRole santanderSequenceNumberGenerator;
+}
+
+relation SantanderBatchSantanderBatchRequester {
+	SantanderBatch playsRole santanderBatch;
+	SantanderBatchRequester playsRole santanderBatchRequester;
+}
+
+relation SantanderBatchSantanderBatchSender {
+	SantanderBatch playsRole santanderBatch;
+	SantanderBatchSender playsRole santanderBatchSender;
+}
+
+relation SantanderBatchSantanderProblem {
+	SantanderBatch playsRole santanderBatch;
+    SantanderProblem playsRole santanderProblems {
+		multiplicity *;
+	}
+}
+
+relation PersonSantanderBatchRequester {
+	.net.sourceforge.fenixedu.domain.Person playsRole person;
+	SantanderBatchRequester playsRole santanderBatchRequesters {
+		multiplicity *;
+	}
+}
+
+relation PersonSantanderBatchSender {
+	.net.sourceforge.fenixedu.domain.Person playsRole person;
+	SantanderBatchSender playsRole santanderBatchSenders {
+		multiplicity *;
+	}
+}
+
+relation PersonSantanderEntry {
+	.net.sourceforge.fenixedu.domain.Person playsRole person;
+	SantanderEntry playsRole santanderEntries {
+		multiplicity *;
+	}
+}
+
+relation PersonSantanderCardInformation {
+	.net.sourceforge.fenixedu.domain.Person playsRole person;
+	SantanderCardInformation playsRole santanderCardsInformation {
+		multiplicity *;
+	}
+}
+
+relation SantanderPhotoEntrySantanderEntry {
+	SantanderEntry playsRole santanderEntry;
+	SantanderPhotoEntry playsRole santanderPhotoEntry;
+}
+
+relation PersonSantanderPIN {
+	.net.sourceforge.fenixedu.domain.Person playsRole person;
+	SantanderPIN playsRole santanderPIN;
+}
+
+relation PersonCardGenerationProblem {
+    .net.sourceforge.fenixedu.domain.Person playsRole person;
+    CardGenerationProblem playsRole cardGenerationProblems {
+            multiplicity *;
+    }
+}
+    
+relation RootDomainObjectSantanderPhotoEntry {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject; 
+	SantanderPhotoEntry playsRole santanderPhotoEntry {
+		multiplicity *;
+	}
+}
+
+relation SantanderEntryPerson {
+	.net.sourceforge.fenixedu.domain.Person playsRole person; 
+	SantanderPhotoEntry playsRole santanderPhotoEntry;
+}
+
+relation SantanderEntrySantanderPhotoEntry {
+	SantanderPhotoEntry playsRole previous;
+	SantanderPhotoEntry playsRole next;
+}
+
+relation PhotographSantanderPhotoEntry {
+	.net.sourceforge.fenixedu.domain.Photograph playsRole photograph; 
+	SantanderPhotoEntry playsRole santanderPhotoEntry {
+		multiplicity *;
+	}
+}    

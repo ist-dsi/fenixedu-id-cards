@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright © 2014 Instituto Superior Técnico
+
+    This file is part of FenixEdu Identification Cards.
+
+    FenixEdu Identification Cards is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    FenixEdu Identification Cards is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with FenixEdu Identification Cards.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<schemas>
+
+ <schema name="org.fenixedu.idcards.ui.CardGenerationContext.selectExecutionYear" type="org.fenixedu.idcards.ui.CardGenerationContext">
+	<slot name="executionYear" bundle="CARD_GENERATION_RESOURCES" key="label.execution.year" layout="menu-select-postback">
+		<property name="providerClass" value="net.sourceforge.fenixedu.presentationTier.renderers.providers.ExecutionYearsProvider" />
+		<property name="format" value="${year}" />
+	</slot>
+</schema>
+<schema name="net.sourceforge.fenixedu.domain.Degree.card.generation.edit" type="net.sourceforge.fenixedu.domain.Degree">
+	<slot name="ministryCode" bundle="CARD_GENERATION_RESOURCES" key="label.degree.ministery.code"
+			validator="pt.ist.fenixWebFramework.renderers.validators.MinistryDegreeCodeValidator">
+		<property name="size" value="4" />
+	</slot>
+	<slot name="idCardName" bundle="CARD_GENERATION_RESOURCES" key="label.degree.card.name"
+			validator="pt.ist.fenixWebFramework.renderers.validators.DegreeIdCardNameValidator">
+		<property name="size" value="42" />
+	</slot>
+</schema>
+<schema name="card.generation.search.person.form" type="net.sourceforge.fenixedu.applicationTier.Servico.person.SearchPerson$SearchParameters" bundle="CARD_GENERATION_RESOURCES">
+	<slot name="name"/>
+	<slot name="email"/>
+	<slot name="username" key="label.istid"/>
+	<slot name="documentIdNumber"/>
+	<slot name="mechanoGraphicalNumber"/>
+</schema>
+<schema name="card.generation.person.card.list" type="org.fenixedu.idcards.domain.CardGenerationEntry">
+	<slot name="cardGenerationBatch.executionYear.year"/>
+	<slot name="cardGenerationBatch.description"/>
+	<slot name="cardGenerationBatch.sent"/>
+</schema>
+<schema name="net.sourceforge.fenixedu.domain.cardGeneration.CardGenerationBatch.edit" type="org.fenixedu.idcards.domain.CardGenerationBatch">
+	<slot name="description"/>
+</schema>
+
+<schema name="importIdentificationCardData" type="org.fenixedu.idcards.ui.ImportIdentificationCardDataDA$ImportIdentificationCardDataBean" bundle="CARD_GENERATION_RESOURCES">
+	<slot name="selectedExecutionYear" key="label.executionYear" 
+			validator="pt.ist.fenixWebFramework.renderers.validators.RequiredValidator" layout="menu-select-postback">
+		<property name="providerClass" value="net.sourceforge.fenixedu.presentationTier.renderers.providers.ExecutionYearsProvider" />
+		<property name="format" value="${year}" />
+		<property name="destination" value="loadCardGenerationBatches"/>			
+	</slot>
+	<slot name="selectedCardGenerationBatch" key="label.cardGenerationBatch"
+		validator="pt.ist.fenixWebFramework.renderers.validators.RequiredValidator" layout="menu-select">
+		<property name="providerClass" value="net.sourceforge.fenixedu.presentationTier.Action.directiveCouncil.ImportIdentificationCardDataDA$CardGenerationBatchProvider" />
+		<property name="format" value="${description}" />
+	</slot>
+	<slot name="sourceData" key="label.file" validator="pt.ist.fenixWebFramework.renderers.validators.RequiredValidator">
+		<property name="fileNameSlot" value="fileName"/>
+		<property name="fileSizeSlot" value="fileSize"/>
+	</slot>
+</schema>
+
+<schema name="import.identification.card.data.unmatched.entries.show" type="org.fenixedu.idcards.domain.CardGenerationBatch$ReportEntry" bundle="CARD_GENERATION_RESOURCES">
+	<slot name="key" key="label.identification.id" bundle="CARD_GENERATION_RESOURCES"/>
+	<slot name="formattedNumbers" key="label.line.numbers"/>
+</schema>
+
+<schema name="import.identification.card.data.duplicated.persons.by.id.show" type="org.fenixedu.idcards.domain.CardGenerationBatch$ReportEntry" bundle="CARD_GENERATION_RESOURCES">
+	<slot name="key" key="label.identification.id"/>
+	<slot name="duplicatedPersons" key="label.duplicated.persons" layout="tabular-list">
+		<property name="subSchema" value="person.name.id.dateOfBirth"/>
+		<property name="subLayout" value="values"/>
+	</slot>
+</schema>
+
+<schema name="import.identification.card.data.duplicated.persons.by.name.show" type="org.fenixedu.idcards.domain.CardGenerationBatch$ReportEntry" bundle="CARD_GENERATION_RESOURCES">
+	<slot name="key" key="label.name"/>
+	<slot name="duplicatedPersons" key="label.duplicated.persons" layout="tabular-list">
+		<property name="subSchema" value="person.name.id.dateOfBirth"/>
+		<property name="subLayout" value="values"/>
+	</slot>
+</schema>
+
+<schema name="import.identification.card.data.matched.persons" type="org.fenixedu.idcards.domain.CardGenerationBatch$ReportEntry" bundle="CARD_GENERATION_RESOURCES">
+	<slot name="key" key="label.name"/>
+	<slot name="duplicatedPersons" key="label.matchedPerson" layout="tabular-list">
+		<property name="subSchema" value="person.name.id.dateOfBirth"/>
+		<property name="subLayout" value="values"/>
+	</slot>
+	<slot name="created" key="label.card.entry.created"/>
+</schema>
+
+
+<schema name="card.generation.register.card.list" type="org.fenixedu.idcards.domain.CardGenerationRegister" bundle="CARD_GENERATION_RESOURCES">
+	<slot name="emission" key="label.emission.date"/>
+	<slot name="withAccountInformation" key="label.withAccountInformation"/>
+	<slot name="linePrefix" key="label.linePrefix"/>
+</schema>
+
+<schema name="CardInfoUpload" type="org.fenixedu.idcards.ui.ManageCardGenerationDA$UploadBean" bundle="CARD_GENERATION_RESOURCES">
+	<slot name="inputStream" key="label.file" validator="pt.ist.fenixWebFramework.renderers.validators.RequiredValidator">
+		<property name="fileNameSlot" value="filename"/>
+	</slot>
+</schema>
+
+
+</schemas>

@@ -1,0 +1,10 @@
+{
+  "resources": {
+    "bundles": [
+      "CardGenerationResources"
+    ]
+  },
+  "modules": [
+    { "name": "identificationCardManager", "configFile": "struts-identificationCardManager.xml" }
+  ]
+}
