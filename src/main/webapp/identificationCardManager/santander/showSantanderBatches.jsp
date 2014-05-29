@@ -167,7 +167,7 @@ a {border-bottom: none !important;}
 <p class="santanderSubtitle"><strong><bean:message bundle="CARD_GENERATION_RESOURCES" key="subtitle.santander.cards.dchp.managment"/></strong></p>
 
 <fr:edit id="uploadDCHPFileBean" name="uploadDCHPFileBean" action="/manageSantander.do?method=submitDCHPFile" >
-  <fr:schema type="net.sourceforge.fenixedu.dataTransferObject.commons.OpenFileBeanOpenFileBean" bundle="CARD_GENERATION_RESOURCES">
+  <fr:schema type="net.sourceforge.fenixedu.dataTransferObject.commons.OpenFileBean" bundle="CARD_GENERATION_RESOURCES">
     <fr:slot name="inputStream" required="true" key="label.card.generation.dchp.choosefile" />
   </fr:schema>
 
