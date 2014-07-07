@@ -48,7 +48,7 @@
 		<th><bean:message bundle="CARD_GENERATION_RESOURCES" key="label.card.generation.batch.problem.description"/></th>
 		<th></th>
 	</tr>
-	<logic:iterate id="cardGenerationBatchProblem" name="cardGenerationBatch" property="cardGenerationProblems" length="100">
+	<logic:iterate id="cardGenerationBatchProblem" name="cardGenerationBatch" property="cardGenerationProblemsSet" length="100">
 		<tr>
 			<td>
 				<bean:define id="arg" type="java.lang.String" name="cardGenerationBatchProblem" property="arg"/>
@@ -64,7 +64,7 @@
 	</logic:iterate>
 </table>
 
-<bean:size id="numberProblems" name="cardGenerationBatch" property="cardGenerationProblems"/>
+<bean:size id="numberProblems" name="cardGenerationBatch" property="cardGenerationProblemsSet"/>
 <logic:greaterThan name="numberProblems" value="100">
 	<bean:message bundle="CARD_GENERATION_RESOURCES" key="message.card.generation.batch.contains.more.problems"/>
 </logic:greaterThan>

@@ -70,7 +70,7 @@
 	<tr>
 		<jsp:include page="cardGenerationBatchHeader.jsp"></jsp:include>
 		<logic:notPresent name="cardGenerationBatch" property="peopleForEntryCreation">
-			<logic:notEmpty name="cardGenerationBatch" property="cardGenerationProblems">
+			<logic:notEmpty name="cardGenerationBatch" property="cardGenerationProblemsSet">
 				<th></th>
 			</logic:notEmpty>
 		</logic:notPresent>
@@ -78,7 +78,7 @@
 	<tr>
 		<jsp:include page="cardGenerationBatchRow.jsp"></jsp:include>
 		<logic:notPresent name="cardGenerationBatch" property="peopleForEntryCreation">
-			<logic:notEmpty name="cardGenerationBatch" property="cardGenerationProblems">
+			<logic:notEmpty name="cardGenerationBatch" property="cardGenerationProblemsSet">
 		   		<td>
 					<bean:define id="urlResolveProblems" type="java.lang.String">/manageCardGeneration.do?method=manageCardGenerationBatchProblems&amp;cardGenerationBatchID=<bean:write name="cardGenerationBatch" property="externalId"/></bean:define>
 					<html:link page="<%= urlResolveProblems %>">

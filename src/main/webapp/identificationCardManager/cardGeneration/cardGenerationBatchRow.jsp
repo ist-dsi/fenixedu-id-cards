@@ -52,7 +52,7 @@
 			</logic:notEmpty>
 		</logic:present>
 		<logic:notPresent name="cardGenerationBatch" property="peopleForEntryCreation">
-			<logic:notEmpty name="cardGenerationBatch" property="cardGenerationProblems">
+			<logic:notEmpty name="cardGenerationBatch" property="cardGenerationProblemsSet">
 				<font color="red">
 					<bean:message bundle="CARD_GENERATION_RESOURCES" key="message.card.generation.batch.contains.problems"/>
 				</font>
@@ -70,11 +70,11 @@
 		</logic:present>
 	</td>
    	<td>
-		<bean:size id="numberEntries" name="cardGenerationBatch" property="cardGenerationEntries"/>
+		<bean:size id="numberEntries" name="cardGenerationBatch" property="cardGenerationEntriesSet"/>
    		<bean:write name="numberEntries"/>
 	</td>
    	<td>
-		<bean:size id="numberProblems" name="cardGenerationBatch" property="cardGenerationProblems"/>
+		<bean:size id="numberProblems" name="cardGenerationBatch" property="cardGenerationProblemsSet"/>
    		<bean:write name="numberProblems"/>
 	</td>
 	<td>

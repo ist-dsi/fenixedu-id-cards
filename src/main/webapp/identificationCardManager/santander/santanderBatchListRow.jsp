@@ -69,7 +69,7 @@
 	</td>
    	<td>
    		<% 	SantanderBatch santanderBatch = ((SantanderBatch) thisBatch);
-   			if (santanderBatch.getSantanderProblemsCount() > 0) { %>
+   			if (santanderBatch.getSantanderProblemsSet().size() > 0) { %>
    				<font color="red">
 					<bean:message bundle="CARD_GENERATION_RESOURCES" key="message.card.generation.batch.contains.problems"/>
 				</font>
@@ -88,11 +88,11 @@
    		<%	} %>
 	</td>
    	<td>
-		<bean:size id="numberLines" name="batch" property="santanderEntries"/>
+		<bean:size id="numberLines" name="batch" property="santanderEntriesSet"/>
    		<bean:write name="numberLines"/>
 	</td>
    	<td>
-		<bean:size id="numberProblems" name="batch" property="santanderProblems"/>
+		<bean:size id="numberProblems" name="batch" property="santanderProblemsSet"/>
    		<bean:write name="numberProblems"/>
 	</td>	
 </logic:present>

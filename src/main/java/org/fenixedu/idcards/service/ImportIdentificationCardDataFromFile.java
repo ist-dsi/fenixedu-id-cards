@@ -378,11 +378,11 @@ public class ImportIdentificationCardDataFromFile {
                     final String personName = CardGenerationEntry.normalizePersonName(person).trim();
                     addPerson(peopleByName, person, personName);
 
-                    if (person.hasEmployee()) {
+                    if (person.getEmployee() != null) {
                         final Integer number = person.getEmployee().getEmployeeNumber();
                         addPerson(peopleByNumber, person, number);
                     }
-                    if (person.hasStudent()) {
+                    if (person.getStudent() != null) {
                         final Integer number = person.getStudent().getNumber();
                         addPerson(peopleByNumber, person, number);
                     }

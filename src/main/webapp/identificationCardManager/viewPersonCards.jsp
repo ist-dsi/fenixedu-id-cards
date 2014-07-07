@@ -90,7 +90,7 @@
 	<br/>
 
 	<h3><bean:message key="label.card.generation.entry"/>:</h3>
-		<fr:view name="person" property="cardGenerationEntries" schema="card.generation.person.card.list">
+		<fr:view name="person" property="cardGenerationEntriesSet" schema="card.generation.person.card.list">
 			<fr:layout name="tabular">
 				<fr:property name="classes" value="tstyle1 thlight thtop mtop05"/>
 				<fr:property name="rowClasses" value=",bgcolorfafafa"/>
@@ -392,11 +392,11 @@
 	</logic:present>
 	
 	<h3><bean:message key="label.card.generation.emission"/>:</h3>
-	<logic:empty name="person" property="cardGenerationRegister">
+	<logic:empty name="person" property="cardGenerationRegisterSet">
 		<bean:message key="label.message.no.card.registers" bundle="CARD_GENERATION_RESOURCES" />
 	</logic:empty>
-	<logic:notEmpty name="person" property="cardGenerationRegister">
-		<fr:view name="person" property="cardGenerationRegister" schema="card.generation.register.card.list">
+	<logic:notEmpty name="person" property="cardGenerationRegisterSet">
+		<fr:view name="person" property="cardGenerationRegisterSet" schema="card.generation.register.card.list">
 			<fr:layout name="tabular">
 				<fr:property name="classes" value="tstyle1 thlight thtop mtop05"/>
 				<fr:property name="rowClasses" value=",bgcolorfafafa"/>
@@ -409,7 +409,7 @@
 	<br/>
 
 	<%
-		if (person.hasStudent()) {
+		if (person.getStudent() != null) {
 		    final Student student = person.getStudent();
 		    final Teacher teacher = person.getTeacher();
 		    final Employee employee = person.getEmployee();

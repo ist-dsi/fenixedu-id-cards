@@ -46,13 +46,13 @@
 
 <bean:define id="deleteConfirm">return confirm('<bean:message bundle="CARD_GENERATION_RESOURCES" key="message.confirm.delete"/>')</bean:define>
 
-<logic:present name="cardGenerationProblems">
+<logic:present name="cardGenerationProblemsSet">
 	<table class="tstyle4 thlight mtop05">
 		<tr>
 			<th><bean:message bundle="CARD_GENERATION_RESOURCES" key="label.card.generation.batch.problem.description"/></th>
 			<th></th>
 		</tr>
-		<logic:iterate id="cardGenerationProblem" name="cardGenerationProblems" length="100">
+		<logic:iterate id="cardGenerationProblem" name="cardGenerationProblemsSet" length="100">
 			<tr>
 				<td>
 					<bean:define id="arg" type="java.lang.String" name="cardGenerationProblem" property="arg"/>
@@ -93,7 +93,7 @@
 		</tr>
 	</table>
 	<bean:define id="documentId" type="java.lang.String" name="cardGenerationProblem" property="arg"/>
-	<logic:iterate id="cardGenerationEntryX" type="org.fenixedu.idcards.domain.CardGenerationEntry" name="cardGenerationProblem" property="cardGenerationBatch.cardGenerationEntries">
+	<logic:iterate id="cardGenerationEntryX" type="org.fenixedu.idcards.domain.CardGenerationEntry" name="cardGenerationProblem" property="cardGenerationBatch.cardGenerationEntriesSet">
 		<logic:equal name="cardGenerationEntryX" property="documentID" value="<%= documentId %>">
 			<bean:define id="cardGenerationEntry" name="cardGenerationEntryX" toScope="request"/>
 			<jsp:include page="cardGenerationEntry.jsp"/>
@@ -145,7 +145,7 @@
 		</logic:iterate>
 	</ul>
 
-	<logic:iterate id="cardGenerationEntryX" type="org.fenixedu.idcards.domain.CardGenerationEntry" name="person" property="cardGenerationEntries">
+	<logic:iterate id="cardGenerationEntryX" type="org.fenixedu.idcards.domain.CardGenerationEntry" name="person" property="cardGenerationEntriesSet">
 		<bean:define id="cardGenerationEntry" name="cardGenerationEntryX" toScope="request"/>
 		<jsp:include page="cardGenerationEntry.jsp"/>
 
