@@ -104,7 +104,7 @@
 		<jsp:include page="cardGenerationBatchHeader.jsp"></jsp:include>
 		<th></th>
 	</tr>
-	<logic:iterate id="cardGenerationBatch" name="cardGenerationContext" property="executionYear.cardGenerationBatches">
+	<logic:iterate id="cardGenerationBatch" name="cardGenerationContext" property="executionYear.cardGenerationBatchesSet">
 		<bean:define id="cardGenerationBatch" name="cardGenerationBatch" toScope="request"/>
 		<tr>
 			<jsp:include page="cardGenerationBatchRow.jsp"></jsp:include>

@@ -40,20 +40,4 @@ public class SantanderBatchRequester extends SantanderBatchRequester_Base {
         setRootDomainObject(null);
         super.deleteDomainObject();
     }
-
-    @Deprecated
-    public boolean hasBennu() {
-        return getRootDomainObject() != null;
-    }
-
-    @Deprecated
-    public boolean hasSantanderBatch() {
-        return getSantanderBatch() != null;
-    }
-
-    @Deprecated
-    public boolean hasPerson() {
-        return getPerson() != null;
-    }
-
 }

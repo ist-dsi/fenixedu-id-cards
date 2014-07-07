@@ -71,10 +71,10 @@ public class SantanderBatch extends SantanderBatch_Base {
             getSantanderBatchSender().delete();
         }
         setSantanderSequenceNumberGenerator(null);
-        for (SantanderEntry entry : getSantanderEntries()) {
+        for (SantanderEntry entry : getSantanderEntriesSet()) {
             entry.delete();
         }
-        for (SantanderProblem problem : getSantanderProblems()) {
+        for (SantanderProblem problem : getSantanderProblemsSet()) {
             problem.delete();
         }
         setExecutionYear(null);
@@ -84,7 +84,7 @@ public class SantanderBatch extends SantanderBatch_Base {
     }
 
     public List<SantanderEntry> getSortedSantanderEntries() {
-        List<SantanderEntry> sortedList = new ArrayList<SantanderEntry>(getSantanderEntries());
+        List<SantanderEntry> sortedList = new ArrayList<SantanderEntry>(getSantanderEntriesSet());
         Collections.sort(sortedList, SantanderEntry.COMPARATOR_BY_MOST_RECENTLY_CREATED);
         return sortedList;
     }
@@ -182,71 +182,6 @@ public class SantanderBatch extends SantanderBatch_Base {
         }
         String format = "%0" + size + "d";
         return String.format(format, number);
-    }
-
-    @Deprecated
-    public java.util.Set<org.fenixedu.idcards.domain.SantanderProblem> getSantanderProblems() {
-        return getSantanderProblemsSet();
-    }
-
-    @Deprecated
-    public boolean hasAnySantanderProblems() {
-        return !getSantanderProblemsSet().isEmpty();
-    }
-
-    @Deprecated
-    public java.util.Set<org.fenixedu.idcards.domain.SantanderEntry> getSantanderEntries() {
-        return getSantanderEntriesSet();
-    }
-
-    @Deprecated
-    public boolean hasAnySantanderEntries() {
-        return !getSantanderEntriesSet().isEmpty();
-    }
-
-    @Deprecated
-    public boolean hasSent() {
-        return getSent() != null;
-    }
-
-    @Deprecated
-    public boolean hasBennu() {
-        return getRootDomainObject() != null;
-    }
-
-    @Deprecated
-    public boolean hasCreated() {
-        return getCreated() != null;
-    }
-
-    @Deprecated
-    public boolean hasSantanderBatchSender() {
-        return getSantanderBatchSender() != null;
-    }
-
-    @Deprecated
-    public boolean hasSantanderSequenceNumberGenerator() {
-        return getSantanderSequenceNumberGenerator() != null;
-    }
-
-    @Deprecated
-    public boolean hasSantanderBatchRequester() {
-        return getSantanderBatchRequester() != null;
-    }
-
-    @Deprecated
-    public boolean hasSequenceNumber() {
-        return getSequenceNumber() != null;
-    }
-
-    @Deprecated
-    public boolean hasGenerated() {
-        return getGenerated() != null;
-    }
-
-    @Deprecated
-    public boolean hasExecutionYear() {
-        return getExecutionYear() != null;
     }
 
     private String makeRightShiftedPaddedNumber(int number, int size) {

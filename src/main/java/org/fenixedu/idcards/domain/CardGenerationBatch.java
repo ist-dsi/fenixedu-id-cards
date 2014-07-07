@@ -161,7 +161,7 @@ public class CardGenerationBatch extends CardGenerationBatch_Base {
 
     public int getNumberOfIssuedCards() {
         int result = 0;
-        for (CardGenerationEntry cardGenerationEntry : getCardGenerationEntries()) {
+        for (CardGenerationEntry cardGenerationEntry : getCardGenerationEntriesSet()) {
             result += cardGenerationEntry.getNumberOfCGRsAfterThisCGEAndBeforeTheNextCGE();
         }
         return result;
@@ -169,7 +169,7 @@ public class CardGenerationBatch extends CardGenerationBatch_Base {
 
     public List<String> getSentButNotIssuedCGRs() {
         List<String> lineEntriesSentButNotIssued = new ArrayList<String>();
-        for (CardGenerationEntry cardGenerationEntry : getCardGenerationEntries()) {
+        for (CardGenerationEntry cardGenerationEntry : getCardGenerationEntriesSet()) {
             if (cardGenerationEntry.getNumberOfCGRsAfterThisCGEAndBeforeTheNextCGE() <= 0) {
                 lineEntriesSentButNotIssued.add(cardGenerationEntry.getLine());
             }
@@ -946,61 +946,6 @@ public class CardGenerationBatch extends CardGenerationBatch_Base {
         public Integer getMatches() {
             return this.matchedEntriesWithId.size() + this.matchedEntriesWithName.size();
         }
-    }
-
-    @Deprecated
-    public java.util.Set<org.fenixedu.idcards.domain.CardGenerationEntry> getCardGenerationEntries() {
-        return getCardGenerationEntriesSet();
-    }
-
-    @Deprecated
-    public boolean hasAnyCardGenerationEntries() {
-        return !getCardGenerationEntriesSet().isEmpty();
-    }
-
-    @Deprecated
-    public java.util.Set<org.fenixedu.idcards.domain.CardGenerationProblem> getCardGenerationProblems() {
-        return getCardGenerationProblemsSet();
-    }
-
-    @Deprecated
-    public boolean hasAnyCardGenerationProblems() {
-        return !getCardGenerationProblemsSet().isEmpty();
-    }
-
-    @Deprecated
-    public boolean hasUpdated() {
-        return getUpdated() != null;
-    }
-
-    @Deprecated
-    public boolean hasSent() {
-        return getSent() != null;
-    }
-
-    @Deprecated
-    public boolean hasDescription() {
-        return getDescription() != null;
-    }
-
-    @Deprecated
-    public boolean hasBennu() {
-        return getRootDomainObject() != null;
-    }
-
-    @Deprecated
-    public boolean hasPeopleForEntryCreation() {
-        return getPeopleForEntryCreation() != null;
-    }
-
-    @Deprecated
-    public boolean hasCreated() {
-        return getCreated() != null;
-    }
-
-    @Deprecated
-    public boolean hasExecutionYear() {
-        return getExecutionYear() != null;
     }
 
 }

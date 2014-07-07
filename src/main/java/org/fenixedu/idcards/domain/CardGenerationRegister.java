@@ -44,30 +44,4 @@ public class CardGenerationRegister extends CardGenerationRegister_Base {
         setRootDomainObject(null);
         deleteDomainObject();
     }
-
-    @Deprecated
-    public boolean hasBennu() {
-        return getRootDomainObject() != null;
-    }
-
-    @Deprecated
-    public boolean hasWithAccountInformation() {
-        return getWithAccountInformation() != null;
-    }
-
-    @Deprecated
-    public boolean hasLinePrefix() {
-        return getLinePrefix() != null;
-    }
-
-    @Deprecated
-    public boolean hasEmission() {
-        return getEmission() != null;
-    }
-
-    @Deprecated
-    public boolean hasPerson() {
-        return getPerson() != null;
-    }
-
 }

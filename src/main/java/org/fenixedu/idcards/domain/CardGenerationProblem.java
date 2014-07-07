@@ -88,8 +88,8 @@ public class CardGenerationProblem extends CardGenerationProblem_Base {
         cardGenerationEntry.setCardGenerationBatch(cardGenerationBatch);
         crossReference(cardGenerationEntry);
         delete();
-        if (!cardGenerationBatchWithProblems.hasAnyCardGenerationProblems()
-                && !cardGenerationBatchWithProblems.hasAnyCardGenerationEntries()) {
+        if (cardGenerationBatchWithProblems.getCardGenerationProblemsSet().isEmpty()
+                && cardGenerationBatchWithProblems.getCardGenerationEntriesSet().isEmpty()) {
             cardGenerationBatchWithProblems.delete();
         }
     }
@@ -134,36 +134,10 @@ public class CardGenerationProblem extends CardGenerationProblem_Base {
 
     private CardGenerationBatch findBatchUnderConstruction(final ExecutionYear executionYear) {
         for (final CardGenerationBatch cardGenerationBatch : executionYear.getCardGenerationBatchesSet()) {
-            if (cardGenerationBatch.getSent() == null && !cardGenerationBatch.hasAnyCardGenerationProblems()) {
+            if (cardGenerationBatch.getSent() == null && cardGenerationBatch.getCardGenerationProblemsSet().isEmpty()) {
                 return cardGenerationBatch;
             }
         }
         return new CardGenerationBatch("New Batch", executionYear, true);
     }
-
-    @Deprecated
-    public boolean hasCardGenerationBatch() {
-        return getCardGenerationBatch() != null;
-    }
-
-    @Deprecated
-    public boolean hasArg() {
-        return getArg() != null;
-    }
-
-    @Deprecated
-    public boolean hasBennu() {
-        return getRootDomainObject() != null;
-    }
-
-    @Deprecated
-    public boolean hasDescriptionKey() {
-        return getDescriptionKey() != null;
-    }
-
-    @Deprecated
-    public boolean hasPerson() {
-        return getPerson() != null;
-    }
-
 }
