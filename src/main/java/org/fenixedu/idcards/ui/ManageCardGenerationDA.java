@@ -41,7 +41,6 @@ import net.sourceforge.fenixedu.domain.ExecutionYear;
 import net.sourceforge.fenixedu.domain.Person;
 import net.sourceforge.fenixedu.domain.degree.Category;
 import net.sourceforge.fenixedu.domain.degree.DegreeType;
-import net.sourceforge.fenixedu.domain.person.PersonName;
 import net.sourceforge.fenixedu.domain.personnelSection.contracts.ProfessionalCategory;
 import net.sourceforge.fenixedu.domain.student.Student;
 import net.sourceforge.fenixedu.presentationTier.Action.base.FenixDispatchAction;
@@ -139,7 +138,7 @@ public class ManageCardGenerationDA extends FenixDispatchAction {
 
         private CardGenerationProblem cardGenerationProblem;
         private CardGenerationEntry cardGenerationEntry;
-        private PersonName personName;
+        private Person person;
         private String name;
 
         public String getName() {
@@ -159,15 +158,11 @@ public class ManageCardGenerationDA extends FenixDispatchAction {
         }
 
         public Person getPerson() {
-            return personName == null ? null : personName.getPerson();
+            return person;
         }
 
-        public PersonName getPersonName() {
-            return personName;
-        }
-
-        public void setPersonName(PersonName personName) {
-            this.personName = personName;
+        public void setPerson(Person person) {
+            this.person = person;
         }
 
         public CardGenerationProblem getCardGenerationProblem() {
