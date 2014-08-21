@@ -24,7 +24,7 @@ import java.util.TreeSet;
 
 import net.sourceforge.fenixedu.applicationTier.Servico.person.SearchPerson;
 import net.sourceforge.fenixedu.domain.Person;
-import net.sourceforge.fenixedu.domain.person.PersonNamePart;
+import net.sourceforge.fenixedu.domain.person.HumanName;
 
 import org.apache.commons.collections.Predicate;
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -72,15 +72,7 @@ public class SearchPersonWithCard extends SearchPerson {
     }
 
     private boolean matchableSearchNameAndCardName(String searchName, String cardName) {
-        final String[] nameParts = PersonNamePart.getNameParts(searchName);
-        if (nameParts.length > 0) {
-            for (final String namePart : nameParts) {
-                if (cardName.indexOf(namePart) == -1) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return HumanName.namesMatch(cardName, searchName);
     }
 
     // Service Invokers migrated from Berserk

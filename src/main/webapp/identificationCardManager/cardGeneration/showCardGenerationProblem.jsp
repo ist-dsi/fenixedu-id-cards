@@ -107,16 +107,14 @@
 					<bean:define id="url" type="java.lang.String">/manageCardGeneration.do?method=setPersonForCardGenerationEntry&amp;cardGenerationEntryID=<bean:write name="cardGenerationEntryX" property="externalId"/></bean:define>
 					<fr:edit id="setPersonForCardGenerationEntryBean" name="setPersonForCardGenerationEntryBean" action="<%= url %>">
 						<fr:schema type="org.fenixedu.idcards.ui.ManageCardGenerationDA$SetPersonForCardGenerationEntryBean" bundle="CARD_GENERATION_RESOURCES">
-							<fr:slot name="personName" layout="autoComplete" validator="net.sourceforge.fenixedu.presentationTier.renderers.validators.RequiredAutoCompleteSelectionValidator" key="label.person">
+							<fr:slot name="person" layout="autoComplete" validator="net.sourceforge.fenixedu.presentationTier.renderers.validators.RequiredAutoCompleteSelectionValidator" key="label.person">
 								<fr:property name="size" value="30"/>
 								<fr:property name="rawSlotName" value="name"/>
 								<fr:property name="indicatorShown" value="true"/>
 								<fr:property name="provider" value="net.sourceforge.fenixedu.applicationTier.Servico.commons.searchers.SearchInternalPersons"/>
 								<fr:property name="args" value="slot=name,size=30"/>
-								<fr:property name="className" value="net.sourceforge.fenixedu.domain.person.PersonName"/>				
 								<fr:property name="minChars" value="4"/>
-								<fr:property name="labelField" value="person.name"/>
-								<fr:property name="format" value="${text}"/>
+								<fr:property name="labelField" value="name"/>
 							</fr:slot>
 						</fr:schema>
 						<fr:layout name="tabular">
