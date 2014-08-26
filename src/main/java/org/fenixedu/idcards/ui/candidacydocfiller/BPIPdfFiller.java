@@ -92,7 +92,7 @@ public class BPIPdfFiller extends PdfFiller {
         PdfStamper stamper = new PdfStamper(reader, output);
         form = stamper.getAcroFields();
 
-        setField("Cliente", person.getName());
+        setField("Text1", person.getName());
         stamper.setFormFlattening(true);
         stamper.close();
         return output;
@@ -107,9 +107,9 @@ public class BPIPdfFiller extends PdfFiller {
         PdfStamper stamper = new PdfStamper(reader, output);
         form = stamper.getAcroFields();
 
-        setField("Nome completo_1", person.getName());
+        setField("undefined_2", person.getName());
         setField("NIF", person.getSocialSecurityNumber());
-        setField("Nº", person.getDocumentIdNumber());
+        setField("N", person.getDocumentIdNumber());
 
         setField("Nacionalidade", person.getCountryOfBirth().getCountryNationality().toString());
         setField("Naturalidade", person.getCountryOfBirth().getName());
@@ -119,35 +119,35 @@ public class BPIPdfFiller extends PdfFiller {
         setField("Freguesia", person.getParishOfBirth());
         setField("Nome do Pai", person.getNameOfFather());
         setField("Nome da Mãe", person.getNameOfMother());
-        setField("Morada de Residencia_1", person.getAddress());
+        setField("Morada de Residência", person.getAddress());
         setField("Localidade", person.getAreaOfAreaCode());
         setField("Designação Postal", person.getAreaOfAreaCode());
         setField("País", person.getCountryOfResidence().getName());
 
         String postalCode = person.getPostalCode();
         int dashIndex = postalCode.indexOf('-');
-        setField("Código Postal4", postalCode.substring(0, 4));
+        setField("Código Postal", postalCode.substring(0, 4));
         String last3Numbers = postalCode.substring(dashIndex + 1, dashIndex + 4);
-        setField("Código Postal_5", last3Numbers);
-        setField("Móvel", person.getDefaultMobilePhoneNumber());
-        setField("E-mail", getMail(person));
+        setField("undefined_14", last3Numbers);
+        setField("undefined_17", person.getDefaultMobilePhoneNumber());
+        setField("undefined_19", getMail(person));
 
         YearMonthDay emissionDate = person.getEmissionDateOfDocumentIdYearMonthDay();
         if (emissionDate != null) {
-            setField("Dia_1", String.valueOf(emissionDate.getDayOfMonth()));
-            setField("Mês_1", String.valueOf(emissionDate.getMonthOfYear()));
-            setField("Ano_1", String.valueOf(emissionDate.getYear()));
+            setField("Data de Emissão", String.valueOf(emissionDate.getDayOfMonth()));
+            setField("undefined_5", String.valueOf(emissionDate.getMonthOfYear()));
+            setField("undefined_6", String.valueOf(emissionDate.getYear()));
         }
 
         YearMonthDay expirationDate = person.getExpirationDateOfDocumentIdYearMonthDay();
-        setField("Dia_2", String.valueOf(expirationDate.getDayOfMonth()));
-        setField("Mês_2", String.valueOf(expirationDate.getMonthOfYear()));
-        setField("Ano_2", String.valueOf(expirationDate.getYear()));
+        setField("Válido até", String.valueOf(expirationDate.getDayOfMonth()));
+        setField("undefined_7", String.valueOf(expirationDate.getMonthOfYear()));
+        setField("undefined_8", String.valueOf(expirationDate.getYear()));
 
         YearMonthDay birthdayDate = person.getDateOfBirthYearMonthDay();
-        setField("Dia3", String.valueOf(birthdayDate.getDayOfMonth()));
-        setField("Mês3", String.valueOf(birthdayDate.getMonthOfYear()));
-        setField("Ano_3", String.valueOf(birthdayDate.getYear()));
+        setField("Data de Nascimento", String.valueOf(birthdayDate.getDayOfMonth()));
+        setField("undefined_9", String.valueOf(birthdayDate.getMonthOfYear()));
+        setField("undefined_10", String.valueOf(birthdayDate.getYear()));
 
         stamper.setFormFlattening(true);
         stamper.close();
