@@ -69,14 +69,9 @@ public class BPIPdfFiller extends PdfFiller {
         setField("Nome", person.getName());
         setField("topmostSubform[0].Page1[0].Datavalidade[0]",
                 person.getExpirationDateOfDocumentIdYearMonthDay().toString(DateTimeFormat.forPattern("dd/MM/yyyy")));
-        setField("dia", String.valueOf(person.getExpirationDateOfDocumentIdYearMonthDay().getDayOfMonth()));
-        setField("Mês", String.valueOf(person.getExpirationDateOfDocumentIdYearMonthDay().getMonthOfYear()));
+        setField("dia", String.format("%02d", person.getExpirationDateOfDocumentIdYearMonthDay().getDayOfMonth()));
+        setField("Mês", String.format("%02d", person.getExpirationDateOfDocumentIdYearMonthDay().getMonthOfYear()));
         setField("Ano", String.valueOf(person.getExpirationDateOfDocumentIdYearMonthDay().getYear()));
-
-        LocalDate today = new LocalDate();
-        setField("dia_1", String.valueOf(today.getDayOfMonth()));
-        setField("Mês_1", String.valueOf(today.getMonthOfYear()));
-        setField("Ano_1", String.valueOf(today.getYear()));
 
         stamper.setFormFlattening(true);
         stamper.close();
@@ -92,7 +87,13 @@ public class BPIPdfFiller extends PdfFiller {
         PdfStamper stamper = new PdfStamper(reader, output);
         form = stamper.getAcroFields();
 
-        setField("Cliente", person.getName());
+        setField("Text1", person.getName());
+
+        LocalDate today = new LocalDate();
+        setField("Data1_Dia1.0", String.format("%02d", today.getDayOfMonth()));
+        setField("Data1_mes1.0", String.format("%02d", today.getMonthOfYear()));
+        setField("Data1_ano.0", String.valueOf(today.getYear()));
+
         stamper.setFormFlattening(true);
         stamper.close();
         return output;
@@ -107,9 +108,16 @@ public class BPIPdfFiller extends PdfFiller {
         PdfStamper stamper = new PdfStamper(reader, output);
         form = stamper.getAcroFields();
 
-        setField("Nome completo_1", person.getName());
+        setField("undefined_2", person.getName());
+
+        if (person.isFemale()) {
+            setField("Check Box53", "Yes"); // female
+        } else {
+            setField("Check Box52", "Yes"); // male
+        }
+
         setField("NIF", person.getSocialSecurityNumber());
-        setField("Nº", person.getDocumentIdNumber());
+        setField("N", person.getDocumentIdNumber());
 
         setField("Nacionalidade", person.getCountryOfBirth().getCountryNationality().toString());
         setField("Naturalidade", person.getCountryOfBirth().getName());
@@ -119,35 +127,62 @@ public class BPIPdfFiller extends PdfFiller {
         setField("Freguesia", person.getParishOfBirth());
         setField("Nome do Pai", person.getNameOfFather());
         setField("Nome da Mãe", person.getNameOfMother());
-        setField("Morada de Residencia_1", person.getAddress());
+
+        switch (person.getMaritalStatus()) {
+        case CIVIL_UNION:
+            setField("Check Box10[0]", "Yes");
+            break;
+        case DIVORCED:
+            setField("Check Box7[0]", "Yes");
+            break;
+        case MARRIED:
+            setField("Check Box11[0]", "Yes");
+            break;
+        case SEPARATED:
+            setField("Check Box8[0]", "Yes");
+            break;
+        case SINGLE:
+            setField("Check Box9[0]", "Yes");
+            break;
+        case WIDOWER:
+            setField("Check Box51", "Yes");
+            break;
+        }
+
+        setField("Morada de Residência", person.getAddress());
         setField("Localidade", person.getAreaOfAreaCode());
         setField("Designação Postal", person.getAreaOfAreaCode());
         setField("País", person.getCountryOfResidence().getName());
 
         String postalCode = person.getPostalCode();
         int dashIndex = postalCode.indexOf('-');
-        setField("Código Postal4", postalCode.substring(0, 4));
+        setField("Código Postal", postalCode.substring(0, 4));
         String last3Numbers = postalCode.substring(dashIndex + 1, dashIndex + 4);
-        setField("Código Postal_5", last3Numbers);
-        setField("Móvel", person.getDefaultMobilePhoneNumber());
-        setField("E-mail", getMail(person));
+        setField("undefined_14", last3Numbers);
+        setField("undefined_17", person.getDefaultMobilePhoneNumber());
+        setField("undefined_19", getMail(person));
 
         YearMonthDay emissionDate = person.getEmissionDateOfDocumentIdYearMonthDay();
         if (emissionDate != null) {
-            setField("Dia_1", String.valueOf(emissionDate.getDayOfMonth()));
-            setField("Mês_1", String.valueOf(emissionDate.getMonthOfYear()));
-            setField("Ano_1", String.valueOf(emissionDate.getYear()));
+            setField("Data de Emissão", String.format("%02d", emissionDate.getDayOfMonth()));
+            setField("undefined_5", String.format("%02d", emissionDate.getMonthOfYear()));
+            setField("undefined_6", String.valueOf(emissionDate.getYear()));
         }
 
         YearMonthDay expirationDate = person.getExpirationDateOfDocumentIdYearMonthDay();
-        setField("Dia_2", String.valueOf(expirationDate.getDayOfMonth()));
-        setField("Mês_2", String.valueOf(expirationDate.getMonthOfYear()));
-        setField("Ano_2", String.valueOf(expirationDate.getYear()));
+        setField("Válido até", String.format("%02d", expirationDate.getDayOfMonth()));
+        setField("undefined_7", String.format("%02d", expirationDate.getMonthOfYear()));
+        setField("undefined_8", String.valueOf(expirationDate.getYear()));
 
         YearMonthDay birthdayDate = person.getDateOfBirthYearMonthDay();
-        setField("Dia3", String.valueOf(birthdayDate.getDayOfMonth()));
-        setField("Mês3", String.valueOf(birthdayDate.getMonthOfYear()));
-        setField("Ano_3", String.valueOf(birthdayDate.getYear()));
+        setField("Data de Nascimento", String.format("%02d", birthdayDate.getDayOfMonth()));
+        setField("undefined_9", String.format("%02d", birthdayDate.getMonthOfYear()));
+        setField("undefined_10", String.valueOf(birthdayDate.getYear()));
+
+        LocalDate today = new LocalDate();
+        setField("Data", String.format("%02d", today.getDayOfMonth()));
+        setField("undefined_24", String.format("%02d", today.getMonthOfYear()));
+        setField("undefined_25", String.valueOf(today.getYear()));
 
         stamper.setFormFlattening(true);
         stamper.close();
