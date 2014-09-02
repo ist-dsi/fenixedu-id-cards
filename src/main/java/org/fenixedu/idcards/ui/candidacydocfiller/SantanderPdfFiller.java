@@ -93,7 +93,6 @@ public class SantanderPdfFiller extends PdfFiller {
         setField("topmostSubform[0].Page1[0].Datavalidade[0]",
                 person.getExpirationDateOfDocumentIdYearMonthDay().toString(DateTimeFormat.forPattern("dd/MM/yyyy")));
         setField("topmostSubform[0].Page1[0].NIF[0]", person.getSocialSecurityNumber());
-        setField("topmostSubform[0].Page1[0].Nacionalidade[0]", person.getCountryOfBirth().getCountryNationality().toString());
         setField("topmostSubform[0].Page1[0].Datanascimento[0]",
                 person.getDateOfBirthYearMonthDay().toString(DateTimeFormat.forPattern("dd/MM/yyyy")));
         YearMonthDay dateOfBirthYearMonthDay = person.getDateOfBirthYearMonthDay();
@@ -127,7 +126,8 @@ public class SantanderPdfFiller extends PdfFiller {
         }
         setField("topmostSubform[0].Page1[0].Telemovel[0]", person.getDefaultMobilePhoneNumber());
         setField("topmostSubform[0].Page1[0].E-mail[0]", getMail(person));
-        setField("topmostSubform[0].Page1[0].Moradaprincipal[0]", person.getAddress());
+        
+        setField("topmostSubform[0].Page1[0].Moradaresidenciapermanente[0]", person.getAddress());
         setField("topmostSubform[0].Page1[0].localidade[0]", person.getAreaOfAreaCode());
         String postalCode = person.getPostalCode();
         int dashIndex = postalCode.indexOf('-');
@@ -135,9 +135,10 @@ public class SantanderPdfFiller extends PdfFiller {
         String last3Numbers = person.getPostalCode().substring(dashIndex + 1, dashIndex + 4);
         setField("topmostSubform[0].Page1[0].ExtensaoCodPostal[0]", last3Numbers);
 
-        setField("topmostSubform[0].Page1[0].Nacionalidade[0]", person.getCountryOfBirth().getCountryNationality().toString());
-        setField("topmostSubform[0].Page1[0].Nacionalidade[0]", person.getCountryOfBirth().getCountryNationality().toString());
-
+        setField("topmostSubform[0].Page1[0].Paisnacionalidade", person.getCountry().getCountryNationality().getPreferedContent());
+        setField("topmostSubform[0].Page1[0].Paisnascimento", person.getCountryOfBirth().getName());
+        setField("topmostSubform[0].Page1[0].Paisresidencia", person.getCountryOfResidence().getName());
+        
         stamper.setFormFlattening(true);
         stamper.close();
         return output;
