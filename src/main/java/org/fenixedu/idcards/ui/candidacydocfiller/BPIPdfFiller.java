@@ -89,11 +89,6 @@ public class BPIPdfFiller extends PdfFiller {
 
         setField("Text1", person.getName());
 
-        LocalDate today = new LocalDate();
-        setField("Data1_Dia1.0", String.format("%02d", today.getDayOfMonth()));
-        setField("Data1_mes1.0", String.format("%02d", today.getMonthOfYear()));
-        setField("Data1_ano.0", String.valueOf(today.getYear()));
-
         stamper.setFormFlattening(true);
         stamper.close();
         return output;
@@ -178,11 +173,6 @@ public class BPIPdfFiller extends PdfFiller {
         setField("Data de Nascimento", String.format("%02d", birthdayDate.getDayOfMonth()));
         setField("undefined_9", String.format("%02d", birthdayDate.getMonthOfYear()));
         setField("undefined_10", String.valueOf(birthdayDate.getYear()));
-
-        LocalDate today = new LocalDate();
-        setField("Data", String.format("%02d", today.getDayOfMonth()));
-        setField("undefined_24", String.format("%02d", today.getMonthOfYear()));
-        setField("undefined_25", String.valueOf(today.getYear()));
 
         stamper.setFormFlattening(true);
         stamper.close();
