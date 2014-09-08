@@ -12,7 +12,6 @@ import org.joda.time.format.DateTimeFormat;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.AcroFields;
-import com.lowagie.text.pdf.PdfCopyFields;
 import com.lowagie.text.pdf.PdfName;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
@@ -53,21 +52,14 @@ public class CGDPdfFiller {
      * */
 
     public ByteArrayOutputStream getFilledPdf(Person person) throws IOException, DocumentException {
-        ByteArrayOutputStream concatenatedCGDPdf = new ByteArrayOutputStream();
-        PdfCopyFields copy = new PdfCopyFields(concatenatedCGDPdf);
-
-        copy.addDocument(new PdfReader(getFilledPdfCGDPersonalInformation(person).toByteArray()));
-
-        copy.close();
-
-        return concatenatedCGDPdf;
+        return getFilledPdfCGDPersonalInformation(person);
     }
 
     private ByteArrayOutputStream getFilledPdfCGDPersonalInformation(Person person) throws IOException, DocumentException {
         InputStream istream = getClass().getResourceAsStream(CGD_PERSONAL_INFORMATION_PDF_PATH);
         PdfReader reader = new PdfReader(istream);
         reader.getAcroForm().remove(PdfName.SIGFLAGS);
-        reader.selectPages("1,3");
+        reader.selectPages("1");
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         PdfStamper stamper = new PdfStamper(reader, output);
         form = stamper.getAcroFields();
