@@ -27,9 +27,12 @@ import net.sourceforge.barbecue.BarcodeFactory;
 import net.sourceforge.barbecue.BarcodeImageHandler;
 import net.sourceforge.barbecue.output.OutputException;
 import net.sourceforge.fenixedu.domain.Person;
+import net.sourceforge.fenixedu.domain.organizationalStructure.UniversityUnit;
 import net.sourceforge.fenixedu.domain.person.IDDocumentType;
+import net.sourceforge.fenixedu.domain.student.Registration;
 import net.sourceforge.fenixedu.presentationTier.candidacydocfiller.PdfFiller;
 
+import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.idcards.domain.SantanderPhotoEntry;
 import org.joda.time.DateTime;
 import org.joda.time.DurationFieldType;
@@ -139,9 +142,25 @@ public class SantanderPdfFiller extends PdfFiller {
         setField("topmostSubform[0].Page1[0].Paisnascimento", person.getCountryOfBirth().getName());
         setField("topmostSubform[0].Page1[0].Paisresidencia", person.getCountryOfResidence().getName());
         
+        setField("topmostSubform[0].Page2[0].InstituiçãoEnsinoSuperior[0]", UniversityUnit.getInstitutionsUniversityUnit().getName());
+        setField("topmostSubform[0].Page2[0].FaculdadeEscola[0]", Bennu.getInstance().getInstitutionUnit().getName());
+        Registration registration = getRegistration(person);
+        if(registration != null) {
+            setField("topmostSubform[0].Page2[0].Curso[0]", registration.getDegree().getSigla());
+            setField("topmostSubform[0].Page2[0].AnoIncioCurso[0]", String.valueOf(registration.getStartDate().getYear()));
+        }
+        
         stamper.setFormFlattening(true);
         stamper.close();
         return output;
+    }
+
+    private Registration getRegistration(Person person) {
+        if(person.getStudent().getActiveRegistrations().size() > 1) {
+            return null;
+        } else {
+            return (Registration) person.getStudent().getActiveRegistrations().iterator().next();
+        }
     }
 
     private ByteArrayOutputStream getFilledPdfSantanderCard(Person person) throws IOException, DocumentException,
