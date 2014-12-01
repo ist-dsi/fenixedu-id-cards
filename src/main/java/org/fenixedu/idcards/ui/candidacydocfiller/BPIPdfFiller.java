@@ -22,10 +22,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.sourceforge.fenixedu.domain.Person;
-import net.sourceforge.fenixedu.presentationTier.candidacydocfiller.PdfFiller;
-
-import org.joda.time.LocalDate;
+import org.fenixedu.academic.domain.Person;
+import org.fenixedu.academic.servlet.PdfFiller;
 import org.joda.time.YearMonthDay;
 import org.joda.time.format.DateTimeFormat;
 

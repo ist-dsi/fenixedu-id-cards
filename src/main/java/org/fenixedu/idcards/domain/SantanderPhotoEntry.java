@@ -21,12 +21,11 @@ package org.fenixedu.idcards.domain;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
-import net.sourceforge.fenixedu.domain.Person;
-import net.sourceforge.fenixedu.domain.Photograph;
-import net.sourceforge.fenixedu.domain.photograph.Picture;
-import net.sourceforge.fenixedu.domain.photograph.PictureOriginal;
-import net.sourceforge.fenixedu.util.ContentType;
-
+import org.fenixedu.academic.domain.Person;
+import org.fenixedu.academic.domain.Photograph;
+import org.fenixedu.academic.domain.photograph.Picture;
+import org.fenixedu.academic.domain.photograph.PictureOriginal;
+import org.fenixedu.academic.util.ContentType;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.imgscalr.Scalr;
 import org.imgscalr.Scalr.Method;
@@ -64,12 +63,12 @@ public class SantanderPhotoEntry extends SantanderPhotoEntry_Base {
         final Photograph photograph = getPhotograph();
         final PictureOriginal original = photograph.getOriginal();
         final BufferedImage image =
-                original.getPictureFileFormat() == ContentType.JPG ? Picture.readImage(original.getPictureData().getBytes()) : read(original);
+                original.getPictureFileFormat() == ContentType.JPG ? Picture.readImage(original.getPictureData()) : read(original);
         return transform(image);
     }
 
     private BufferedImage read(final PictureOriginal original) {
-        BufferedImage image = Picture.readImage(original.getPictureData().getBytes());
+        BufferedImage image = Picture.readImage(original.getPictureData());
         BufferedImage result = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
         result.createGraphics().drawImage(image, 0, 0, Color.WHITE, null);
         return result;

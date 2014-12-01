@@ -21,8 +21,7 @@ package org.fenixedu.idcards.ui;
 import java.io.Serializable;
 import java.util.List;
 
-import net.sourceforge.fenixedu.domain.ExecutionYear;
-
+import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.idcards.domain.SantanderBatch;
 
 @SuppressWarnings("serial")

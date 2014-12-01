@@ -20,7 +20,7 @@ package org.fenixedu.idcards.ui;
 
 import java.io.Serializable;
 
-import net.sourceforge.fenixedu.domain.ExecutionYear;
+import org.fenixedu.academic.domain.ExecutionYear;
 
 public class CardGenerationContext implements Serializable {
 

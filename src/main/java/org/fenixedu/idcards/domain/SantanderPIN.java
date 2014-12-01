@@ -18,7 +18,7 @@
  */
 package org.fenixedu.idcards.domain;
 
-import net.sourceforge.fenixedu.domain.Person;
+import org.fenixedu.academic.domain.Person;
 
 import com.google.common.io.BaseEncoding;
 

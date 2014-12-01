@@ -16,31 +16,6 @@ package org.fenixedu.idcards.domain;
  * Class definitions
  *
  */
- 
-class CardGenerationBatch  {
-    String description;
-    DateTime created;
-    DateTime updated;
-    DateTime sent;
-    String peopleForEntryCreation;
-}
-
-class CardGenerationEntry  {
-    String line;
-    DateTime created;
-    String documentID;
-}
-
-class CardGenerationProblem  {
-    String descriptionKey;
-    String arg;
-}
-
-class CardGenerationRegister  {
-    LocalDate emission;
-    Boolean withAccountInformation;
-    String linePrefix;
-}
 
 class SantanderBatch  {
 	DateTime created;
@@ -87,69 +62,6 @@ class SantanderCardInformation {
  * Relations definitions
  * 
  */
- 
-relation RootDomainObjectCardGenerationBatch {
-        .org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
-        CardGenerationBatch playsRole cardGenerationBatches {
-                multiplicity *;
-        }
-}
-
-relation RootDomainObjectCardGenerationEntry {
-        .org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
-        CardGenerationEntry playsRole cardGenerationEntries {
-                multiplicity *;
-        }
-}
-
-relation RootDomainObjectCardGenerationRegister {
-        .org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
-        CardGenerationRegister playsRole cardGenerationRegister {
-                multiplicity *;
-        }
-}
-
-relation RootDomainObjectCardGenerationProblem {
-        .org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
-        CardGenerationProblem playsRole cardGenerationProblem {
-                multiplicity *;
-        }
-}
-
-relation ExecutionYearCardGenerationBatch {
-        .net.sourceforge.fenixedu.domain.ExecutionYear playsRole executionYear;
-        CardGenerationBatch playsRole cardGenerationBatches {
-                multiplicity *;
-        }
-}
-
-relation CardGenerationBatchCardGenerationEntry {
-        CardGenerationBatch playsRole cardGenerationBatch;
-        CardGenerationEntry playsRole cardGenerationEntries {
-                multiplicity *;
-        }
-}
-
-relation CardGenerationBatchCardGenerationProblem {
-        CardGenerationBatch playsRole cardGenerationBatch;
-        CardGenerationProblem playsRole cardGenerationProblems {
-                multiplicity *;
-        }
-}
-
-relation PersonCardGenerationEntry {
-        .net.sourceforge.fenixedu.domain.Person playsRole person;
-        CardGenerationEntry playsRole cardGenerationEntries {
-        multiplicity *;
-    }
-}
-
-relation PersonCardGenerationRegister {
-        .net.sourceforge.fenixedu.domain.Person playsRole person;
-        CardGenerationRegister playsRole cardGenerationRegister {
-        multiplicity *;
-    }
-}
 
 relation RootDomainObjectSantanderBatch {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
@@ -201,7 +113,7 @@ relation RootDomainObjectSantanderProblem {
 }
 
 relation ExecutionYearSantanderBatch {
-	.net.sourceforge.fenixedu.domain.ExecutionYear playsRole executionYear;
+	.org.fenixedu.academic.domain.ExecutionYear playsRole executionYear;
 	SantanderBatch playsRole santanderBatches {
 		multiplicity *;
 	}
@@ -239,28 +151,28 @@ relation SantanderBatchSantanderProblem {
 }
 
 relation PersonSantanderBatchRequester {
-	.net.sourceforge.fenixedu.domain.Person playsRole person;
+	.org.fenixedu.academic.domain.Person playsRole person;
 	SantanderBatchRequester playsRole santanderBatchRequesters {
 		multiplicity *;
 	}
 }
 
 relation PersonSantanderBatchSender {
-	.net.sourceforge.fenixedu.domain.Person playsRole person;
+	.org.fenixedu.academic.domain.Person playsRole person;
 	SantanderBatchSender playsRole santanderBatchSenders {
 		multiplicity *;
 	}
 }
 
 relation PersonSantanderEntry {
-	.net.sourceforge.fenixedu.domain.Person playsRole person;
+	.org.fenixedu.academic.domain.Person playsRole person;
 	SantanderEntry playsRole santanderEntries {
 		multiplicity *;
 	}
 }
 
 relation PersonSantanderCardInformation {
-	.net.sourceforge.fenixedu.domain.Person playsRole person;
+	.org.fenixedu.academic.domain.Person playsRole person;
 	SantanderCardInformation playsRole santanderCardsInformation {
 		multiplicity *;
 	}
@@ -272,17 +184,10 @@ relation SantanderPhotoEntrySantanderEntry {
 }
 
 relation PersonSantanderPIN {
-	.net.sourceforge.fenixedu.domain.Person playsRole person;
+	.org.fenixedu.academic.domain.Person playsRole person;
 	SantanderPIN playsRole santanderPIN;
 }
 
-relation PersonCardGenerationProblem {
-    .net.sourceforge.fenixedu.domain.Person playsRole person;
-    CardGenerationProblem playsRole cardGenerationProblems {
-            multiplicity *;
-    }
-}
-    
 relation RootDomainObjectSantanderPhotoEntry {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject; 
 	SantanderPhotoEntry playsRole santanderPhotoEntry {
@@ -291,7 +196,7 @@ relation RootDomainObjectSantanderPhotoEntry {
 }
 
 relation SantanderEntryPerson {
-	.net.sourceforge.fenixedu.domain.Person playsRole person; 
+	.org.fenixedu.academic.domain.Person playsRole person; 
 	SantanderPhotoEntry playsRole santanderPhotoEntry;
 }
 
@@ -301,7 +206,7 @@ relation SantanderEntrySantanderPhotoEntry {
 }
 
 relation PhotographSantanderPhotoEntry {
-	.net.sourceforge.fenixedu.domain.Photograph playsRole photograph; 
+	.org.fenixedu.academic.domain.Photograph playsRole photograph; 
 	SantanderPhotoEntry playsRole santanderPhotoEntry {
 		multiplicity *;
 	}

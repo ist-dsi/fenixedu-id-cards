@@ -27,13 +27,12 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import net.sourceforge.fenixedu.domain.ExecutionYear;
-import net.sourceforge.fenixedu.domain.Person;
-import net.sourceforge.fenixedu.domain.exceptions.DomainException;
-import net.sourceforge.fenixedu.util.FenixConfigurationManager;
-
 import org.apache.commons.lang.StringUtils;
+import org.fenixedu.academic.domain.ExecutionYear;
+import org.fenixedu.academic.domain.Person;
+import org.fenixedu.academic.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.idcards.IdCardsConfiguration;
 import org.joda.time.DateTime;
 
 public class SantanderBatch extends SantanderBatch_Base {
@@ -106,7 +105,7 @@ public class SantanderBatch extends SantanderBatch_Base {
             visibleLine += SantanderSequenceNumberGenerator.decodeSantanderPIN(entryLine.getPerson().getSantanderPIN());
 
             // Update line with the institutions own PIN
-            visibleLine += FenixConfigurationManager.getConfiguration().appInstitutionPIN();
+            visibleLine += IdCardsConfiguration.getConfiguration().appInstitutionPIN();
 
             visibleLine += line.substring(315);
 
@@ -307,7 +306,7 @@ public class SantanderBatch extends SantanderBatch_Base {
             ddxrBuilder.append("\t\t\t<DOCDET>\n");
             ddxrBuilder.append("\t\t\t\t<NUMDOC>" + timestamp.toString("yy") + "E0042"
                     + makeRightShiftedPaddedNumber(entry.getSantanderPhotoEntry().getSequenceNumber(), 7) + "</NUMDOC>\n");
-            ddxrBuilder.append("\t\t\t\t<NUMDOCFOTO>" + "018042" + makeStringBlock(entry.getPerson().getIstUsername(), 10, 'x')
+            ddxrBuilder.append("\t\t\t\t<NUMDOCFOTO>" + "018042" + makeStringBlock(entry.getPerson().getUsername(), 10, 'x')
                     + "</NUMDOCFOTO>\n");
             ddxrBuilder.append("\t\t\t\t<TIPODOC>" + "000" + "</TIPODOC>\n");
             ddxrBuilder.append("\t\t\t\t<NUMPAG>" + "2" + "</NUMPAG>\n");
@@ -315,7 +314,7 @@ public class SantanderBatch extends SantanderBatch_Base {
                     + "00042E"
                     + makeRightShiftedPaddedNumber(entry.getSantanderPhotoEntry().getSequenceNumber(), 6)
                     + "3"
-                    + makeStringBlock(entry.getPerson().getIstUsername(), 10, 'x')
+                    + makeStringBlock(entry.getPerson().getUsername(), 10, 'x')
                     + "x"
                     + makeStringBlock(
                             getCardName(entry.getPerson().getName()).length() > 21 ? getCardName(entry.getPerson().getName())

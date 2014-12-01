@@ -18,10 +18,10 @@
  */
 package org.fenixedu.idcards.ui;
 
-import org.fenixedu.bennu.portal.StrutsApplication;
+import org.fenixedu.bennu.struts.portal.StrutsApplication;
 
 @StrutsApplication(bundle = "CardGenerationResources", path = "id-cards", titleKey = "title.card.generation",
-        accessGroup = "role(IDENTIFICATION_CARD_MANAGER)", hint = "Identification Cards")
+        accessGroup = "#idCardManager", hint = "Identification Cards")
 public class IdCardsApp {
 
 }

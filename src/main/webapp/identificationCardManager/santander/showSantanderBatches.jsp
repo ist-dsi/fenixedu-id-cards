@@ -68,7 +68,7 @@ a {border-bottom: none !important;}
 	<fr:edit id="santanderBean" name="santanderBean">
 		<fr:schema type="org.fenixedu.idcards.ui.ManageSantanderCardGenerationBean" bundle="MANAGER_RESOURCES">
 			<fr:slot name="executionYear" bundle="CARD_GENERATION_RESOURCES" key="label.execution.year" layout="menu-select-postback">
-				<fr:property name="providerClass" value="net.sourceforge.fenixedu.presentationTier.renderers.providers.ExecutionYearsProvider" />
+				<fr:property name="providerClass" value="org.fenixedu.academic.ui.renderers.providers.ExecutionYearsProvider" />
 				<fr:property name="format" value="\${year}" />
 			</fr:slot>
 		</fr:schema>
@@ -167,7 +167,7 @@ a {border-bottom: none !important;}
 <p class="santanderSubtitle"><strong><bean:message bundle="CARD_GENERATION_RESOURCES" key="subtitle.santander.cards.dchp.managment"/></strong></p>
 
 <fr:edit id="uploadDCHPFileBean" name="uploadDCHPFileBean" action="/manageSantander.do?method=submitDCHPFile" >
-  <fr:schema type="net.sourceforge.fenixedu.dataTransferObject.commons.OpenFileBean" bundle="CARD_GENERATION_RESOURCES">
+  <fr:schema type="org.fenixedu.idcards.ui.OpenFileBean" bundle="CARD_GENERATION_RESOURCES">
     <fr:slot name="inputStream" required="true" key="label.card.generation.dchp.choosefile" />
   </fr:schema>
 

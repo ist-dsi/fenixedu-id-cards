@@ -18,8 +18,7 @@
  */
 package org.fenixedu.idcards.domain;
 
-import net.sourceforge.fenixedu.domain.Person;
-
+import org.fenixedu.academic.domain.Person;
 import org.fenixedu.bennu.core.domain.Bennu;
 
 public class SantanderBatchSender extends SantanderBatchSender_Base {

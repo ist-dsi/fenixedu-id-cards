@@ -24,7 +24,7 @@
       "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
 <struts-config>
       <!-- ========== Controller Configuration ================================ -->
-      <controller processorClass="pt.ist.fenixWebFramework.renderers.plugin.SimpleRenderersRequestProcessor"></controller>
+      <controller processorClass="org.fenixedu.bennu.struts.SimpleRenderersRequestProcessor"></controller>
       <!-- ========== Message Resources Definitions ============================ -->
       <message-resources null="false" key="DEFAULT" parameter="resources.ApplicationResources"></message-resources>
       <message-resources null="false" key="APPLICATION_RESOURCES" parameter="resources.ApplicationResources"></message-resources>
@@ -39,5 +39,5 @@
       <message-resources null="false" key="CARD_GENERATION_RESOURCES" parameter="resources.CardGenerationResources"></message-resources>
       <message-resources null="false" key="TITLES_RESOURCES" parameter="resources.TitlesResources"></message-resources>
       <!-- ========== Plug Ins Configuration ================================= -->
-      <plug-in className="pt.ist.fenixWebFramework.struts.plugin.StrutsAnnotationsPlugIn"></plug-in>
+      <plug-in className="org.fenixedu.bennu.struts.plugin.StrutsAnnotationsPlugIn"></plug-in>
 </struts-config>

@@ -20,8 +20,7 @@ package org.fenixedu.idcards.domain;
 
 import java.util.Comparator;
 
-import net.sourceforge.fenixedu.domain.Person;
-
+import org.fenixedu.academic.domain.Person;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.joda.time.DateTime;
 

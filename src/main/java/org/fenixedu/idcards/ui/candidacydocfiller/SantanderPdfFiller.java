@@ -26,12 +26,12 @@ import net.sourceforge.barbecue.BarcodeException;
 import net.sourceforge.barbecue.BarcodeFactory;
 import net.sourceforge.barbecue.BarcodeImageHandler;
 import net.sourceforge.barbecue.output.OutputException;
-import net.sourceforge.fenixedu.domain.Person;
-import net.sourceforge.fenixedu.domain.organizationalStructure.UniversityUnit;
-import net.sourceforge.fenixedu.domain.person.IDDocumentType;
-import net.sourceforge.fenixedu.domain.student.Registration;
-import net.sourceforge.fenixedu.presentationTier.candidacydocfiller.PdfFiller;
 
+import org.fenixedu.academic.domain.Person;
+import org.fenixedu.academic.domain.organizationalStructure.UniversityUnit;
+import org.fenixedu.academic.domain.person.IDDocumentType;
+import org.fenixedu.academic.domain.student.Registration;
+import org.fenixedu.academic.servlet.PdfFiller;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.idcards.domain.SantanderPhotoEntry;
 import org.joda.time.DateTime;
@@ -129,7 +129,7 @@ public class SantanderPdfFiller extends PdfFiller {
         }
         setField("topmostSubform[0].Page1[0].Telemovel[0]", person.getDefaultMobilePhoneNumber());
         setField("topmostSubform[0].Page1[0].E-mail[0]", getMail(person));
-        
+
         setField("topmostSubform[0].Page1[0].Moradaresidenciapermanente[0]", person.getAddress());
         setField("topmostSubform[0].Page1[0].localidade[0]", person.getAreaOfAreaCode());
         String postalCode = person.getPostalCode();
@@ -141,25 +141,26 @@ public class SantanderPdfFiller extends PdfFiller {
         setField("topmostSubform[0].Page1[0].Paisnacionalidade", person.getCountry().getCountryNationality().getPreferedContent());
         setField("topmostSubform[0].Page1[0].Paisnascimento", person.getCountryOfBirth().getName());
         setField("topmostSubform[0].Page1[0].Paisresidencia", person.getCountryOfResidence().getName());
-        
-        setField("topmostSubform[0].Page2[0].InstituiçãoEnsinoSuperior[0]", UniversityUnit.getInstitutionsUniversityUnit().getName());
+
+        setField("topmostSubform[0].Page2[0].InstituiçãoEnsinoSuperior[0]", UniversityUnit.getInstitutionsUniversityUnit()
+                .getName());
         setField("topmostSubform[0].Page2[0].FaculdadeEscola[0]", Bennu.getInstance().getInstitutionUnit().getName());
         Registration registration = getRegistration(person);
-        if(registration != null) {
+        if (registration != null) {
             setField("topmostSubform[0].Page2[0].Curso[0]", registration.getDegree().getSigla());
             setField("topmostSubform[0].Page2[0].AnoIncioCurso[0]", String.valueOf(registration.getStartDate().getYear()));
         }
-        
+
         stamper.setFormFlattening(true);
         stamper.close();
         return output;
     }
 
     private Registration getRegistration(Person person) {
-        if(person.getStudent().getActiveRegistrations().size() > 1) {
+        if (person.getStudent().getActiveRegistrations().size() > 1) {
             return null;
         } else {
-            return (Registration) person.getStudent().getActiveRegistrations().iterator().next();
+            return person.getStudent().getActiveRegistrations().iterator().next();
         }
     }
 
@@ -172,7 +173,7 @@ public class SantanderPdfFiller extends PdfFiller {
         PdfStamper stamper = new PdfStamper(reader, output);
         form = stamper.getAcroFields();
 
-        setField("StudentIdentification", person.getIstUsername());
+        setField("StudentIdentification", person.getUsername());
         setField("Phone", person.getDefaultMobilePhoneNumber());
         setField("Email", getMail(person));
         setField("CurrentDate", new DateTime().toString(DateTimeFormat.forPattern("dd/MM/yyyy HH:mm")));
@@ -204,7 +205,7 @@ public class SantanderPdfFiller extends PdfFiller {
 
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            BarcodeImageHandler.writeJPEG(BarcodeFactory.createCode128(person.getIstUsername()), baos);
+            BarcodeImageHandler.writeJPEG(BarcodeFactory.createCode128(person.getUsername()), baos);
             Jpeg studentIdBarcodeImg = new Jpeg(baos.toByteArray());
             float[] studentIdFieldPositions = form.getFieldPositions("StudentIdentificationBarcode"); // 1-lowerleftX, 2-lly, 3-upperRightX, 4-ury
             studentIdBarcodeImg.setAbsolutePosition(studentIdFieldPositions[1], studentIdFieldPositions[2]);

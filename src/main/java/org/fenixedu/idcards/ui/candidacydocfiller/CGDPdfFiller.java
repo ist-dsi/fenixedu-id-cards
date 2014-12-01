@@ -4,9 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.sourceforge.fenixedu.domain.Person;
-
 import org.apache.commons.lang.StringUtils;
+import org.fenixedu.academic.domain.Person;
 import org.joda.time.YearMonthDay;
 import org.joda.time.format.DateTimeFormat;
 

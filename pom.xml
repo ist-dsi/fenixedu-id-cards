@@ -16,8 +16,8 @@
     <name>FenixEdu Identification Cards</name>
 
     <properties>
-        <version.pt.ist.fenix>3.14.2</version.pt.ist.fenix>
         <version.org.apache.cxf>2.7.13</version.org.apache.cxf>
+        <version.org.fenixedu.academic>4.1.0-SNAPSHOT</version.org.fenixedu.academic>
     </properties>
 
     <issueManagement>
@@ -83,9 +83,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>pt.ist</groupId>
-            <artifactId>fenix</artifactId>
-            <version>${version.pt.ist.fenix}</version>
+            <groupId>org.fenixedu</groupId>
+            <artifactId>fenixedu-academic</artifactId>
+            <version>${version.org.fenixedu.academic}</version>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.barbecue</groupId>
