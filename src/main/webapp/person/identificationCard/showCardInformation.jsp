@@ -33,7 +33,7 @@
 <%
 	final Person person = (Person) request.getAttribute("person");
 	final String instructionKey;
-	if (person.hasRole(RoleType.STUDENT)) {
+	if (RoleType.STUDENT.isMember(person.getUser())) {
 	    instructionKey = "label.identification.card.instructions.student";
 	} else {
 	    instructionKey = "label.identification.card.instructions.teacher.employee";
