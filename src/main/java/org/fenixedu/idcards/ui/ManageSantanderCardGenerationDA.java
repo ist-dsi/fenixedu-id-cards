@@ -19,6 +19,7 @@
 package org.fenixedu.idcards.ui;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,7 +48,9 @@ import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
-import pt.utl.ist.fenix.tools.util.FileUtils;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 
 @StrutsFunctionality(app = IdCardsApp.class, path = "santander-cards", titleKey = "subtitle.santander.cards")
 @Mapping(module = "identificationCardManager", path = "/manageSantander")
@@ -131,7 +134,7 @@ public class ManageSantanderCardGenerationDA extends FenixDispatchAction {
     }
 
     private String readFile(OpenFileBean dchpFileBean) throws IOException {
-        return FileUtils.readFile(dchpFileBean.getInputStream());
+        return CharStreams.toString(new InputStreamReader(dchpFileBean.getInputStream(), Charsets.UTF_8));
     }
 
     public ActionForward createBatch(final ActionMapping mapping, final ActionForm actionForm, final HttpServletRequest request,
