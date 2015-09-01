@@ -17,7 +17,7 @@
 
     <properties>
         <version.org.apache.cxf>2.7.13</version.org.apache.cxf>
-        <version.org.fenixedu.academic>4.0.1</version.org.fenixedu.academic>
+        <version.org.fenixedu.academic>5.1.5</version.org.fenixedu.academic>
     </properties>
 
     <issueManagement>
