@@ -101,16 +101,16 @@ public class BPIPdfFiller extends PdfFiller {
         PdfStamper stamper = new PdfStamper(reader, output);
         form = stamper.getAcroFields();
 
-        setField("undefined_2", person.getName());
+        setField("NomeCompleto_1", person.getName());
 
         if (person.isFemale()) {
-            setField("Check Box53", "Yes"); // female
+            setField("Sexo_F", "Yes"); // female
         } else {
-            setField("Check Box52", "Yes"); // male
+            setField("Sexo_M", "Yes"); // male
         }
 
         setField("NIF", person.getSocialSecurityNumber());
-        setField("N", person.getDocumentIdNumber());
+        setField("Numero", person.getDocumentIdNumber());
 
         setField("Nacionalidade", person.getCountryOfBirth().getCountryNationality().toString());
         setField("Naturalidade", person.getCountryOfBirth().getName());
@@ -118,59 +118,59 @@ public class BPIPdfFiller extends PdfFiller {
         setField("Distrito", person.getDistrictOfBirth());
         setField("Concelho", person.getDistrictSubdivisionOfBirth());
         setField("Freguesia", person.getParishOfBirth());
-        setField("Nome do Pai", person.getNameOfFather());
-        setField("Nome da Mãe", person.getNameOfMother());
+        setField("NomedoPai", person.getNameOfFather());
+        setField("NomedaMae", person.getNameOfMother());
 
         switch (person.getMaritalStatus()) {
         case CIVIL_UNION:
-            setField("Check Box10[0]", "Yes");
+            setField("EstadoCivil_UniaodeFacto", "Yes");
             break;
         case DIVORCED:
-            setField("Check Box7[0]", "Yes");
+            setField("EstadoCivil_Divorciado", "Yes");
             break;
         case MARRIED:
-            setField("Check Box11[0]", "Yes");
+            setField("EstadoCivil_Casado", "Yes");
             break;
         case SEPARATED:
-            setField("Check Box8[0]", "Yes");
+            setField("EstadoCivil_Separado Judicialmente", "Yes");
             break;
         case SINGLE:
-            setField("Check Box9[0]", "Yes");
+            setField("EstadoCivil_Solteiro", "Yes");
             break;
         case WIDOWER:
-            setField("Check Box51", "Yes");
+            setField("EstadoCivil_Viuvo", "Yes");
             break;
         }
 
-        setField("Morada de Residência", person.getAddress());
-        setField("Localidade", person.getAreaOfAreaCode());
-        setField("Designação Postal", person.getAreaOfAreaCode());
-        setField("País", person.getCountryOfResidence().getName());
+        setField("MoradadeResidenciaPermanente_1", person.getAddress());                 
+        setField("MoradadeResidenciaPermanente_Localidade", person.getAreaOfAreaCode());
+        setField("MoradadeResidenciaPermanente_DesignacaoPostal", person.getAreaOfAreaCode());
+        setField("MoradadeResidenciaPermanente_Pais", person.getCountryOfResidence().getName());
 
         String postalCode = person.getPostalCode();
         int dashIndex = postalCode.indexOf('-');
-        setField("Código Postal", postalCode.substring(0, 4));
+        setField("CodigoPostal_1_1", postalCode.substring(0, 4));
         String last3Numbers = postalCode.substring(dashIndex + 1, dashIndex + 4);
-        setField("undefined_14", last3Numbers);
-        setField("undefined_17", person.getDefaultMobilePhoneNumber());
-        setField("undefined_19", getMail(person));
+        setField("CodigoPostal_1_2", last3Numbers);
+        setField("Contactos_Movel_Pessoal", person.getDefaultMobilePhoneNumber());
+        setField("Contactos_Email", getMail(person));
 
         YearMonthDay emissionDate = person.getEmissionDateOfDocumentIdYearMonthDay();
         if (emissionDate != null) {
-            setField("Data de Emissão", String.format("%02d", emissionDate.getDayOfMonth()));
-            setField("undefined_5", String.format("%02d", emissionDate.getMonthOfYear()));
-            setField("undefined_6", String.valueOf(emissionDate.getYear()));
+            setField("DataEmissao_1", String.format("%02d", emissionDate.getDayOfMonth()));
+            setField("DataEmissao_2", String.format("%02d", emissionDate.getMonthOfYear()));
+            setField("DataEmissao_3", String.valueOf(emissionDate.getYear()));
         }
 
         YearMonthDay expirationDate = person.getExpirationDateOfDocumentIdYearMonthDay();
-        setField("Válido até", String.format("%02d", expirationDate.getDayOfMonth()));
-        setField("undefined_7", String.format("%02d", expirationDate.getMonthOfYear()));
-        setField("undefined_8", String.valueOf(expirationDate.getYear()));
+        setField("Valido_1", String.format("%02d", expirationDate.getDayOfMonth()));
+        setField("Valido_2", String.format("%02d", expirationDate.getMonthOfYear()));
+        setField("Valido_3", String.valueOf(expirationDate.getYear()));
 
         YearMonthDay birthdayDate = person.getDateOfBirthYearMonthDay();
-        setField("Data de Nascimento", String.format("%02d", birthdayDate.getDayOfMonth()));
-        setField("undefined_9", String.format("%02d", birthdayDate.getMonthOfYear()));
-        setField("undefined_10", String.valueOf(birthdayDate.getYear()));
+        setField("DataNascimento_1", String.format("%02d", birthdayDate.getDayOfMonth()));
+        setField("DataNascimento_2", String.format("%02d", birthdayDate.getMonthOfYear()));
+        setField("DataNascimento_3", String.valueOf(birthdayDate.getYear()));
 
         stamper.setFormFlattening(true);
         stamper.close();
@@ -186,7 +186,7 @@ public class BPIPdfFiller extends PdfFiller {
         PdfStamper stamper = new PdfStamper(reader, output);
         form = stamper.getAcroFields();
 
-        setField("Nome_1", person.getName());
+        setField("IdentificacaoIntervenientes_1ºTitular", person.getName());
         stamper.setFormFlattening(true);
         stamper.close();
         return output;
