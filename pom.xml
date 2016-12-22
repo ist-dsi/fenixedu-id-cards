@@ -6,7 +6,7 @@
         <groupId>org.fenixedu</groupId>
         <artifactId>fenix-framework-project</artifactId>
         <version>2.2.0</version>
-        <relativePath></relativePath>
+        <relativePath />
     </parent>
 
     <groupId>pt.ist</groupId>
@@ -18,13 +18,21 @@
     <inceptionYear>2014</inceptionYear>
 
     <properties>
-        <version.org.apache.cxf>2.7.13</version.org.apache.cxf>
         <version.org.fenixedu.academic>5.1.5</version.org.fenixedu.academic>
+        <version.org.fenixedu.bennu>3.4.0</version.org.fenixedu.bennu>
+        <version.org.fenixedu.bennu-renderers>5.0.0</version.org.fenixedu.bennu-renderers>
+        <version.org.fenixedu.fenixedu-commons>1.1.1</version.org.fenixedu.fenixedu-commons>
+        <version.org.apache.cxf>2.7.13</version.org.apache.cxf>
+        <version.com.google.guava.guava>17.0</version.com.google.guava.guava>
+        <version.joda.time.joda.time>2.3</version.joda.time.joda.time>
+        <version.org.imgscalr.imgscalr-lib>4.2</version.org.imgscalr.imgscalr-lib>
+        <version.commons-lang.commons-lang>2.6</version.commons-lang.commons-lang>
+        <version.com.lowagie.itext>2.0.8</version.com.lowagie.itext>
     </properties>
 
     <issueManagement>
         <system>JIRA</system>
-        <url>https://jira.fenixedu.org/projects/IDC</url>
+        <url>https://jira.fenixedu.org/browse/IDC</url>
     </issueManagement>
 
     <licenses>
@@ -90,19 +98,54 @@
             <version>${version.org.fenixedu.academic}</version>
         </dependency>
         <dependency>
-            <groupId>net.sourceforge.barbecue</groupId>
-            <artifactId>barbecue</artifactId>
-            <version>1.5-beta1</version>
+            <groupId>org.fenixedu</groupId>
+            <artifactId>bennu-core</artifactId>
+            <version>${version.org.fenixedu.bennu}</version>
         </dependency>
         <dependency>
-          <groupId>org.apache.cxf</groupId>
-          <artifactId>cxf-rt-frontend-jaxws</artifactId>
-          <version>${version.org.apache.cxf}</version>
+            <groupId>org.fenixedu</groupId>
+            <artifactId>bennu-struts</artifactId>
+            <version>${version.org.fenixedu.bennu-renderers}</version>
         </dependency>
         <dependency>
-          <groupId>org.apache.cxf</groupId>
-          <artifactId>cxf-rt-transports-http</artifactId>
-          <version>${version.org.apache.cxf}</version>
+            <groupId>org.fenixedu</groupId>
+            <artifactId>fenixedu-commons</artifactId>
+            <version>${version.org.fenixedu.fenixedu-commons}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+            <version>${version.org.apache.cxf}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <version>${version.org.apache.cxf}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${version.com.google.guava.guava}</version>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${version.joda.time.joda.time}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.imgscalr</groupId>
+            <artifactId>imgscalr-lib</artifactId>
+            <version>${version.org.imgscalr.imgscalr-lib}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>${version.commons-lang.commons-lang}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.lowagie</groupId>
+            <artifactId>itext</artifactId>
+            <version>${version.com.lowagie.itext}</version>
         </dependency>
     </dependencies>
 
