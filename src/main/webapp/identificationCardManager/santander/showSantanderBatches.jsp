@@ -143,7 +143,6 @@ a {border-bottom: none !important;}
 					   				<bean:message bundle="CARD_GENERATION_RESOURCES" key="link.manage.card.generation.santanderBatch.send"/>
 					   			</button>
 				   		<%	} %>
-						<logic:present role="role(MANAGER)">
 							<% 	if (santanderBatch.getSent() == null) { %>
 								<bean:define id="urlDelete" type="java.lang.String">/manageSantander.do?method=deleteBatch&amp;executionYearEid=<bean:write name="santanderBean" property="executionYear.externalId"/>&amp;santanderBatchEid=<bean:write name="batch" property="externalId"/></bean:define>
 								<html:link page="<%= urlDelete %>" >
@@ -156,7 +155,6 @@ a {border-bottom: none !important;}
 					   				<bean:message bundle="CARD_GENERATION_RESOURCES" key="link.manage.card.generation.batch.delete"/>
 					   			</button>
 				   			<%	} %>
-						</logic:present>
 					</td>
 				</tr>
 			</logic:iterate>
