@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -34,6 +36,11 @@ import org.fenixedu.academic.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.idcards.IdCardsConfiguration;
 import org.joda.time.DateTime;
+
+import pt.ist.esw.advice.pt.ist.fenixframework.AtomicInstance;
+import pt.ist.fenixframework.Atomic.TxMode;
+import pt.ist.fenixframework.CallableWithoutException;
+import pt.ist.fenixframework.FenixFramework;
 
 public class SantanderBatch extends SantanderBatch_Base {
 
@@ -222,6 +229,25 @@ public class SantanderBatch extends SantanderBatch_Base {
         int batchCnt = 0;
         DateTime today = new DateTime();
 
+        final Map<SantanderEntry, byte[]> entryMap = new ConcurrentHashMap<>();
+        getSortedSantanderEntries().stream().parallel()
+            .forEach(entry -> {
+                try {
+                    FenixFramework.getTransactionManager().withTransaction(new CallableWithoutException<Void>() {
+                        @Override
+                        public Void call() {
+                            final SantanderPhotoEntry photoEntry = entry.getSantanderPhotoEntry();
+                            if (photoEntry != null) {
+                                byte[] photo = photoEntry.getPhotoAsByteArray();
+                                entryMap.put(entry, photo);
+                            }
+                            return null;
+                        }
+                    }, new AtomicInstance(TxMode.READ, false));
+                } catch (final Exception ex) {
+                    throw new Error(ex);
+                }
+            });
         for (SantanderEntry santanderEntry : getSortedSantanderEntries()) {
             if (santanderEntry.getSantanderPhotoEntry() != null) {
                 batch2k.add(santanderEntry);
@@ -234,13 +260,14 @@ public class SantanderBatch extends SantanderBatch_Base {
 
                     zipFile.putNextEntry(new ZipEntry(today.toString("yyyy-MM-dd") + "_E" + makeZeroPaddedNumber(batchCnt, 4)
                             + ".zip"));
-                    zipFile.write(generatePhotoZip(batch2k, batchCnt, today));
+                    zipFile.write(generatePhotoZip(entryMap, batch2k, batchCnt, today));
                     zipFile.closeEntry();
 
                     batch2k.clear();
                 }
             }
         }
+
         if (batch2k.size() > 0) {
             batchCnt++;
             zipFile.putNextEntry(new ZipEntry(today.toString("yyyy-MM-dd") + "_E" + makeZeroPaddedNumber(batchCnt, 4) + ".xml"));
@@ -248,7 +275,7 @@ public class SantanderBatch extends SantanderBatch_Base {
             zipFile.closeEntry();
 
             zipFile.putNextEntry(new ZipEntry(today.toString("yyyy-MM-dd") + "_E" + makeZeroPaddedNumber(batchCnt, 4) + ".zip"));
-            zipFile.write(generatePhotoZip(batch2k, batchCnt, today));
+            zipFile.write(generatePhotoZip(entryMap, batch2k, batchCnt, today));
             zipFile.closeEntry();
 
             batch2k.clear();
@@ -331,13 +358,13 @@ public class SantanderBatch extends SantanderBatch_Base {
         return ddxrBuilder.toString().getBytes("UTF-8");
     }
 
-    private byte[] generatePhotoZip(List<SantanderEntry> entries, int seqNumber, DateTime timestamp) throws IOException {
+    private byte[] generatePhotoZip(final Map<SantanderEntry, byte[]> entryMap, List<SantanderEntry> entries, int seqNumber, DateTime timestamp) throws IOException {
         final ByteArrayOutputStream file = new ByteArrayOutputStream();
         final ZipOutputStream zipFile = new ZipOutputStream(file);
         for (SantanderEntry entry : entries) {
             zipFile.putNextEntry(new ZipEntry(timestamp.toString("yy") + "E0042"
                     + makeRightShiftedPaddedNumber(entry.getSantanderPhotoEntry().getSequenceNumber(), 7) + ".jpg"));
-            zipFile.write(entry.getSantanderPhotoEntry().getPhotoAsByteArray());
+            zipFile.write(entryMap.get(entry));
             zipFile.closeEntry();
         }
         zipFile.close();
