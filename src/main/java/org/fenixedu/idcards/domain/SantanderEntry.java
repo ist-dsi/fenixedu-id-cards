@@ -41,11 +41,11 @@ public class SantanderEntry extends SantanderEntry_Base {
         setCreated(new DateTime());
     }
 
-    public SantanderEntry(SantanderBatch batch, Person person, String line) {
+    public SantanderEntry(final SantanderBatch batch, final Person person, final String line) {
         this();
         setSantanderBatch(batch);
         setPerson(person);
-        setSantanderPhotoEntry(person.getSantanderPhotoEntry());
+        //setSantanderPhotoEntry(person.getSantanderPhotoEntry());
         setLine(line);
     }
 
