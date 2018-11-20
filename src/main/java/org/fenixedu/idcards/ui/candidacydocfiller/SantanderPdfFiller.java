@@ -123,7 +123,7 @@ public class SantanderPdfFiller extends PdfFiller {
         String last3Numbers = person.getPostalCode().substring(dashIndex + 1, dashIndex + 4);
         setField("topmostSubform[0].Page1[0].ExtensaoCodPostal[0]", last3Numbers);
 
-        setField("topmostSubform[0].Page1[0].Paisnacionalidade", person.getCountry().getCountryNationality().getPreferedContent());
+        setField("topmostSubform[0].Page1[0].Paisnacionalidade", person.getCountry().getCountryNationality().getContent());
         setField("topmostSubform[0].Page1[0].Paisnascimento", person.getCountryOfBirth().getName());
         setField("topmostSubform[0].Page1[0].Paisresidencia", person.getCountryOfResidence().getName());
 
