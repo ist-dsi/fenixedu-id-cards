@@ -2,13 +2,13 @@ package org.fenixedu.idcards.utils;
 
 import org.apache.commons.lang.StringUtils;
 
-public class Validator {
+public class SantanderFieldValidator {
 
     private boolean required;
     private boolean numeric;
     private int size;
 
-    public Validator(boolean required, boolean numeric, int size) {
+    public SantanderFieldValidator(boolean required, boolean numeric, int size) {
         this.required = required;
         this.numeric = numeric;
         this.size = size;
@@ -16,17 +16,17 @@ public class Validator {
 
     public void validate(String s) {
         if (s == null && required) {
-            throw new ValidationException();
+            throw new SantanderValidationException();
         } else if (s == null) {
             return;
         }
 
         if (s.length() > size) {
-            throw new ValidationException();
+            throw new SantanderValidationException();
         }
 
         if (numeric && !StringUtils.isNumeric(s)) {
-            throw new ValidationException();
+            throw new SantanderValidationException();
         }
     }
 

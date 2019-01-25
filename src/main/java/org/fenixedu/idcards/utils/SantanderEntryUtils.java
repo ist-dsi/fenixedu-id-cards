@@ -5,21 +5,16 @@ import org.fenixedu.academic.domain.exceptions.DomainException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Detail {
+public class SantanderEntryUtils {
 
-    private static List<Validator> validators = new ArrayList<Validator>() {{
-        add(new Validator(true, true, 1));
-        add(new Validator(true, false, 10));
-        add(new Validator(true, false, 15));
-        add(new Validator(false, false, 40));
+    private static List<SantanderFieldValidator> validators = new ArrayList<SantanderFieldValidator>() {{
+        add(new SantanderFieldValidator(true, true, 1));
+        add(new SantanderFieldValidator(true, false, 10));
+        add(new SantanderFieldValidator(true, false, 15));
+        add(new SantanderFieldValidator(false, false, 40));
     }};
-    private List<String> values;
 
-    public Detail(List<String> values) {
-        this.values = values;
-    }
-
-    public String generateLine() {
+    public static String generateLine(List<String> values) {
         int i = 0;
         StringBuilder strBuilder = new StringBuilder(1505);
 
@@ -31,7 +26,7 @@ public class Detail {
         return strBuilder.toString();
     }
 
-    private String makeStringBlock(String value, Validator validator) {
+    private static String makeStringBlock(String value, SantanderFieldValidator validator) {
         validator.validate(value);
 
         int size = validator.getSize();
@@ -55,7 +50,7 @@ public class Detail {
         int beginIndex = 0;
 
         for (; i < fieldIndex; i++) {
-            Validator validator = validators.get(i);
+            SantanderFieldValidator validator = validators.get(i);
             beginIndex += validator.getSize();
         }
         int endIndex = validators.get(i).getSize();
