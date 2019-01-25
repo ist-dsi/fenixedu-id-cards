@@ -8,10 +8,10 @@ public class SantanderFieldValidator {
     private boolean numeric;
     private int size;
 
-    public SantanderFieldValidator(boolean required, boolean numeric, int size) {
-        this.required = required;
+    public SantanderFieldValidator(boolean numeric, int size, boolean required) {
         this.numeric = numeric;
         this.size = size;
+        this.required = required;
     }
 
     public void validate(String s) {
