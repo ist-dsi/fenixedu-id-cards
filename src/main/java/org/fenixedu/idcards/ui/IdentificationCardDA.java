@@ -26,40 +26,55 @@ import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
-import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.predicate.AccessControl;
+import org.fenixedu.academic.ui.struts.action.base.FenixDispatchAction;
 import org.fenixedu.academic.ui.struts.action.person.PersonApplication.PersonalAreaApp;
 import org.fenixedu.bennu.core.util.CoreConfiguration;
 import org.fenixedu.bennu.struts.annotations.Forward;
 import org.fenixedu.bennu.struts.annotations.Forwards;
 import org.fenixedu.bennu.struts.annotations.Mapping;
+import org.fenixedu.bennu.struts.portal.EntryPoint;
 import org.fenixedu.bennu.struts.portal.StrutsFunctionality;
 import org.fenixedu.idcards.IdCardsConfiguration;
 
+import org.fenixedu.idcards.service.SantanderRequestCardService;
 import pt.sibscartoes.portal.wcf.IRegistersInfo;
 import pt.sibscartoes.portal.wcf.dto.RegisterData;
 
 import com.google.common.base.Strings;
 
-@StrutsFunctionality(app = PersonalAreaApp.class, descriptionKey = "label.identification.card", path = "identification-card",
+/*@StrutsFunctionality(app = PersonalAreaApp.class, descriptionKey = "label.identification.card", path = "identification-card",
         titleKey = "label.identification.card")
 @Mapping(module = "person", path = "/identificationCard")
-@Forwards(@Forward(name = "show.card.information", path = "/person/identificationCard/showCardInformation.jsp"))
-public class IdentificationCardDA extends Action {
+@Forwards({
+        @Forward(name = "show.card.information", path = "/person/identificationCard/showCardInformation.jsp")
+})*/
+public class IdentificationCardDA extends FenixDispatchAction {
 
-    @Override
-    public ActionForward execute(final ActionMapping mapping, final ActionForm actionForm, final HttpServletRequest request,
-            final HttpServletResponse response) throws Exception {
+    /*@EntryPoint
+    public ActionForward intro(final ActionMapping mapping, final ActionForm actionForm, final HttpServletRequest request,
+                               final HttpServletResponse response) throws Exception {
         final Person person = AccessControl.getPerson();
         final String cardProdutionState =
                 CoreConfiguration.getConfiguration().developmentMode() ? "<Cannot read card state in development mode>" : getIdentificationCardState(person);
 
         request.setAttribute("person", person);
         request.setAttribute("state", cardProdutionState);
+        request.setAttribute("mappingPath", mapping.getPath());
+        return mapping.findForward("show.card.information");
+    }
+
+    public ActionForward createRegister(ActionMapping mapping, ActionForm actionForm, HttpServletRequest request, HttpServletResponse response) {
+        final Person person = AccessControl.getPerson();
+        ExecutionYear executionYear = ExecutionYear.readCurrentExecutionYear();
+        SantanderRequestCardService.createRegister(person, executionYear);
+
+        request.setAttribute("success", true);
         return mapping.findForward("show.card.information");
     }
 
@@ -72,7 +87,7 @@ public class IdentificationCardDA extends Action {
         factory.getFeatures().add(new WSAddressingFeature());
         IRegistersInfo port = (IRegistersInfo) factory.create();
 
-        /*define WSDL policy*/
+        *//*define WSDL policy*//*
         Client client = ClientProxy.getClient(port);
         HTTPConduit http = (HTTPConduit) client.getConduit();
         http.getAuthorization().setUserName(IdCardsConfiguration.getConfiguration().sibsWebServiceUsername());
@@ -84,5 +99,5 @@ public class IdentificationCardDA extends Action {
         return statusInformation.getStatusDate().getValue().replaceAll("-", "/") + " : "
                 + statusInformation.getStatus().getValue() + " - " + statusInformation.getStatusDesc().getValue();
 
-    }
+    }*/
 }

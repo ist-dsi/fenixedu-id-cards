@@ -18,18 +18,22 @@
     along with FenixEdu Identification Cards.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="org.fenixedu.academic.domain.organizationalStructure.Unit"%>
+<%--<%@ page import="org.fenixedu.academic.domain.organizationalStructure.Unit"%>
 <%@ page import="java.net.URLEncoder"%>
-<%@ page language="java" %>
+<%@ page language="java" %>--%>
+
 <%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean" %>
 <%@ taglib uri="http://struts.apache.org/tags-html" prefix="html" %>
 <%@ taglib uri="http://struts.apache.org/tags-logic" prefix="logic" %>
-<%@ page import="org.fenixedu.academic.domain.Person" %>
-<%@ page import="org.fenixedu.academic.domain.person.RoleType" %>
+<%@ taglib uri="http://fenix-ashes.ist.utl.pt/fenix-renderers" prefix="fr"%>
+<%--<%@ page import="org.fenixedu.academic.domain.Person" %>
+<%@ page import="org.fenixedu.academic.domain.person.RoleType" %>--%>
 <html:xhtml/>
 
-<h2><bean:message key="title.person.welcome"/> - <bean:message key="label.identification.card"  bundle="APPLICATION_RESOURCES"/></h2>
+<bean:define id="mappingPath" name="mappingPath"/>
 
+<h2><bean:message key="title.person.welcome"/> - <bean:message key="label.identification.card"  bundle="APPLICATION_RESOURCES"/></h2>
+<%--
 <%
 	final Person person = (Person) request.getAttribute("person");
 	final String instructionKey;
@@ -59,7 +63,8 @@
 <p class="cardProdutionStateSubtitle"><strong><bean:message bundle="CARD_GENERATION_RESOURCES" key="subtitle.santander.cards.dchp.state"/></strong></p>
 
 <pre style="font-family: Trebuchet MS, Arial, Helvetica, sans-serif; text-align: justify; width: 80%; white-space: pre-wrap; white-space: -moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; word-wrap: break-word;"
-><bean:write name="state"/></pre>
+><bean:write name="state"/></pre>--%>
 
-
- 
+<fr:form action='<%= mappingPath + ".do?method=createRegister" %>'>
+	<html:submit><bean:message key="button.submit" bundle="APPLICATION_RESOURCES" /></html:submit>
+</fr:form>
