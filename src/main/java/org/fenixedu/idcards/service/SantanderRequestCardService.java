@@ -93,9 +93,9 @@ public class SantanderRequestCardService {
 
         List<String> result = new ArrayList<>();
 
-        /*result.add(tuiResponse.getStatus().getValue());
+        result.add(tuiResponse.getStatus().getValue());
         result.add(tuiResponse.getStatusDescription().getValue());
-        result.add(tuiResponse.getTuiResponseLine().getValue());*/
+        result.add(tuiResponse.getTuiResponseLine().getValue());
 
         return result;
     }
@@ -117,8 +117,8 @@ public class SantanderRequestCardService {
         byte[] photo_contents = photoEntry.getPhotoAsByteArray();
 
         photo.setFileContents(new JAXBElement<>(FILE_CONTENTS, byte[].class, photo_contents));
-        photo.setSize(new JAXBElement<>(FILE_SIZE, String.class, new Integer(photo_contents.length).toString()));
-        photo.setExtension(new JAXBElement<>(FILE_EXTENSION, String.class, new String(EXTENSION)));
+        photo.setSize(new JAXBElement<>(FILE_SIZE, String.class, Integer.toString(photo_contents.length)));
+        photo.setExtension(new JAXBElement<>(FILE_EXTENSION, String.class, EXTENSION));
         photo.setFileName(new JAXBElement<>(FILE_NAME, String.class, "foto")); //TODO
 
         return photo;
