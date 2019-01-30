@@ -50,7 +50,8 @@ public class SantanderEntryUtils {
         add(new SantanderFieldValidator(false, 32, false)); // 39: signature ref
         add(new SantanderFieldValidator(true, 1, false)); // 40: dig certificate flag
         add(new SantanderFieldValidator(false, 32, false)); // 41: dig certificate ref
-        add(new SantanderFieldValidator(false, 682, false)); // 42: filler
+        add(new SantanderFieldValidator(false, 681, false)); // 42: filler
+        add(new SantanderFieldValidator(false, 1, true)); // 43: end flag
     }};
 
     public static String generateLine(List<String> values) {
