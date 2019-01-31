@@ -40,6 +40,16 @@ class SantanderEntry  {
 	DateTime created;
 }
 
+class SantanderEntryNew {
+    String requestLine;
+    String responseLine;
+    DateTime createdAt;
+    DateTime expiryDate;
+    boolean registerSuccessful;
+    boolean cardIssued;
+    String errorDescription;
+}
+
 class SantanderPhotoEntry {
 	Integer sequenceNumber;
 	DateTime whenGenerated;
@@ -94,6 +104,13 @@ relation RootDomainObjectSantanderSequenceNumberGenerator {
 relation RootDomainObjectSantanderEntry {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
 	SantanderEntry playsRole santanderEntries {
+		multiplicity *;
+	}
+}
+
+relation RootDomainObjectSantanderEntryNew {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
+	SantanderEntryNew playsRole santanderEntriesNew {
 		multiplicity *;
 	}
 }
@@ -171,6 +188,13 @@ relation PersonSantanderEntry {
 	}
 }
 
+relation PersonSantanderEntryNew {
+	.org.fenixedu.academic.domain.Person playsRole person;
+	SantanderEntryNew playsRole santanderEntriesNew {
+		multiplicity *;
+	}
+}
+
 relation PersonSantanderCardInformation {
 	.org.fenixedu.academic.domain.Person playsRole person;
 	SantanderCardInformation playsRole santanderCardsInformation {
@@ -181,6 +205,13 @@ relation PersonSantanderCardInformation {
 relation SantanderPhotoEntrySantanderEntry {
 	SantanderEntry playsRole santanderEntry;
 	SantanderPhotoEntry playsRole santanderPhotoEntry;
+}
+
+relation PhotographSantanderEntryNew {
+	SantanderEntryNew playsRole santanderEntryNew {
+	    multiplicity *;
+	}
+	.org.fenixedu.academic.domain.Photograph playsRole photograph;
 }
 
 relation PersonSantanderPIN {
