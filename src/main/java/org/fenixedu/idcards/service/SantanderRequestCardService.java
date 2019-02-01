@@ -28,7 +28,7 @@ import java.util.List;
 
 public class SantanderRequestCardService {
 
-    public static String getRegister(User user) {
+    public static String getRegister(Person person) {
 
         JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
 
@@ -51,7 +51,7 @@ public class SantanderRequestCardService {
         http.getAuthorization().setUserName(IdCardsConfiguration.getConfiguration().sibsWebServiceUsername());
         http.getAuthorization().setPassword(IdCardsConfiguration.getConfiguration().sibsWebServicePassword());
 
-        final String userName = Strings.padEnd(user.getUsername(), 10, 'x');
+        final String userName = Strings.padEnd(person.getUsername(), 10, 'x');
 
         RegisterData statusInformation = port.getRegister(userName);
 
