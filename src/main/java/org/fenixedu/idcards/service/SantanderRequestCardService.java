@@ -1,6 +1,11 @@
 package org.fenixedu.idcards.service;
 
-import com.google.common.base.Strings;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.interceptor.LoggingInInterceptor;
@@ -8,11 +13,14 @@ import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
-import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
-import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.idcards.IdCardsConfiguration;
 import org.fenixedu.idcards.domain.SantanderPhotoEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
+
 import pt.sibscartoes.portal.wcf.IRegistersInfo;
 import pt.sibscartoes.portal.wcf.dto.FormData;
 import pt.sibscartoes.portal.wcf.dto.RegisterData;
@@ -21,12 +29,9 @@ import pt.sibscartoes.portal.wcf.tui.dto.TUIResponseData;
 import pt.sibscartoes.portal.wcf.tui.dto.TuiPhotoRegisterData;
 import pt.sibscartoes.portal.wcf.tui.dto.TuiSignatureRegisterData;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-import java.util.ArrayList;
-import java.util.List;
-
 public class SantanderRequestCardService {
+
+    private static Logger logger = LoggerFactory.getLogger(SantanderRequestCardService.class);
 
     public static String getRegister(Person person) {
 
@@ -61,10 +66,16 @@ public class SantanderRequestCardService {
         String result = String.format(template, userName, formData.getEntityCode().getValue(), formData.getIdentRegNum().getValue(),
                 formData.getNDoc().getValue(), formData.getStatus().getValue(), formData.getIdentRegNum().getValue());
 
+        logger.debug("Result: " + result);
+
         return result;
     }
 
     public static List<String> createRegister(String tuiEntry, Person person) {
+
+        logger.debug("Entry: " + tuiEntry);
+        logger.debug("Entry size: " + tuiEntry.length());
+
         JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
 
         factory.setServiceClass(ITUIDetailService.class);
@@ -96,6 +107,10 @@ public class SantanderRequestCardService {
         result.add(tuiResponse.getStatus().getValue());
         result.add(tuiResponse.getStatusDescription().getValue());
         result.add(tuiResponse.getTuiResponseLine().getValue());
+
+        logger.debug("Status: " + result.get(0));
+        logger.debug("Description: " + result.get(1));
+        logger.debug("Line: " + result.get(2));
 
         return result;
     }
