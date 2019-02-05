@@ -2,37 +2,46 @@ package org.fenixedu.idcards.domain;
 
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.idcards.service.SantanderRequestCardService;
+import org.fenixedu.idcards.utils.SantanderEntryUtils;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class SantanderEntryNew extends SantanderEntryNew_Base {
 
-    public SantanderEntryNew() {
+    public SantanderEntryNew(Person person, String requestLine, String responseLine, boolean registerSuccessful, String errorDescription) {
         super();
         setRootDomainObject(Bennu.getInstance());
         setCreatedAt(DateTime.now());
         setCardIssued(false);
-    }
-
-    public SantanderEntryNew(Person person, String requestLine, String responseLine) {
-        setPerson(person);
+        if (person.getCurrentSantanderEntry() != null) {
+            setPrevious(person.getCurrentSantanderEntry());
+        }
+        person.setCurrentSantanderEntry(this);
+        setPhotograph(person.getPersonalPhoto());
         setRequestLine(requestLine);
         setResponseLine(responseLine);
-        setPhotograph(person.getPersonalPhoto());
+        setRegisterSuccessful(registerSuccessful);
+        setErrorDescription(errorDescription);
     }
 
-    public String getCurrentState() {
-        // TODO: Refactor this method to get state codes and give proper messages
+    public static List<SantanderEntryNew> getSantanderEntryHistory(Person person) {
+        LinkedList<SantanderEntryNew> history = new LinkedList<>();
 
-        if (getCardIssued()) {
-            return "Expedido";
+        for(SantanderEntryNew entry = person.getCurrentSantanderEntry(); entry != null; entry = entry.getPrevious()) {
+            history.addFirst(entry);
         }
 
-        String state = SantanderRequestCardService.getRegister(getPerson());
+        return history;
+    }
 
-        if (state.equals("Expedido")) {
-            setCardIssued(true);
-        }
-        return state;
+    public DateTime getExpiryDate() {
+        String requestLine = getRequestLine();
+
+        String expiryDateString = SantanderEntryUtils.getValue(requestLine, 18);
+
+        return DateTime.parse("20" + expiryDateString, DateTimeFormat.forPattern("yyMM"));
     }
 }

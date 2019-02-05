@@ -15,12 +15,15 @@ import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.idcards.IdCardsConfiguration;
+import org.fenixedu.idcards.domain.SantanderEntryNew;
 import org.fenixedu.idcards.domain.SantanderPhotoEntry;
+import org.fenixedu.idcards.utils.SantanderEntryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
+import pt.ist.fenixframework.Atomic;
 import pt.sibscartoes.portal.wcf.IRegistersInfo;
 import pt.sibscartoes.portal.wcf.dto.FormData;
 import pt.sibscartoes.portal.wcf.dto.RegisterData;
@@ -71,7 +74,7 @@ public class SantanderRequestCardService {
         return result;
     }
 
-    public static List<String> createRegister(String tuiEntry, Person person) {
+    public static void createRegister(String tuiEntry, Person person) {
 
         logger.debug("Entry: " + tuiEntry);
         logger.debug("Entry size: " + tuiEntry.length());
@@ -102,6 +105,8 @@ public class SantanderRequestCardService {
 
         TUIResponseData tuiResponse = port.saveRegister(tuiEntry, photo, signature);
 
+        createSantanderEntry(person, tuiEntry, tuiResponse);
+
         List<String> result = new ArrayList<>();
 
         result.add(tuiResponse.getStatus().getValue());
@@ -111,8 +116,20 @@ public class SantanderRequestCardService {
         logger.debug("Status: " + result.get(0));
         logger.debug("Description: " + result.get(1));
         logger.debug("Line: " + result.get(2));
+    }
 
-        return result;
+    @Atomic(mode = Atomic.TxMode.WRITE)
+    private static void createSantanderEntry(Person person, String tuiEntry, TUIResponseData tuiResponse) {
+        String tuiResponseLine = tuiResponse.getTuiResponseLine().getValue();
+
+        boolean registerSuccessful = tuiResponseLine.substring(1 + 10 + 5, 1 + 10 + 5 + 1).equals("0");
+        String errorDescription = null;
+
+        if (!registerSuccessful) {
+            errorDescription = tuiResponseLine.substring(1 + 10 + 5 + 1 + 3, 1 + 10 + 5 + 1 + 3 + 50).trim();
+        }
+
+        new SantanderEntryNew(person, tuiEntry, tuiResponseLine, registerSuccessful, errorDescription);
     }
 
     private static TuiPhotoRegisterData getOrCreateSantanderPhoto(Person person) {

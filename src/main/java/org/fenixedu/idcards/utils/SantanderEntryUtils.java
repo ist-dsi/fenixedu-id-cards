@@ -102,7 +102,7 @@ public class SantanderEntryUtils {
             SantanderFieldValidator validator = validators.get(i);
             beginIndex += validator.getSize();
         }
-        int endIndex = validators.get(i).getSize();
+        int endIndex = validators.get(i).getSize() + beginIndex;
 
         return line.substring(beginIndex, endIndex).trim();
     }
