@@ -79,6 +79,6 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
 
         String expiryDateString = SantanderEntryUtils.getValue(requestLine, 18);
 
-        return DateTime.parse(expiryDateString, DateTimeFormat.forPattern("yyMM"));
+        return DateTime.parse("20" + expiryDateString, DateTimeFormat.forPattern("yyyyMM"));
     }
 }

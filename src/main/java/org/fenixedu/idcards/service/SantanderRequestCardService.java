@@ -17,6 +17,8 @@ import org.fenixedu.academic.domain.Person;
 import org.fenixedu.idcards.IdCardsConfiguration;
 import org.fenixedu.idcards.domain.SantanderEntryNew;
 import org.fenixedu.idcards.domain.SantanderPhotoEntry;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +35,43 @@ import pt.sibscartoes.portal.wcf.tui.dto.TuiSignatureRegisterData;
 
 public class SantanderRequestCardService {
 
+    private static final String ACTION_NEW = "NOVO";
+    private static final String ACTION_REMI = "REMI";
+    private static final String ACTION_RENU = "RENU";
+    private static final String ACTION_ATUA = "ATUA";
+    private static final String ACTION_CANC = "CANC";
+
     private static Logger logger = LoggerFactory.getLogger(SantanderRequestCardService.class);
+
+    public static List<String> getPersonAvailableActions(Person person) {
+        // TODO: just a draft
+        List<String> actions = new ArrayList<>();
+
+        if (person.getCurrentSantanderEntry() == null) {
+            actions.add(ACTION_NEW);
+
+            return actions;
+        }
+
+        // TODO: Probably have to refactor this to persist the entry state
+        // and check the string correctly
+        String status = getRegister(person);
+
+        DateTime expiryDate = person.getCurrentSantanderEntry().getExpiryDate();
+
+        if (Days.daysBetween(DateTime.now().withTimeAtStartOfDay(), expiryDate.withTimeAtStartOfDay()).getDays() < 60) {
+            actions.add(ACTION_RENU);
+        } else if (status.equals("Expedido")) {
+            actions.add(ACTION_REMI);
+        }
+
+        if (status.equals("Expedido") || status.equals("Não produzido")) {
+            actions.add(ACTION_ATUA);
+            actions.add(ACTION_CANC);
+        }
+
+        return actions;
+    }
 
     public static String getRegister(Person person) {
 
@@ -70,7 +108,7 @@ public class SantanderRequestCardService {
 
         logger.debug("Result: " + result);
 
-        return result;
+        return formData.getStatus().getValue();
     }
 
     public static void createRegister(String tuiEntry, Person person) {
