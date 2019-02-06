@@ -243,4 +243,5 @@ relation PhotographSantanderPhotoEntry {
 	SantanderPhotoEntry playsRole santanderPhotoEntry {
 		multiplicity *;
 	}
-}    
+}
+

@@ -17,7 +17,6 @@ import org.fenixedu.academic.domain.Person;
 import org.fenixedu.idcards.IdCardsConfiguration;
 import org.fenixedu.idcards.domain.SantanderEntryNew;
 import org.fenixedu.idcards.domain.SantanderPhotoEntry;
-import org.fenixedu.idcards.utils.SantanderEntryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,14 +119,11 @@ public class SantanderRequestCardService {
 
     @Atomic(mode = Atomic.TxMode.WRITE)
     private static void createSantanderEntry(Person person, String tuiEntry, TUIResponseData tuiResponse) {
+        String tuiStatus = tuiResponse.getStatus().getValue();
+        String errorDescription = tuiResponse.getStatusDescription().getValue();
         String tuiResponseLine = tuiResponse.getTuiResponseLine().getValue();
 
-        boolean registerSuccessful = tuiResponseLine.substring(1 + 10 + 5, 1 + 10 + 5 + 1).equals("0");
-        String errorDescription = null;
-
-        if (!registerSuccessful) {
-            errorDescription = tuiResponseLine.substring(1 + 10 + 5 + 1 + 3, 1 + 10 + 5 + 1 + 3 + 50).trim();
-        }
+        boolean registerSuccessful = !tuiStatus.trim().toLowerCase().equals("error");
 
         new SantanderEntryNew(person, tuiEntry, tuiResponseLine, registerSuccessful, errorDescription);
     }
