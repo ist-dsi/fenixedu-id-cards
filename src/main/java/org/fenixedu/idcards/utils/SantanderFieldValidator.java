@@ -9,10 +9,10 @@ public class SantanderFieldValidator {
     private boolean required;
     private boolean numeric;
     private int size;
-    private String field;
+    private String fieldName;
 
-    public SantanderFieldValidator(String field, boolean numeric, int size, boolean required) {
-        this.field = field;
+    public SantanderFieldValidator(String fieldName, boolean numeric, int size, boolean required) {
+        this.fieldName = fieldName;
         this.numeric = numeric;
         this.size = size;
         this.required = required;
@@ -21,23 +21,27 @@ public class SantanderFieldValidator {
     public void validate(String s) throws SantanderValidationException {
         if (Strings.isNullOrEmpty(s)) {
             if (required) {
-                throw new SantanderValidationException("field " + field + " is missing");
+                throw new SantanderValidationException("property " + fieldName + " is missing");
             } else {
                 return;
             }
         }
 
         if (s.length() > size) {
-            String template = "field %s (%s) has to many characters (max characters: %d)";
-            String error = String.format(template, field, s, size);
+            String template = "property %s (%s) has to many characters (max characters: %d)";
+            String error = String.format(template, fieldName, s, size);
             throw new SantanderValidationException(error);
         }
 
         if (numeric && !StringUtils.isNumeric(s)) {
-            String template = "field %s (%s) can only contain numbers";
-            String error = String.format(template, field, s);
+            String template = "property %s (%s) can only contain numbers";
+            String error = String.format(template, fieldName, s);
             throw new SantanderValidationException(error);
         }
+    }
+
+    public String getfieldName() {
+        return fieldName;
     }
 
     public boolean isRequired() {

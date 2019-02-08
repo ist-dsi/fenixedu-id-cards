@@ -157,8 +157,8 @@ public class SantanderRequestCardService {
 
     @Atomic(mode = Atomic.TxMode.WRITE)
     private static void createSantanderEntry(Person person, String tuiEntry, TUIResponseData tuiResponse) {
-        String tuiStatus = tuiResponse.getStatus().getValue();
-        String errorDescription = tuiResponse.getStatusDescription().getValue();
+        String tuiStatus = tuiResponse.getStatus().getValue().trim();
+        String errorDescription = tuiResponse.getStatusDescription().getValue().trim();
         String tuiResponseLine = tuiResponse.getTuiResponseLine().getValue();
 
         boolean registerSuccessful = !tuiStatus.trim().toLowerCase().equals("error");

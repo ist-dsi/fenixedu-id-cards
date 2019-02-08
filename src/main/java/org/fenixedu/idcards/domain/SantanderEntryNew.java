@@ -12,6 +12,8 @@ import org.joda.time.DateTime;
 import org.joda.time.YearMonthDay;
 import org.joda.time.format.DateTimeFormat;
 
+import com.google.gson.JsonObject;
+
 public class SantanderEntryNew extends SantanderEntryNew_Base {
 
     static public Comparator<SantanderEntryNew> COMPARATOR_BY_CREATED_DATE = new Comparator<SantanderEntryNew>() {
@@ -71,7 +73,12 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     }
 
     public String getErrorCode() {
+        //System.out.println("object: " + getExternalId());
         return getResponseLine().substring(18, 20);
+    }
+
+    public String getErrorDescriptionMessage() {
+        return getErrorCode() + " - " + getErrorDescription();
     }
 
     public DateTime getExpiryDate() {
@@ -80,5 +87,24 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         String expiryDateString = SantanderEntryUtils.getValue(requestLine, 18);
 
         return DateTime.parse("20" + expiryDateString, DateTimeFormat.forPattern("yyyyMM"));
+    }
+
+    public JsonObject getResponseAsJson() {
+        JsonObject response = new JsonObject();
+
+        if (!getRegisterSuccessful()) {
+            response.addProperty("status", "Error");
+            response.addProperty("errorCode", getErrorCode());
+            response.addProperty("errorDescription", getErrorDescription());
+        } else {
+            response.addProperty("status", "Ok");
+            response.addProperty("errorCode", "");
+            response.addProperty("errorDescription", "");
+        }
+        return response;
+    }
+
+    public JsonObject getRequestAsJson() {
+        return SantanderEntryUtils.getRequestAsJson(getRequestLine());
     }
 }
