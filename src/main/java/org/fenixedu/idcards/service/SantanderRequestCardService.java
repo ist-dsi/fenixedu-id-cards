@@ -157,11 +157,13 @@ public class SantanderRequestCardService {
 
     @Atomic(mode = Atomic.TxMode.WRITE)
     private static void createSantanderEntry(Person person, String tuiEntry, TUIResponseData tuiResponse) {
-        String tuiStatus = tuiResponse.getStatus().getValue().trim();
-        String errorDescription = tuiResponse.getStatusDescription().getValue().trim();
-        String tuiResponseLine = tuiResponse.getTuiResponseLine().getValue();
+        String tuiStatus = tuiResponse.getStatus().getValue() == null ? "" : tuiResponse.getStatus().getValue().trim();
+        String errorDescription =
+                tuiResponse.getStatusDescription().getValue() == null ? "" : tuiResponse.getStatusDescription().getValue().trim();
+        String tuiResponseLine =
+                tuiResponse.getTuiResponseLine().getValue() == null ? "" : tuiResponse.getTuiResponseLine().getValue().trim();
 
-        boolean registerSuccessful = !tuiStatus.trim().toLowerCase().equals("error");
+        boolean registerSuccessful = !tuiStatus.toLowerCase().equals("error") || !tuiStatus.isEmpty();
 
         new SantanderEntryNew(person, tuiEntry, tuiResponseLine, registerSuccessful, errorDescription);
     }

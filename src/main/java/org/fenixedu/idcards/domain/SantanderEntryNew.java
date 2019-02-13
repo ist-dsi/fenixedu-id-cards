@@ -25,6 +25,15 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         }
     };
 
+    static public Comparator<SantanderEntryNew> REVERSE_COMPARATOR_BY_CREATED_DATE = new Comparator<SantanderEntryNew>() {
+        @Override
+        public int compare(final SantanderEntryNew p1, final SantanderEntryNew p2) {
+            DateTime date1 = p1.getCreatedAt();
+            DateTime date2 = p2.getCreatedAt();
+            return date2.compareTo(date1);
+        }
+    };
+
     public SantanderEntryNew(Person person, String requestLine, String responseLine, boolean registerSuccessful, String errorDescription) {
         super();
         setRootDomainObject(Bennu.getInstance());
@@ -73,12 +82,19 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     }
 
     public String getErrorCode() {
-        //System.out.println("object: " + getExternalId());
-        return getResponseLine().substring(18, 20);
+        if (!getRegisterSuccessful()) {
+            return "";
+        }
+
+        try {
+            return getResponseLine().substring(18, 20);
+        } catch (StringIndexOutOfBoundsException soobe) {
+            return "-1";
+        }
     }
 
     public String getErrorDescriptionMessage() {
-        return getErrorCode() + " - " + getErrorDescription();
+        return getErrorCode().isEmpty() ? getErrorDescription() : getErrorCode() + " - " + getErrorDescription();
     }
 
     public DateTime getExpiryDate() {
