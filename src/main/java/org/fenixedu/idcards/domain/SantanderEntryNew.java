@@ -82,7 +82,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     }
 
     public String getErrorCode() {
-        if (!getRegisterSuccessful()) {
+        if (getRegisterSuccessful()) {
             return "";
         }
 

@@ -113,6 +113,11 @@ public class SantanderRequestCardService {
 
     public static void createRegister(String tuiEntry, Person person) {
 
+        if (tuiEntry == null) {
+            logger.debug("Null tuiEntry for user " + person.getUsername());
+            return;
+        }
+
         logger.debug("Entry: " + tuiEntry);
         logger.debug("Entry size: " + tuiEntry.length());
 
@@ -142,26 +147,19 @@ public class SantanderRequestCardService {
 
         TUIResponseData tuiResponse = port.saveRegister(tuiEntry, photo, signature);
 
-        createSantanderEntry(person, tuiEntry, tuiResponse);
+        List<String> response = getResponse(tuiResponse);
 
-        List<String> result = new ArrayList<>();
+        logger.debug("Status: " + response.get(0));
+        logger.debug("Description: " + response.get(1));
+        logger.debug("Line: " + response.get(2));
 
-        result.add(tuiResponse.getStatus().getValue());
-        result.add(tuiResponse.getStatusDescription().getValue());
-        result.add(tuiResponse.getTuiResponseLine().getValue());
+        createSantanderEntry(person, tuiEntry, response.get(0), response.get(1), response.get(2));
 
-        logger.debug("Status: " + result.get(0));
-        logger.debug("Description: " + result.get(1));
-        logger.debug("Line: " + result.get(2));
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
-    private static void createSantanderEntry(Person person, String tuiEntry, TUIResponseData tuiResponse) {
-        String tuiStatus = tuiResponse.getStatus().getValue() == null ? "" : tuiResponse.getStatus().getValue().trim();
-        String errorDescription =
-                tuiResponse.getStatusDescription().getValue() == null ? "" : tuiResponse.getStatusDescription().getValue().trim();
-        String tuiResponseLine =
-                tuiResponse.getTuiResponseLine().getValue() == null ? "" : tuiResponse.getTuiResponseLine().getValue().trim();
+    private static void createSantanderEntry(Person person, String tuiEntry, String tuiStatus, String errorDescription,
+            String tuiResponseLine) {
 
         boolean registerSuccessful = !tuiStatus.toLowerCase().equals("error") || !tuiStatus.isEmpty();
 
@@ -191,5 +189,25 @@ public class SantanderRequestCardService {
 
         return photo;
 
+    }
+
+    private static List<String> getResponse(TUIResponseData tuiResponse) {
+        List<String> result = new ArrayList<>();
+
+        String tuiStatus = tuiResponse.getStatus() == null || tuiResponse.getStatus().getValue() == null ? "" : tuiResponse
+                .getStatus().getValue().trim();
+        String errorDescription =
+                tuiResponse.getStatusDescription() == null
+                        || tuiResponse.getStatusDescription().getValue() == null ? "" : tuiResponse.getStatusDescription()
+                                .getValue().trim();
+        String tuiResponseLine =
+                tuiResponse.getTuiResponseLine() == null || tuiResponse.getTuiResponseLine().getValue() == null ? "" : tuiResponse
+                        .getTuiResponseLine().getValue().trim();
+
+        result.add(tuiStatus);
+        result.add(errorDescription);
+        result.add(tuiResponseLine);
+
+        return result;
     }
 }
