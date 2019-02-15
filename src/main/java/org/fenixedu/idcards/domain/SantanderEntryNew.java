@@ -50,6 +50,17 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         setErrorDescription(errorDescription);
     }
 
+    public static SantanderEntryNew getLastSuccessfulEntry(Person person) {
+
+        for (SantanderEntryNew entry = person.getCurrentSantanderEntry(); entry != null; entry = entry.getPrevious()) {
+            if (entry.getRegisterSuccessful()) {
+                return entry;
+            }
+        }
+
+        return null;
+    }
+
     public static List<SantanderEntryNew> getSantanderEntryHistory(Person person) {
         LinkedList<SantanderEntryNew> history = new LinkedList<>();
 
@@ -100,9 +111,13 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     public DateTime getExpiryDate() {
         String requestLine = getRequestLine();
 
-        String expiryDateString = SantanderEntryUtils.getValue(requestLine, 18);
+        String expiryMonth = SantanderEntryUtils.getValue(requestLine, 18).substring(2);
+        String expiryDateYear = SantanderEntryUtils.getValue(requestLine, 11).substring(5);
+        String expiryDateString = expiryMonth + expiryDateYear;
 
-        return DateTime.parse("20" + expiryDateString, DateTimeFormat.forPattern("yyyyMM"));
+        System.out.println(expiryDateString);
+
+        return DateTime.parse(expiryDateString, DateTimeFormat.forPattern("MMyyyy"));
     }
 
     public JsonObject getResponseAsJson() {

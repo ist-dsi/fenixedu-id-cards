@@ -1,6 +1,7 @@
 package org.fenixedu.idcards.service;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.JAXBElement;
@@ -17,6 +18,7 @@ import org.fenixedu.academic.domain.Person;
 import org.fenixedu.idcards.IdCardsConfiguration;
 import org.fenixedu.idcards.domain.SantanderEntryNew;
 import org.fenixedu.idcards.domain.SantanderPhotoEntry;
+import org.fenixedu.idcards.utils.Action;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.slf4j.Logger;
@@ -26,7 +28,6 @@ import com.google.common.base.Strings;
 
 import pt.ist.fenixframework.Atomic;
 import pt.sibscartoes.portal.wcf.IRegistersInfo;
-import pt.sibscartoes.portal.wcf.dto.FormData;
 import pt.sibscartoes.portal.wcf.dto.RegisterData;
 import pt.sibscartoes.portal.wcf.tui.ITUIDetailService;
 import pt.sibscartoes.portal.wcf.tui.dto.TUIResponseData;
@@ -35,45 +36,114 @@ import pt.sibscartoes.portal.wcf.tui.dto.TuiSignatureRegisterData;
 
 public class SantanderRequestCardService {
 
-    private static final String ACTION_NEW = "NOVO";
-    private static final String ACTION_REMI = "REMI";
-    private static final String ACTION_RENU = "RENU";
-    private static final String ACTION_ATUA = "ATUA";
-    private static final String ACTION_CANC = "CANC";
+    private static final Action ACTION_NEW = new Action("NOVO", "Novo");
+    private static final Action ACTION_REMI = new Action("REMI", "Reemissão");
+    private static final Action ACTION_RENU = new Action("RENU", "Renuvação");
+    private static final Action ACTION_ATUA = new Action("ATUA", "Atualização de dados");
+    private static final Action ACTION_CANC = new Action("CANC", "Cancelar Pedido");
+
+    private static final String CANCELED = "Anulado";
+    private static final String CANCELED_REMI = "Anulado (Reemissão)";
+    private static final String CANCELED_RENU = "Anulado (Renovação)";
+    private static final String MISSING_DATA = "Falta Dados Adicionais";
+    private static final String READY_FOR_PRODUCTION = "Preparado para Produção";
+    private static final String REMI_REQUEST = "Pedido de Reemissão";
+    private static final String RENU_REQUEST = "Pedido de Renovação";
+    private static final String REJECTED_REQUEST = "Emissão Rejeitada";
+    private static final String ISSUED = "Expedido";
+    private static final String PRODUCTION = "Em Produção";
 
     private static Logger logger = LoggerFactory.getLogger(SantanderRequestCardService.class);
 
-    public static List<String> getPersonAvailableActions(Person person) {
-        // TODO: just a draft
-        List<String> actions = new ArrayList<>();
+    public static List<Action> getPersonAvailableActions(Person person) {
+        List<Action> actions = new LinkedList<>();
+        String status = getRegister(person).get(1);
 
-        if (person.getCurrentSantanderEntry() == null) {
+        /* If card is in canceled state
+         * Or the person has no successful request
+         * => Can only use ACTION_NEW
+         */
+        if (!hasCardRequest(person, status)) {
             actions.add(ACTION_NEW);
-
+            return actions;
+        }
+        
+        /* If card is in production state
+         * => Can only use ACTION_CANC
+         */
+        if (status.equals(PRODUCTION)) {
+            actions.add(ACTION_CANC);
             return actions;
         }
 
-        // TODO: Probably have to refactor this to persist the entry state
-        // and check the string correctly
-        String status = getRegister(person);
-
-        DateTime expiryDate = person.getCurrentSantanderEntry().getExpiryDate();
-
-        if (Days.daysBetween(DateTime.now().withTimeAtStartOfDay(), expiryDate.withTimeAtStartOfDay()).getDays() < 60) {
-            actions.add(ACTION_RENU);
-        } else if (status.equals("Expedido")) {
-            actions.add(ACTION_REMI);
-        }
-
-        if (status.equals("Expedido") || status.equals("Não produzido")) {
+        /* If the card is in any of this states
+         * => Can only use ACTION_ATUA and ACTION_CANC
+         */
+        if (specialCases(status)) {
             actions.add(ACTION_ATUA);
             actions.add(ACTION_CANC);
+            return actions;
         }
+
+        /* If the card is issued
+         * => Can use ACTION_ATUA and ACTION_CANC
+         * => ACTION_RENU can be used if there are 60 days or less until the expiration date
+         * => ACTION_REMI can be used otherwise
+         */
+        if (status.equals(ISSUED)) {
+            
+            DateTime expiryDate = SantanderEntryNew.getLastSuccessfulEntry(person).getExpiryDate();
+
+            if (Days.daysBetween(DateTime.now().withTimeAtStartOfDay(), expiryDate.withTimeAtStartOfDay()).getDays() < 60) {
+                actions.add(ACTION_RENU);
+            } else if (status.equals("Expedido")) {
+                actions.add(ACTION_REMI);
+            }
+
+            actions.add(ACTION_ATUA);
+            actions.add(ACTION_CANC);
+
+            return actions;
+
+        }
+
+        /* Something went wrong!
+         * Allow all actions
+         */
+        actions.add(ACTION_NEW);
+        actions.add(ACTION_REMI);
+        actions.add(ACTION_RENU);
+        actions.add(ACTION_ATUA);
+        actions.add(ACTION_CANC);
 
         return actions;
     }
 
-    public static String getRegister(Person person) {
+    private static boolean hasCardRequest(Person person, String status) {
+
+        if (SantanderEntryNew.getLastSuccessfulEntry(person) == null) {
+            return false;
+        }
+
+        if (status.equals(CANCELED) || status.equals(CANCELED_REMI) || status.equals(CANCELED_RENU)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static boolean specialCases(String status) {
+
+        if (status.equals(MISSING_DATA) || status.equals(READY_FOR_PRODUCTION) || status.equals(REMI_REQUEST)
+                || status.equals(RENU_REQUEST) || status.equals(REJECTED_REQUEST)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static List<String> getRegister(Person person) {
+        List<String> result = new ArrayList<>();
 
         JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
 
@@ -100,15 +170,13 @@ public class SantanderRequestCardService {
 
         RegisterData statusInformation = port.getRegister(userName);
 
-        FormData formData = port.getFormStatus(userName);
+        result.add(statusInformation.getStatus().getValue());
+        result.add(statusInformation.getStatusDate().getValue().replaceAll("-", "/"));
+        result.add(statusInformation.getStatusDesc().getValue());
 
-        String template = "%s | Entity: %s | IdentRegNum: %s | NDoc: %s | Status: %s | Date: %s";
-        String result = String.format(template, userName, formData.getEntityCode().getValue(), formData.getIdentRegNum().getValue(),
-                formData.getNDoc().getValue(), formData.getStatus().getValue(), formData.getIdentRegNum().getValue());
+        logger.debug("Result: " + result.get(1) + " : " + result.get(0) + " - " + result.get(2));
 
-        logger.debug("Result: " + result);
-
-        return formData.getStatus().getValue();
+        return result;
     }
 
     public static void createRegister(String tuiEntry, Person person) {
