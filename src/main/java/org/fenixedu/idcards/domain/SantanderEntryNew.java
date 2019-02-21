@@ -36,18 +36,41 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         }
     };
 
-    public SantanderEntryNew(Person person) {
+    public SantanderEntryNew(Person person, String requestLine) {
         setRootDomainObject(Bennu.getInstance());
-        SantanderEntryNew entryNew = person.getCurrentSantanderEntry();
-        if (entryNew != null) {
-            setPrevious(entryNew);
-            entryNew.setNext(this);
+        SantanderEntryNew currentEntry = person.getCurrentSantanderEntry();
+        if (currentEntry != null) {
+            setPrevious(currentEntry);
+            currentEntry.setNext(this);
         }
         person.setCurrentSantanderEntry(this);
-        reset(person);
+        setRequestLine(requestLine);
+        setLastUpdate(DateTime.now());
+
+        // No response from server yet
+        setState(SantanderCardState.FENIX_ERROR);
     }
 
-    public void reset(Person person) {
+    public void reset(String requestLine) {
+        setLastUpdate(DateTime.now());
+        setState(SantanderCardState.FENIX_ERROR);
+        setRequestLine(requestLine);
+    }
+
+    public void saveSuccessful(String responseLine) {
+        setLastUpdate(DateTime.now());
+        setResponseLine(responseLine);
+        setState(SantanderCardState.NEW);
+    }
+
+    public void saveWithError(String errorDescription, SantanderCardState state) {
+        // TODO: Check the correct error state
+        setLastUpdate(DateTime.now());
+        setErrorDescription(errorDescription);
+        setState(state);
+    }
+
+    /*public void reset(Person person) {
         updateEntry(person, SantanderCardState.FENIX_ERROR, DateTime.now(), "", "", false, "Erro no fenix");
     }
 
@@ -62,7 +85,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         setResponseLine(responseLine);
         setRegisterSuccessful(registerSuccessful);
         setErrorDescription(errorDescription);
-    }
+    }*/
 
     public static SantanderEntryNew getLastSuccessfulEntry(Person person) {
 
