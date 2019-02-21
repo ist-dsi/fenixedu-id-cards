@@ -19,6 +19,7 @@ import org.fenixedu.idcards.IdCardsConfiguration;
 import org.fenixedu.idcards.domain.SantanderEntryNew;
 import org.fenixedu.idcards.domain.SantanderPhotoEntry;
 import org.fenixedu.idcards.utils.Action;
+import org.fenixedu.idcards.utils.SantanderCardState;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.slf4j.Logger;
@@ -27,8 +28,8 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Strings;
 
 import pt.ist.fenixframework.Atomic;
-import pt.sibscartoes.portal.wcf.IRegistersInfo;
-import pt.sibscartoes.portal.wcf.dto.RegisterData;
+import pt.sibscartoes.portal.wcf.register.info.IRegisterInfoService;
+import pt.sibscartoes.portal.wcf.register.info.dto.RegisterData;
 import pt.sibscartoes.portal.wcf.tui.ITUIDetailService;
 import pt.sibscartoes.portal.wcf.tui.dto.TUIResponseData;
 import pt.sibscartoes.portal.wcf.tui.dto.TuiPhotoRegisterData;
@@ -56,6 +57,7 @@ public class SantanderRequestCardService {
     private static Logger logger = LoggerFactory.getLogger(SantanderRequestCardService.class);
 
     public static List<Action> getPersonAvailableActions(Person person) {
+        //TODO Use SantanderCardState instead
         List<Action> actions = new LinkedList<>();
         String status = getRegister(person).get(1);
 
@@ -147,8 +149,8 @@ public class SantanderRequestCardService {
 
         JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
 
-        factory.setServiceClass(IRegistersInfo.class);
-        factory.setAddress("https://portal.sibscartoes.pt/wcf/RegistersInfo.svc");
+        factory.setServiceClass(IRegisterInfoService.class);
+        factory.setAddress("https://portal.sibscartoes.pt/tstwcfv2/services/RegisterInfoService.svc");
         factory.setBindingId("http://schemas.xmlsoap.org/wsdl/soap12/");
         factory.getFeatures().add(new WSAddressingFeature());
 
@@ -156,7 +158,7 @@ public class SantanderRequestCardService {
         factory.getInInterceptors().add(new LoggingInInterceptor());
         factory.getOutInterceptors().add(new LoggingOutInterceptor());
 
-        IRegistersInfo port = (IRegistersInfo) factory.create();
+        IRegisterInfoService port = (IRegisterInfoService) factory.create();
 
         /*define WSDL policy*/
         Client client = ClientProxy.getClient(port);
@@ -172,14 +174,15 @@ public class SantanderRequestCardService {
 
         result.add(statusInformation.getStatus().getValue());
         result.add(statusInformation.getStatusDate().getValue().replaceAll("-", "/"));
-        result.add(statusInformation.getStatusDesc().getValue());
+        result.add(statusInformation.getStatusDescription().getValue());
 
         logger.debug("Result: " + result.get(1) + " : " + result.get(0) + " - " + result.get(2));
 
         return result;
     }
 
-    public static void createRegister(String tuiEntry, Person person) {
+    @Atomic(mode = Atomic.TxMode.WRITE)
+    public static void createRegister(String tuiEntry, Person person) throws SantanderCardMissingDataException {
 
         if (tuiEntry == null) {
             logger.debug("Null tuiEntry for user " + person.getUsername());
@@ -188,6 +191,23 @@ public class SantanderRequestCardService {
 
         logger.debug("Entry: " + tuiEntry);
         logger.debug("Entry size: " + tuiEntry.length());
+        
+        TuiPhotoRegisterData photo = getOrCreateSantanderPhoto(person);
+        TuiSignatureRegisterData signature = new TuiSignatureRegisterData();
+
+        SantanderEntryNew entry = person.getCurrentSantanderEntry();
+        SantanderCardState cardState = entry.getState();
+
+        /*
+         * If there was an error on the previous entry update it
+         * Else create a new entry
+         */
+        if (cardState == SantanderCardState.FENIX_ERROR || cardState == SantanderCardState.RESPONSE_ERROR
+                || cardState == SantanderCardState.REJECTED) {
+            entry.reset(person);
+        } else {
+            entry = new SantanderEntryNew(person);
+        }
 
         JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
 
@@ -209,32 +229,36 @@ public class SantanderRequestCardService {
         http.getAuthorization().setUserName(IdCardsConfiguration.getConfiguration().sibsWebServiceUsername());
         http.getAuthorization().setPassword(IdCardsConfiguration.getConfiguration().sibsWebServicePassword());
 
-        TuiPhotoRegisterData photo = getOrCreateSantanderPhoto(person);
+        TUIResponseData tuiResponse;
 
-        TuiSignatureRegisterData signature = new TuiSignatureRegisterData();
+        try {
+            tuiResponse = port.saveRegister(tuiEntry, photo, signature);
+        } catch (Throwable t) {
+            entry.updateEntry(person, SantanderCardState.RESPONSE_ERROR, DateTime.now(), "", "", false,
+                    "Erro a comunicar com o santander");
+            return;
+        }
 
-        TUIResponseData tuiResponse = port.saveRegister(tuiEntry, photo, signature);
+        String tuiStatus = tuiResponse.getStatus() == null || tuiResponse.getStatus().getValue() == null ? "" : tuiResponse
+                .getStatus().getValue().trim();
+        String tuiErrorDescription = tuiResponse.getStatusDescription() == null
+                || tuiResponse.getStatusDescription().getValue() == null ? "" : tuiResponse.getStatusDescription().getValue()
+                        .trim();
+        String tuiResponseLine = tuiResponse.getTuiResponseLine() == null
+                || tuiResponse.getTuiResponseLine().getValue() == null ? "" : tuiResponse.getTuiResponseLine().getValue().trim();
 
-        List<String> response = getResponse(tuiResponse);
+        logger.debug("Status: " + tuiStatus);
+        logger.debug("Description: " + tuiErrorDescription);
+        logger.debug("Line: " + tuiResponseLine);
 
-        logger.debug("Status: " + response.get(0));
-        logger.debug("Description: " + response.get(1));
-        logger.debug("Line: " + response.get(2));
+        boolean registerSuccessful = !tuiStatus.isEmpty() || !tuiStatus.toLowerCase().equals("error");
 
-        createSantanderEntry(person, tuiEntry, response.get(0), response.get(1), response.get(2));
+        entry.updateEntry(person, SantanderCardState.NEW, DateTime.now(), tuiEntry, tuiResponseLine, registerSuccessful,
+                tuiErrorDescription);
 
     }
 
-    @Atomic(mode = Atomic.TxMode.WRITE)
-    private static void createSantanderEntry(Person person, String tuiEntry, String tuiStatus, String errorDescription,
-            String tuiResponseLine) {
-
-        boolean registerSuccessful = !tuiStatus.toLowerCase().equals("error") || !tuiStatus.isEmpty();
-
-        new SantanderEntryNew(person, tuiEntry, tuiResponseLine, registerSuccessful, errorDescription);
-    }
-
-    private static TuiPhotoRegisterData getOrCreateSantanderPhoto(Person person) {
+    private static TuiPhotoRegisterData getOrCreateSantanderPhoto(Person person) throws SantanderCardMissingDataException {
         final QName FILE_NAME =
                 new QName("http://schemas.datacontract.org/2004/07/SibsCards.Wcf.Services.DataContracts", "FileName");
         final QName FILE_EXTENSION =
@@ -247,7 +271,14 @@ public class SantanderRequestCardService {
 
         TuiPhotoRegisterData photo = new TuiPhotoRegisterData();
 
-        SantanderPhotoEntry photoEntry = SantanderPhotoEntry.getOrCreatePhotoEntryForPerson(person);
+        SantanderPhotoEntry photoEntry;
+
+        try {
+            photoEntry = SantanderPhotoEntry.getOrCreatePhotoEntryForPerson(person);
+        } catch (Throwable t) {
+            throw new SantanderCardMissingDataException("Missing photo");
+        }
+
         byte[] photo_contents = photoEntry.getPhotoAsByteArray();
 
         photo.setFileContents(new JAXBElement<>(FILE_CONTENTS, byte[].class, photo_contents));
@@ -256,26 +287,5 @@ public class SantanderRequestCardService {
         photo.setFileName(new JAXBElement<>(FILE_NAME, String.class, "foto")); //TODO
 
         return photo;
-
-    }
-
-    private static List<String> getResponse(TUIResponseData tuiResponse) {
-        List<String> result = new ArrayList<>();
-
-        String tuiStatus = tuiResponse.getStatus() == null || tuiResponse.getStatus().getValue() == null ? "" : tuiResponse
-                .getStatus().getValue().trim();
-        String errorDescription =
-                tuiResponse.getStatusDescription() == null
-                        || tuiResponse.getStatusDescription().getValue() == null ? "" : tuiResponse.getStatusDescription()
-                                .getValue().trim();
-        String tuiResponseLine =
-                tuiResponse.getTuiResponseLine() == null || tuiResponse.getTuiResponseLine().getValue() == null ? "" : tuiResponse
-                        .getTuiResponseLine().getValue().trim();
-
-        result.add(tuiStatus);
-        result.add(errorDescription);
-        result.add(tuiResponseLine);
-
-        return result;
     }
 }

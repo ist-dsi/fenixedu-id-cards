@@ -12,6 +12,12 @@
 package org.fenixedu.idcards.domain;
 
 /*
+ * Enums definitions
+ */
+ 
+enum org.fenixedu.idcards.utils.SantanderCardState as SantanderCardState;
+
+/*
  *
  * Class definitions
  *
@@ -43,10 +49,19 @@ class SantanderEntry  {
 class SantanderEntryNew {
     String requestLine;
     String responseLine;
-    DateTime createdAt;
+    DateTime lastUpdate;
     boolean registerSuccessful;
-    boolean cardIssued;
     String errorDescription;
+    SantanderCardState state;
+}
+
+class SantanderCardInfo {	
+	DateTime lastUpdate;
+	String serialNumber;
+	String mifareNumber;
+	DateTime expeditionDate;
+	DateTime expiryDate;
+	String nameOnCard;
 }
 
 class SantanderPhotoEntry {
@@ -244,4 +259,12 @@ relation PhotographSantanderPhotoEntry {
 		multiplicity *;
 	}
 }
+
+relation SantanderCardSantanderEntryNew {
+	SantanderEntryNew playsRole santanderEntriesNew;
+	SantanderCardInfo playsRole SantanderCardInfo {
+		multiplicity 0..1;
+	}
+}
+
 

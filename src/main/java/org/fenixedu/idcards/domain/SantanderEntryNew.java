@@ -3,10 +3,12 @@ package org.fenixedu.idcards.domain;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.idcards.utils.SantanderCardState;
 import org.fenixedu.idcards.utils.SantanderEntryUtils;
 import org.joda.time.DateTime;
 import org.joda.time.YearMonthDay;
@@ -19,8 +21,8 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     static public Comparator<SantanderEntryNew> COMPARATOR_BY_CREATED_DATE = new Comparator<SantanderEntryNew>() {
         @Override
         public int compare(final SantanderEntryNew p1, final SantanderEntryNew p2) {
-            DateTime date1 = p1.getCreatedAt();
-            DateTime date2 = p2.getCreatedAt();
+            DateTime date1 = p1.getLastUpdate();
+            DateTime date2 = p2.getLastUpdate();
             return date1.compareTo(date2);
         }
     };
@@ -28,22 +30,34 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     static public Comparator<SantanderEntryNew> REVERSE_COMPARATOR_BY_CREATED_DATE = new Comparator<SantanderEntryNew>() {
         @Override
         public int compare(final SantanderEntryNew p1, final SantanderEntryNew p2) {
-            DateTime date1 = p1.getCreatedAt();
-            DateTime date2 = p2.getCreatedAt();
+            DateTime date1 = p1.getLastUpdate();
+            DateTime date2 = p2.getLastUpdate();
             return date2.compareTo(date1);
         }
     };
 
-    public SantanderEntryNew(Person person, String requestLine, String responseLine, boolean registerSuccessful, String errorDescription) {
-        super();
+    public SantanderEntryNew(Person person) {
         setRootDomainObject(Bennu.getInstance());
-        setCreatedAt(DateTime.now());
-        setCardIssued(false);
-        if (person.getCurrentSantanderEntry() != null) {
-            setPrevious(person.getCurrentSantanderEntry());
+        SantanderEntryNew entryNew = person.getCurrentSantanderEntry();
+        if (entryNew != null) {
+            setPrevious(entryNew);
+            entryNew.setNext(this);
         }
         person.setCurrentSantanderEntry(this);
+        reset(person);
+    }
+
+    public void reset(Person person) {
+        updateEntry(person, SantanderCardState.FENIX_ERROR, DateTime.now(), "", "", false, "Erro no fenix");
+    }
+
+    public void updateEntry(Person person, SantanderCardState state, DateTime lastUpdated, String requestLine,
+            String responseLine,
+            boolean registerSuccessful, String errorDescription) {
+
         setPhotograph(person.getPersonalPhoto());
+        setLastUpdate(lastUpdated);
+        setState(state);
         setRequestLine(requestLine);
         setResponseLine(responseLine);
         setRegisterSuccessful(registerSuccessful);
@@ -72,11 +86,13 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     }
 
     public static List<SantanderEntryNew> getSantanderEntryHistory(ExecutionYear executionYear) {
-        return null;
+        return Bennu.getInstance().getSantanderEntriesNewSet().stream()
+                .filter(sen -> sen.getExecutionYear().equals(executionYear))
+                .sorted(SantanderEntryNew.REVERSE_COMPARATOR_BY_CREATED_DATE).collect(Collectors.toList());
     }
 
     public ExecutionYear getExecutionYear() {
-        DateTime dateTime = getCreatedAt();
+        DateTime dateTime = getLastUpdate();
         YearMonthDay yearMonthDay = new YearMonthDay(dateTime.getMillis());
 
         return ExecutionYear.getExecutionYearByDate(yearMonthDay);
@@ -105,7 +121,10 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     }
 
     public String getErrorDescriptionMessage() {
-        return getErrorCode().isEmpty() ? getErrorDescription() : getErrorCode() + " - " + getErrorDescription();
+        if (getRegisterSuccessful()) {
+            return "";
+        }
+        return getErrorCode() + " - " + getErrorDescription();
     }
 
     public DateTime getExpiryDate() {
@@ -121,6 +140,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     }
 
     public JsonObject getResponseAsJson() {
+        //TODO
         JsonObject response = new JsonObject();
 
         if (!getRegisterSuccessful()) {

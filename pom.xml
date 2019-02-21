@@ -99,6 +99,18 @@
                                         <extraarg>-validate</extraarg>
                                     </extraargs>
                                 </wsdlOption>
+                                <wsdlOption>
+                                    <wsdl>${basedir}/src/main/webapp/WEB-INF/wsdl/RegisterInfoService.wsdl</wsdl>
+                                    <extraargs>
+                                        <extraarg>-client</extraarg>
+                                        <extraarg>-verbose</extraarg>
+                                        <extraarg>-p</extraarg>
+                                        <extraarg>http://portal.sibscartoes.pt/wcf=pt.sibscartoes.portal.wcf.register.info</extraarg>
+                                        <extraarg>-p</extraarg>
+                                        <extraarg>http://schemas.datacontract.org/2004/07/SibsCards.Wcf.Services.DataContracts=pt.sibscartoes.portal.wcf.register.info.dto</extraarg>
+                                        <extraarg>-validate</extraarg>
+                                    </extraargs>
+                                </wsdlOption>
                             </wsdlOptions>
                         </configuration>
                         <goals>
