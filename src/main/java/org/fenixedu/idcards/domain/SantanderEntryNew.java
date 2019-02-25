@@ -11,6 +11,7 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.idcards.utils.SantanderCardState;
 import org.fenixedu.idcards.utils.SantanderEntryUtils;
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.YearMonthDay;
 import org.joda.time.format.DateTimeFormat;
 
@@ -48,12 +49,12 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         setLastUpdate(DateTime.now());
 
         // No response from server yet
-        setState(SantanderCardState.FENIX_ERROR);
+        setState(SantanderCardState.PENDING);
     }
 
     public void reset(String requestLine) {
         setLastUpdate(DateTime.now());
-        setState(SantanderCardState.FENIX_ERROR);
+        setState(SantanderCardState.PENDING);
         setRequestLine(requestLine);
     }
 
@@ -160,6 +161,10 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         System.out.println(expiryDateString);
 
         return DateTime.parse(expiryDateString, DateTimeFormat.forPattern("MMyyyy"));
+    }
+
+    public boolean isExpiring() {
+        return Days.daysBetween(DateTime.now().withTimeAtStartOfDay(), getExpiryDate().withTimeAtStartOfDay()).getDays() < 60;
     }
 
     public JsonObject getResponseAsJson() {

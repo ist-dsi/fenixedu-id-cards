@@ -38,37 +38,43 @@ import pt.sibscartoes.portal.wcf.tui.dto.TuiSignatureRegisterData;
 
 public class SantanderRequestCardService {
 
-    private static final String CANCELED = "Anulado";
-    private static final String CANCELED_REMI = "Anulado (Reemissão)";
-    private static final String CANCELED_RENU = "Anulado (Renovação)";
-    private static final String MISSING_DATA = "Falta Dados Adicionais";
-    private static final String READY_FOR_PRODUCTION = "Preparado para Produção";
-    private static final String REMI_REQUEST = "Pedido de Reemissão";
-    private static final String RENU_REQUEST = "Pedido de Renovação";
-    private static final String REJECTED_REQUEST = "Emissão Rejeitada";
-    private static final String ISSUED = "Expedido";
-    private static final String PRODUCTION = "Em Produção";
+    private static String NO_RESULT = "NoResult";
 
     private static Logger logger = LoggerFactory.getLogger(SantanderRequestCardService.class);
 
     public static List<RegisterAction> getPersonAvailableActions(Person person) {
 
         List<RegisterAction> actions = new LinkedList<>();
-        String status = getRegister(person).get(1);
-
         SantanderEntryNew personEntry = person.getCurrentSantanderEntry();
-
 
         /* If card is in canceled state
          * Or the person has no successful request
          * => Can only use ACTION_NEW
          */
-        if (personEntry == null || personEntry.getState() == SantanderCardState.CANCELED) {
+        if (personEntry == null || personEntry.getState().canRegisterNew()) {
             actions.add(RegisterAction.NOVO);
             return actions;
         }
 
         SantanderCardState cardState = personEntry.getState();
+
+        /**
+         * If current state is pending
+         * we need to know if it was saved
+         * on sibs side and update accordingly
+         */
+        if (cardState == SantanderCardState.PENDING) {
+            RegisterData registerData = getRegister(person);
+            String status = registerData.getStatus().getValue();
+
+            // It wasn't saved on sibs side
+            if (NO_RESULT.equals(status)) {
+                actions.add(RegisterAction.NOVO);
+                return actions;
+            }
+
+            // TODO: set new state accordingly, and save the data
+        }
 
         /* If the card is issued
          * => Can use ACTION_ATUA and ACTION_CANC
@@ -78,11 +84,21 @@ public class SantanderRequestCardService {
         if (cardState == SantanderCardState.ISSUED) {
             actions.add(RegisterAction.REMI);
 
-            if (Days.daysBetween(DateTime.now().withTimeAtStartOfDay(), personEntry.getExpiryDate().withTimeAtStartOfDay()).getDays() < 60) {
+            if (personEntry.isExpiring()) {
                 actions.add(RegisterAction.RENU);
             }
+
+            actions.add(RegisterAction.ATUA);
+            actions.add(RegisterAction.CANC);
         }
-        
+
+        // Entry is in successful state and we need to update it's status
+
+        RegisterData registerData = getRegister(person);
+        String status = registerData.getStatus().getValue();
+
+        // updateEntry
+
         /* If card is in production state
          * => Can only use ACTION_CANC
          */
@@ -100,33 +116,6 @@ public class SantanderRequestCardService {
             return actions;
         }
 
-
-        if (status.equals(ISSUED)) {
-            
-            DateTime expiryDate = SantanderEntryNew.getLastSuccessfulEntry(person).getExpiryDate();
-
-            if (Days.daysBetween(DateTime.now().withTimeAtStartOfDay(), expiryDate.withTimeAtStartOfDay()).getDays() < 60) {
-                actions.add(RegisterAction.RENU);
-            } else if (status.equals("Expedido")) {
-                actions.add(RegisterAction.REMI);
-            }
-
-            actions.add(RegisterAction.ATUA);
-            actions.add(RegisterAction.CANC);
-
-            return actions;
-
-        }
-
-        /* Something went wrong!
-         * Allow all actions
-         */
-        /*actions.add(ACTION_NEW);
-        actions.add(ACTION_REMI);
-        actions.add(ACTION_RENU);
-        actions.add(ACTION_ATUA);
-        actions.add(ACTION_CANC);*/
-
         return actions;
     }
 
@@ -141,7 +130,7 @@ public class SantanderRequestCardService {
         return false;
     }
 
-    public static List<String> getRegister(Person person) {
+    public static RegisterData getRegister(Person person) {
         List<String> result = new ArrayList<>();
 
         JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
@@ -175,7 +164,7 @@ public class SantanderRequestCardService {
 
         logger.debug("Result: " + result.get(1) + " : " + result.get(0) + " - " + result.get(2));
 
-        return result;
+        return statusInformation;
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
@@ -228,7 +217,7 @@ public class SantanderRequestCardService {
         }
 
         // Update entry with the response
-        updateEntry(entry, tuiResponse);
+        saveResponse(entry, tuiResponse);
     }
 
     private static TuiPhotoRegisterData getOrCreateSantanderPhoto(Person person) throws SantanderCardMissingDataException {
@@ -271,12 +260,6 @@ public class SantanderRequestCardService {
 
         SantanderCardState cardState = entry.getState();
 
-        // No saved response, synchronize the state
-        if (cardState == SantanderCardState.FENIX_ERROR) {
-            List<String> status = SantanderRequestCardService.getRegister(person);
-            // TODO: Review logic to update entry here based on the response
-        }
-
         // In error state, overwrite entry
         if (cardState == SantanderCardState.RESPONSE_ERROR || cardState == SantanderCardState.REJECTED) {
             entry.reset(request);
@@ -285,7 +268,7 @@ public class SantanderRequestCardService {
         return entry;
     }
 
-    private static void updateEntry(SantanderEntryNew entry, TUIResponseData response) {
+    private static void saveResponse(SantanderEntryNew entry, TUIResponseData response) {
         String status = response.getStatus() == null || response.getStatus().getValue() == null ? "" : response
                 .getStatus().getValue().trim();
         String errorDescription = response.getStatusDescription() == null
@@ -294,7 +277,7 @@ public class SantanderRequestCardService {
         String responseLine = response.getTuiResponseLine() == null
                 || response.getTuiResponseLine().getValue() == null ? "" : response.getTuiResponseLine().getValue().trim();
 
-        boolean registerSuccessful = !status.isEmpty() || !status.toLowerCase().equals("error");
+        boolean registerSuccessful = !status.isEmpty() && !status.toLowerCase().equals("error");
 
         if (registerSuccessful) {
             entry.saveSuccessful(responseLine);
