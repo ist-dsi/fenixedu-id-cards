@@ -17,6 +17,8 @@ import org.joda.time.format.DateTimeFormat;
 
 import com.google.gson.JsonObject;
 
+import pt.ist.fenixframework.Atomic;
+
 public class SantanderEntryNew extends SantanderEntryNew_Base {
 
     static public Comparator<SantanderEntryNew> COMPARATOR_BY_CREATED_DATE = new Comparator<SantanderEntryNew>() {
@@ -45,11 +47,36 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
             currentEntry.setNext(this);
         }
         person.setCurrentSantanderEntry(this);
+        setPhotograph(person.getPersonalPhoto());
         setRequestLine(requestLine);
         setLastUpdate(DateTime.now());
 
         // No response from server yet
         setState(SantanderCardState.PENDING);
+        setErrorDescription("");
+    }
+
+    //TODO REMOVE THIS LATER
+    @Override
+    @Atomic(mode = Atomic.TxMode.WRITE)
+    public DateTime getLastUpdate() {
+        if (super.getLastUpdate() == null) {
+            DateTime now = DateTime.now();
+            setLastUpdate(now);
+            return now;
+        }
+        return super.getLastUpdate();
+    }
+
+    public void update(Person person, String requestLine) {
+        setLastUpdate(DateTime.now());
+        setRequestLine(requestLine);
+        setPhotograph(person.getPersonalPhoto());
+    }
+
+    public void cancel() {
+        setLastUpdate(DateTime.now());
+        setState(SantanderCardState.CANCELED);
     }
 
     public void reset(String requestLine) {
@@ -69,34 +96,6 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         setLastUpdate(DateTime.now());
         setErrorDescription(errorDescription);
         setState(state);
-    }
-
-    /*public void reset(Person person) {
-        updateEntry(person, SantanderCardState.FENIX_ERROR, DateTime.now(), "", "", false, "Erro no fenix");
-    }
-
-    public void updateEntry(Person person, SantanderCardState state, DateTime lastUpdated, String requestLine,
-            String responseLine,
-            boolean registerSuccessful, String errorDescription) {
-
-        setPhotograph(person.getPersonalPhoto());
-        setLastUpdate(lastUpdated);
-        setState(state);
-        setRequestLine(requestLine);
-        setResponseLine(responseLine);
-        setRegisterSuccessful(registerSuccessful);
-        setErrorDescription(errorDescription);
-    }*/
-
-    public static SantanderEntryNew getLastSuccessfulEntry(Person person) {
-
-        for (SantanderEntryNew entry = person.getCurrentSantanderEntry(); entry != null; entry = entry.getPrevious()) {
-            if (entry.getRegisterSuccessful()) {
-                return entry;
-            }
-        }
-
-        return null;
     }
 
     public static List<SantanderEntryNew> getSantanderEntryHistory(Person person) {
@@ -162,9 +161,41 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
 
         return DateTime.parse(expiryDateString, DateTimeFormat.forPattern("MMyyyy"));
     }
+    
+    public boolean canRegisterNew() {
+        SantanderCardState state = getState();
+        return state == SantanderCardState.PENDING || state == SantanderCardState.RESPONSE_ERROR
+                || state == SantanderCardState.CANCELED;
+    }
+    
+    public boolean canUpdateEntry() {
+        SantanderCardState state = getState();
+        if (state == SantanderCardState.NEW || state == SantanderCardState.REJECTED) {
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean canCancelCard() {
+        SantanderCardState state = getState();
+        if (state == SantanderCardState.NEW || state == SantanderCardState.PRODUCTION || state == SantanderCardState.ISSUED) {
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean canReemitCard() {
+        SantanderCardState state = getState();
+        if (state == SantanderCardState.ISSUED) {
+            return true;
+        }
+        return false;
+    }
 
-    public boolean isExpiring() {
-        return Days.daysBetween(DateTime.now().withTimeAtStartOfDay(), getExpiryDate().withTimeAtStartOfDay()).getDays() < 60;
+    public boolean canRenovateCard() {
+        SantanderCardState state = getState();
+        return state == SantanderCardState.ISSUED
+                && Days.daysBetween(DateTime.now().withTimeAtStartOfDay(), getExpiryDate().withTimeAtStartOfDay()).getDays() < 60;
     }
 
     public JsonObject getResponseAsJson() {
