@@ -1,6 +1,5 @@
 package org.fenixedu.idcards.service;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,7 +22,6 @@ import org.fenixedu.idcards.utils.SantanderCardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.ist.fenixframework.Atomic;
 import pt.sibscartoes.portal.wcf.register.info.IRegisterInfoService;
 import pt.sibscartoes.portal.wcf.register.info.dto.RegisterData;
 import pt.sibscartoes.portal.wcf.tui.ITUIDetailService;
@@ -33,7 +31,17 @@ import pt.sibscartoes.portal.wcf.tui.dto.TuiSignatureRegisterData;
 
 public class SantanderRequestCardService {
 
-    private static String NO_RESULT = "NoResult";
+    private static final String CANCELED = "Anulado";
+    private static final String CANCELED_REMI = "Anulado (Reemissão)";
+    private static final String CANCELED_RENU = "Anulado (Renovação)";
+    private static final String MISSING_DATA = "Falta Dados Adicionais";
+    private static final String READY_FOR_PRODUCTION = "Preparado para Produção";
+    private static final String REMI_REQUEST = "Pedido de Reemissão";
+    private static final String RENU_REQUEST = "Pedido de Renovação";
+    private static final String REJECTED_REQUEST = "Emissão Rejeitada";
+    private static final String ISSUED = "Expedido";
+    private static final String PRODUCTION = "Em Produção";
+    private static final String NO_RESULT = "NoResult";
 
     private static Logger logger = LoggerFactory.getLogger(SantanderRequestCardService.class);
 
@@ -66,10 +74,69 @@ public class SantanderRequestCardService {
         return actions;
     }
 
-    public static RegisterData getRegister(Person person) {
-        //TODO Synchronize fenix and santander states
-        List<String> result = new ArrayList<>();
+    public static SantanderEntryNew updateState(Person person) {
 
+        SantanderEntryNew entryNew = person.getCurrentSantanderEntry();
+
+        if (entryNew == null) {
+            return null;
+        }
+
+        SantanderCardState cardState = entryNew.getState();
+
+        if (cardState == SantanderCardState.ISSUED || cardState == SantanderCardState.CANCELED) {
+            return entryNew;
+        }
+
+        RegisterData registerData = getRegister(person);
+
+        if (registerData == null) {
+            return entryNew;
+        }
+
+        String status = registerData.getStatusDescription().getValue();
+
+        System.out.println("GetRegister:" + status);
+
+        switch (status) {
+        case MISSING_DATA:
+        case REJECTED_REQUEST:
+            entryNew.updateState(SantanderCardState.REJECTED);
+            return entryNew;
+
+        case PRODUCTION:
+            entryNew.updateState(SantanderCardState.PRODUCTION);
+            break;
+
+        case NO_RESULT:
+            break;
+
+        case READY_FOR_PRODUCTION:
+        case REMI_REQUEST:
+        case RENU_REQUEST:
+            entryNew.updateState(SantanderCardState.NEW);
+            break;
+
+        case CANCELED:
+        case CANCELED_REMI:
+        case CANCELED_RENU:
+            entryNew.updateState(SantanderCardState.CANCELED);
+            break;
+
+        case ISSUED:
+            entryNew.update(registerData);
+            break;
+
+        default:
+            logger.debug("Wrong status");
+        }
+
+        return entryNew;
+    }
+
+    private static RegisterData getRegister(Person person) {
+        
+        logger.debug("Entering getRegister");
         JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
         factory.setServiceClass(IRegisterInfoService.class);
         factory.setAddress("https://portal.sibscartoes.pt/tstwcfv2/services/RegisterInfoService.svc");
@@ -88,66 +155,23 @@ public class SantanderRequestCardService {
 
         final String userName = person.getUsername();
 
-        RegisterData statusInformation = port.getRegister(userName);
-
-        result.add(statusInformation.getStatus().getValue());
-        //result.add(statusInformation.getStatusDate().getValue());
-        result.add(statusInformation.getStatusDescription().getValue());
-
-        logger.debug("Result: " + result.get(0) + " - " + result.get(1));
-
-        return statusInformation;
-    }
-
-    @Atomic(mode = Atomic.TxMode.WRITE)
-    public static void updateRegister(String tuiEntry, Person person) throws SantanderCardMissingDataException {
-        //TODO what happens in case of error?
-        logger.debug("Update Register");
-        if (tuiEntry == null) {
-            logger.debug("Null tuiEntry for user " + person.getUsername());
-            return;
-        }
-
-        logger.debug("Entry: " + tuiEntry);
-        logger.debug("Entry size: " + tuiEntry.length());
-
-        TuiPhotoRegisterData photo = getOrCreateSantanderPhoto(person);
-        TuiSignatureRegisterData signature = new TuiSignatureRegisterData();
-
-        SantanderEntryNew entry = person.getCurrentSantanderEntry();
-
-        entry.update(person, tuiEntry);
-
-        JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
-        factory.setServiceClass(ITUIDetailService.class);
-        factory.setAddress("https://portal.sibscartoes.pt/tstwcfv2/services/TUIDetailService.svc");
-        factory.setBindingId("http://schemas.xmlsoap.org/wsdl/soap12/");
-        factory.getFeatures().add(new WSAddressingFeature());
-        //Add loggers to request
-        factory.getInInterceptors().add(new LoggingInInterceptor());
-        factory.getOutInterceptors().add(new LoggingOutInterceptor());
-        ITUIDetailService port = (ITUIDetailService) factory.create();
-        /*define WSDL policy*/
-        Client client = ClientProxy.getClient(port);
-        HTTPConduit http = (HTTPConduit) client.getConduit();
-        //Add username and password properties
-        http.getAuthorization().setUserName(IdCardsConfiguration.getConfiguration().sibsWebServiceUsername());
-        http.getAuthorization().setPassword(IdCardsConfiguration.getConfiguration().sibsWebServicePassword());
-
-        TUIResponseData tuiResponse;
-
         try {
-            tuiResponse = port.saveRegister(tuiEntry, photo, signature);
-            logger.debug("saveRegister result: %s" + tuiResponse.getTuiResponseLine().getValue());
+            RegisterData statusInformation = port.getRegister(userName);
+
+            logger.debug("Result: " + statusInformation.getStatus().getValue() + " - "
+                    + statusInformation.getStatusDescription().getValue());
+
+            return statusInformation;
+
         } catch (Throwable t) {
-            return;
+            logger.debug("failed trying to communicate with santander");
+            t.printStackTrace();
+            return null;
         }
     }
 
-    @Atomic(mode = Atomic.TxMode.WRITE)
     public static void cancelRegister(String tuiEntry, Person person) throws SantanderCardMissingDataException {
-        //TODO in case of error
-        logger.debug("Cancel Register");
+        logger.debug("Entering cancelRegister");
         if (tuiEntry == null) {
             logger.debug("Null tuiEntry for user " + person.getUsername());
             return;
@@ -183,14 +207,15 @@ public class SantanderRequestCardService {
 
         try {
             tuiResponse = port.saveRegister(tuiEntry, photo, signature);
-            entry.cancel();
+            entry.updateState(SantanderCardState.CANCELED);
             logger.debug("saveRegister result: %s" + tuiResponse.getTuiResponseLine().getValue());
         } catch (Throwable t) {
+            logger.debug("failed trying to communicate with santander");
+            t.printStackTrace();
             return;
         }
     }
 
-    @Atomic(mode = Atomic.TxMode.WRITE)
     public static void createRegister(String tuiEntry, Person person) throws SantanderCardMissingDataException {
         if (tuiEntry == null) {
             logger.debug("Null tuiEntry for user " + person.getUsername());
@@ -237,7 +262,6 @@ public class SantanderRequestCardService {
             return;
         }
 
-        // Update entry with the response
         saveResponse(entry, tuiResponse);
     }
 
@@ -282,8 +306,9 @@ public class SantanderRequestCardService {
         SantanderCardState cardState = entry.getState();
 
         // In error state, overwrite entry
-        if (cardState == SantanderCardState.PENDING || cardState == SantanderCardState.RESPONSE_ERROR) {
-            entry.reset(request);
+        if (cardState == SantanderCardState.PENDING || cardState == SantanderCardState.RESPONSE_ERROR
+                || cardState == SantanderCardState.REJECTED) {
+            entry.reset(person, request);
             return entry;
         } else {
             return new SantanderEntryNew(person, request);

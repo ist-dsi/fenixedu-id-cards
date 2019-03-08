@@ -18,6 +18,7 @@ import org.joda.time.format.DateTimeFormat;
 import com.google.gson.JsonObject;
 
 import pt.ist.fenixframework.Atomic;
+import pt.sibscartoes.portal.wcf.register.info.dto.RegisterData;
 
 public class SantanderEntryNew extends SantanderEntryNew_Base {
 
@@ -68,33 +69,49 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         return super.getLastUpdate();
     }
 
+    @Atomic(mode = Atomic.TxMode.WRITE)
     public void update(Person person, String requestLine) {
         setLastUpdate(DateTime.now());
         setRequestLine(requestLine);
         setPhotograph(person.getPersonalPhoto());
     }
 
+    @Atomic(mode = Atomic.TxMode.WRITE)
+    public void update(RegisterData registerData) {
+        //TODO create cartd info and update relevant information
+    }
+
+    @Atomic(mode = Atomic.TxMode.WRITE)
     public void cancel() {
         setLastUpdate(DateTime.now());
         setState(SantanderCardState.CANCELED);
     }
 
-    public void reset(String requestLine) {
+    @Atomic(mode = Atomic.TxMode.WRITE)
+    public void reset(Person person, String requestLine) {
         setLastUpdate(DateTime.now());
         setState(SantanderCardState.PENDING);
         setRequestLine(requestLine);
+        setPhotograph(person.getPersonalPhoto());
     }
 
+    @Atomic(mode = Atomic.TxMode.WRITE)
     public void saveSuccessful(String responseLine) {
         setLastUpdate(DateTime.now());
         setResponseLine(responseLine);
         setState(SantanderCardState.NEW);
     }
 
+    @Atomic(mode = Atomic.TxMode.WRITE)
     public void saveWithError(String errorDescription, SantanderCardState state) {
-        // TODO: Check the correct error state
         setLastUpdate(DateTime.now());
         setErrorDescription(errorDescription);
+        setState(state);
+    }
+
+    @Atomic(mode = Atomic.TxMode.WRITE)
+    public void updateState(SantanderCardState state) {
+        setLastUpdate(DateTime.now());
         setState(state);
     }
 
@@ -170,7 +187,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     
     public boolean canUpdateEntry() {
         SantanderCardState state = getState();
-        if (state == SantanderCardState.NEW || state == SantanderCardState.REJECTED) {
+        if (state == SantanderCardState.REJECTED) {
             return true;
         }
         return false;
