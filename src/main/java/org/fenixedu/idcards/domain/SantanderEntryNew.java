@@ -57,18 +57,6 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         setErrorDescription("");
     }
 
-    //TODO REMOVE THIS LATER
-    @Override
-    @Atomic(mode = Atomic.TxMode.WRITE)
-    public DateTime getLastUpdate() {
-        if (super.getLastUpdate() == null) {
-            DateTime now = DateTime.now();
-            setLastUpdate(now);
-            return now;
-        }
-        return super.getLastUpdate();
-    }
-
     @Atomic(mode = Atomic.TxMode.WRITE)
     public void update(Person person, String requestLine) {
         setLastUpdate(DateTime.now());
@@ -79,12 +67,6 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     @Atomic(mode = Atomic.TxMode.WRITE)
     public void update(RegisterData registerData) {
         //TODO create cartd info and update relevant information
-    }
-
-    @Atomic(mode = Atomic.TxMode.WRITE)
-    public void cancel() {
-        setLastUpdate(DateTime.now());
-        setState(SantanderCardState.CANCELED);
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
@@ -174,44 +156,30 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         String expiryDateYear = SantanderEntryUtils.getValue(requestLine, 11).substring(5);
         String expiryDateString = expiryMonth + expiryDateYear;
 
-        System.out.println(expiryDateString);
+        DateTime expiryDate = DateTime.parse(expiryDateString, DateTimeFormat.forPattern("MMyyyy"));
 
-        return DateTime.parse(expiryDateString, DateTimeFormat.forPattern("MMyyyy"));
+        if (expiryDate.getDayOfMonth() == 1) {
+            expiryDate = expiryDate.plusMonths(1).minusDays(1);
+        }
+
+        return expiryDate;
     }
     
     public boolean canRegisterNew() {
         SantanderCardState state = getState();
-        return state == SantanderCardState.PENDING || state == SantanderCardState.RESPONSE_ERROR
-                || state == SantanderCardState.CANCELED;
+        return state == SantanderCardState.IGNORED && getPrevious() == null;
     }
     
-    public boolean canUpdateEntry() {
-        SantanderCardState state = getState();
-        if (state == SantanderCardState.REJECTED) {
-            return true;
-        }
-        return false;
-    }
-    
-    public boolean canCancelCard() {
-        SantanderCardState state = getState();
-        if (state == SantanderCardState.NEW || state == SantanderCardState.PRODUCTION || state == SantanderCardState.ISSUED) {
-            return true;
-        }
-        return false;
-    }
     
     public boolean canReemitCard() {
         SantanderCardState state = getState();
-        if (state == SantanderCardState.ISSUED) {
-            return true;
-        }
-        return false;
+        SantanderEntryNew previous = getPrevious();
+        return state == SantanderCardState.ISSUED
+                || (previous != null && previous.getState() == SantanderCardState.ISSUED && state == SantanderCardState.IGNORED);
     }
 
     public boolean canRenovateCard() {
-        SantanderCardState state = getState();
-        return state == SantanderCardState.ISSUED
+        return canReemitCard()
                 && Days.daysBetween(DateTime.now().withTimeAtStartOfDay(), getExpiryDate().withTimeAtStartOfDay()).getDays() < 60;
     }
 

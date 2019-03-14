@@ -9,19 +9,15 @@ import pt.ist.fenixWebFramework.rendererExtensions.util.IPresentableEnum;
 
 public enum SantanderCardState implements IPresentableEnum {
 
-    PENDING,        //Initial state; If not changed it means that something went wrong with fenix
+    PENDING,        //Initial state; If not changed it means that something went when communicating with santander
 
-    RESPONSE_ERROR, //If the response did not arrive successfully
-
-    REJECTED,       //The request was accepted but ended up being rejected (the photo might not be appropriate)
+    IGNORED,       //Request was rejected    
 
     NEW,            //After first card request was successful
 
     PRODUCTION,     //When card is in production
 
-    ISSUED,         //After card was sent
-
-    CANCELED;       //After canceling card
+    ISSUED;         //After card was sent
 
     public String getName() {
         return name();
