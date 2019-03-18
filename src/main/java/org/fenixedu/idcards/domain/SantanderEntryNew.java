@@ -130,8 +130,12 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         return firstName.trim() + " " + surname.trim();
     }
 
+    public boolean wasRegisterSuccessful() {
+        return getState() != SantanderCardState.IGNORED && getState() != SantanderCardState.PENDING;
+    }
+
     public String getErrorCode() {
-        if (getRegisterSuccessful()) {
+        if (wasRegisterSuccessful()) {
             return "";
         }
 
@@ -143,7 +147,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     }
 
     public String getErrorDescriptionMessage() {
-        if (getRegisterSuccessful()) {
+        if (wasRegisterSuccessful()) {
             return "";
         }
         return getErrorCode() + " - " + getErrorDescription();
@@ -187,7 +191,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         //TODO
         JsonObject response = new JsonObject();
 
-        if (!getRegisterSuccessful()) {
+        if (!wasRegisterSuccessful()) {
             response.addProperty("status", "Error");
             response.addProperty("errorCode", getErrorCode());
             response.addProperty("errorDescription", getErrorDescription());

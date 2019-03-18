@@ -50,7 +50,6 @@ class SantanderEntryNew {
     String requestLine;
     String responseLine;
     DateTime lastUpdate;
-    boolean registerSuccessful;
     String errorDescription;
     SantanderCardState state;
 }
