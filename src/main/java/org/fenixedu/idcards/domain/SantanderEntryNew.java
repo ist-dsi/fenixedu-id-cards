@@ -22,23 +22,13 @@ import pt.sibscartoes.portal.wcf.register.info.dto.RegisterData;
 
 public class SantanderEntryNew extends SantanderEntryNew_Base {
 
-    static public Comparator<SantanderEntryNew> COMPARATOR_BY_CREATED_DATE = new Comparator<SantanderEntryNew>() {
-        @Override
-        public int compare(final SantanderEntryNew p1, final SantanderEntryNew p2) {
-            DateTime date1 = p1.getLastUpdate();
-            DateTime date2 = p2.getLastUpdate();
-            return date1.compareTo(date2);
-        }
+    static public Comparator<SantanderEntryNew> COMPARATOR_BY_CREATED_DATE = (p1, p2) -> {
+        DateTime date1 = p1.getLastUpdate();
+        DateTime date2 = p2.getLastUpdate();
+        return date1.compareTo(date2);
     };
 
-    static public Comparator<SantanderEntryNew> REVERSE_COMPARATOR_BY_CREATED_DATE = new Comparator<SantanderEntryNew>() {
-        @Override
-        public int compare(final SantanderEntryNew p1, final SantanderEntryNew p2) {
-            DateTime date1 = p1.getLastUpdate();
-            DateTime date2 = p2.getLastUpdate();
-            return date2.compareTo(date1);
-        }
-    };
+    static public Comparator<SantanderEntryNew> REVERSE_COMPARATOR_BY_CREATED_DATE = COMPARATOR_BY_CREATED_DATE.reversed();
 
     public SantanderEntryNew(Person person, String requestLine) {
         setRootDomainObject(Bennu.getInstance());
@@ -105,6 +95,13 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         }
 
         return history;
+    }
+
+    public static List<SantanderEntryNew> getSantanderCardHistory(Person person) {
+        return getSantanderEntryHistory(person).stream()
+                .filter(SantanderEntryNew::wasRegisterSuccessful)
+                .sorted(REVERSE_COMPARATOR_BY_CREATED_DATE)
+                .collect(Collectors.toList());
     }
 
     public static List<SantanderEntryNew> getSantanderEntryHistory(ExecutionYear executionYear) {
