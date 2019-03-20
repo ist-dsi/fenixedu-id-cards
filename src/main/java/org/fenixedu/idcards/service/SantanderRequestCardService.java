@@ -82,16 +82,16 @@ public class SantanderRequestCardService {
         }
 
         switch (cardState) {
-        case IGNORED:
-        case ISSUED:
-            return entryNew;
-        case PENDING:
-            return synchronizeFenixAndSantanderStates(person, entryNew);
-        case NEW:
-            return checkState(person, entryNew);
-        default:
-            logger.debug("SantanderEntryNew " + entryNew.getExternalId() + " has unknown state (" + cardState.getName() + ")");
-            throw new RuntimeException();
+            case IGNORED:
+            case ISSUED:
+                return entryNew;
+            case PENDING:
+                return synchronizeFenixAndSantanderStates(person, entryNew);
+            case NEW:
+                return checkState(person, entryNew);
+            default:
+                logger.debug("SantanderEntryNew " + entryNew.getExternalId() + " has unknown state (" + cardState.getName() + ")");
+                throw new RuntimeException();
         }
     }
 
@@ -112,27 +112,29 @@ public class SantanderRequestCardService {
         }
 
         switch (status) {
-        case REJECTED_REQUEST:
-            //TODO Create new state
-            return entryNew;
+            case REJECTED_REQUEST:
+                //TODO Create new state
+                return entryNew;
 
-        case READY_FOR_PRODUCTION:
-        case REMI_REQUEST:
-        case RENU_REQUEST:
-        case PRODUCTION:
-            entryNew.updateState(SantanderCardState.NEW);
-            break;
+            case READY_FOR_PRODUCTION:
+            case REMI_REQUEST:
+            case RENU_REQUEST:
+            case PRODUCTION:
+                entryNew.updateState(SantanderCardState.NEW);
+                break;
 
-        case ISSUED:
-            entryNew.updateState(SantanderCardState.ISSUED);
-            entryNew.update(registerData); //TODO implement update
-            break;
+            case ISSUED:
+                entryNew.updateState(SantanderCardState.ISSUED);
+                entryNew.update(registerData); //TODO implement update
+                break;
 
-        case NO_RESULT:
-            throw new RuntimeException(); //TODO throw decent exception
+            case NO_RESULT:
+                // May not be processed yet, do nothing
+                // throw new RuntimeException(); //TODO throw decent exception
+                break;
 
-        default:
-            logger.debug("Not supported status:  " + status); //When can this happen?
+            default:
+                logger.debug("Not supported status:  " + status); //When can this happen?
         }
 
         return entryNew;
