@@ -147,6 +147,12 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         if (wasRegisterSuccessful()) {
             return "";
         }
+
+        // There was no response from the server
+        if (getResponseLine() == null) {
+            return "Didn't get a response from the server";
+        }
+
         return getErrorCode() + " - " + getErrorDescription();
     }
 
@@ -188,7 +194,11 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         //TODO
         JsonObject response = new JsonObject();
 
-        if (!wasRegisterSuccessful()) {
+        if (getResponseLine() == null) {
+            response.addProperty("status", "");
+            response.addProperty("errorCode", "");
+            response.addProperty("errorDescription", "Didn't get a response from the server");
+        } else if (!wasRegisterSuccessful()) {
             response.addProperty("status", "Error");
             response.addProperty("errorCode", getErrorCode());
             response.addProperty("errorDescription", getErrorDescription());

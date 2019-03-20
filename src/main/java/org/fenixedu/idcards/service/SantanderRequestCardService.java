@@ -105,7 +105,7 @@ public class SantanderRequestCardService {
             return entryNew;
         }
 
-        String status = registerData.getStatusDescription().getValue();
+        String status = registerData.getStatus().getValue();
 
         switch (status) {
         case REJECTED_REQUEST:
@@ -137,12 +137,13 @@ public class SantanderRequestCardService {
     private static SantanderEntryNew synchronizeFenixAndSantanderStates(Person person, SantanderEntryNew entryNew) {
         RegisterData registerData = getRegister(person);
 
-        String status = registerData.getStatusDescription().getValue();
+        String status = registerData.getStatus().getValue();
 
         SantanderEntryNew previousEntry = entryNew.getPrevious();
 
         if (previousEntry == null) {
             if (status.equals(NO_RESULT)) {
+
                 entryNew.updateState(SantanderCardState.IGNORED);
                 return entryNew;
             } else {
@@ -243,7 +244,7 @@ public class SantanderRequestCardService {
 
         TUIResponseData tuiResponse;
 
-        try {
+        /*try {
             tuiResponse = port.saveRegister(tuiEntry, photo, signature);
             logger.debug("saveRegister result: %s" + tuiResponse.getTuiResponseLine().getValue());
         } catch (Throwable t) {
@@ -253,7 +254,7 @@ public class SantanderRequestCardService {
             return;
         }
 
-        saveResponse(entry, tuiResponse);
+        saveResponse(entry, tuiResponse);*/
     }
 
     private static TuiPhotoRegisterData getOrCreateSantanderPhoto(Person person) throws SantanderCardMissingDataException {
