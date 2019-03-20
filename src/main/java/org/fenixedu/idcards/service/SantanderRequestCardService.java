@@ -107,6 +107,10 @@ public class SantanderRequestCardService {
 
         String status = registerData.getStatus().getValue();
 
+        if (status == null) {
+            status = registerData.getStatusDescription().getValue();
+        }
+
         switch (status) {
         case REJECTED_REQUEST:
             //TODO Create new state
@@ -138,6 +142,10 @@ public class SantanderRequestCardService {
         RegisterData registerData = getRegister(person);
 
         String status = registerData.getStatus().getValue();
+
+        if (status == null) {
+            status = registerData.getStatusDescription().getValue();
+        }
 
         SantanderEntryNew previousEntry = entryNew.getPrevious();
 
@@ -298,13 +306,13 @@ public class SantanderRequestCardService {
         SantanderCardState cardState = entry.getState();
 
         switch (cardState) {
-        case IGNORED:
-            entry.reset(person, request);
-            return entry;
-        case ISSUED:
-            return new SantanderEntryNew(person, request);
-        default:
-            throw new RuntimeException(); //TODO throw decent exception 
+            case IGNORED:
+                entry.reset(person, request);
+                return entry;
+            case ISSUED:
+                return new SantanderEntryNew(person, request);
+            default:
+                throw new RuntimeException(); //TODO throw decent exception
         }
     }
 
