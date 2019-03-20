@@ -244,7 +244,7 @@ public class SantanderRequestCardService {
 
         TUIResponseData tuiResponse;
 
-        /*try {
+        try {
             tuiResponse = port.saveRegister(tuiEntry, photo, signature);
             logger.debug("saveRegister result: %s" + tuiResponse.getTuiResponseLine().getValue());
         } catch (Throwable t) {
@@ -254,7 +254,7 @@ public class SantanderRequestCardService {
             return;
         }
 
-        saveResponse(entry, tuiResponse);*/
+        saveResponse(entry, tuiResponse);
     }
 
     private static TuiPhotoRegisterData getOrCreateSantanderPhoto(Person person) throws SantanderCardMissingDataException {
