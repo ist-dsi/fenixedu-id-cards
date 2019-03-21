@@ -19,6 +19,7 @@ import org.fenixedu.idcards.domain.RegisterAction;
 import org.fenixedu.idcards.domain.SantanderEntryNew;
 import org.fenixedu.idcards.domain.SantanderPhotoEntry;
 import org.fenixedu.idcards.utils.SantanderCardState;
+import org.fenixedu.santandersdk.service.SantanderCardService;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
@@ -181,29 +182,17 @@ public class SantanderRequestCardService {
     private static RegisterData getRegister(Person person) {
         
         logger.debug("Entering getRegister");
-        JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
-        factory.setServiceClass(IRegisterInfoService.class);
-        factory.setAddress("https://portal.sibscartoes.pt/tstwcfv2/services/RegisterInfoService.svc");
-        factory.setBindingId("http://schemas.xmlsoap.org/wsdl/soap12/");
-        factory.getFeatures().add(new WSAddressingFeature());
-        //Add loggers to request
-        factory.getInInterceptors().add(new LoggingInInterceptor());
-        factory.getOutInterceptors().add(new LoggingOutInterceptor());
-        IRegisterInfoService port = (IRegisterInfoService) factory.create();
-        /*define WSDL policy*/
-        Client client = ClientProxy.getClient(port);
-        HTTPConduit http = (HTTPConduit) client.getConduit();
-        //Add username and password properties
-        http.getAuthorization().setUserName(IdCardsConfiguration.getConfiguration().sibsWebServiceUsername());
-        http.getAuthorization().setPassword(IdCardsConfiguration.getConfiguration().sibsWebServicePassword());
 
         final String userName = person.getUsername();
+
+        // Change to autowired
+        SantanderCardService santanderCardService = new SantanderCardService();
 
         try {
 
             //TODO use getRegister only when synchronizing and card is issued
             //Otherwise use getRegisterStatus
-            RegisterData statusInformation = port.getRegister(userName);
+            RegisterData statusInformation = santanderCardService.getRegister(userName);
 
             logger.debug("Result: " + statusInformation.getStatus().getValue() + " - "
                     + statusInformation.getStatusDescription().getValue());
