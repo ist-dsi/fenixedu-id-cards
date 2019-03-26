@@ -19,6 +19,8 @@ import org.fenixedu.idcards.domain.RegisterAction;
 import org.fenixedu.idcards.domain.SantanderEntryNew;
 import org.fenixedu.idcards.domain.SantanderPhotoEntry;
 import org.fenixedu.idcards.utils.SantanderCardState;
+import org.fenixedu.santandersdk.dto.GetRegisterResponse;
+import org.fenixedu.santandersdk.dto.GetRegisterStatus;
 import org.fenixedu.santandersdk.service.SantanderCardService;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -27,12 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
-import pt.sibscartoes.portal.wcf.register.info.IRegisterInfoService;
 import pt.sibscartoes.portal.wcf.register.info.dto.RegisterData;
-import pt.sibscartoes.portal.wcf.tui.ITUIDetailService;
 import pt.sibscartoes.portal.wcf.tui.dto.TUIResponseData;
-import pt.sibscartoes.portal.wcf.tui.dto.TuiPhotoRegisterData;
-import pt.sibscartoes.portal.wcf.tui.dto.TuiSignatureRegisterData;
 
 public class SantanderRequestCardService {
 
@@ -97,20 +95,16 @@ public class SantanderRequestCardService {
     }
 
     private static SantanderEntryNew checkState(Person person, SantanderEntryNew entryNew) {
-        RegisterData registerData = getRegister(person);
+        GetRegisterResponse registerData = getRegister(person);
         return checkState(entryNew, registerData);
     }
 
-    private static SantanderEntryNew checkState(SantanderEntryNew entryNew, RegisterData registerData) {
+    private static SantanderEntryNew checkState(SantanderEntryNew entryNew, GetRegisterResponse registerData) {
         if (registerData == null) {
             return entryNew;
         }
 
-        String status = registerData.getStatus().getValue();
-
-        if (status == null) {
-            status = registerData.getStatusDescription().getValue();
-        }
+        GetRegisterStatus status = registerData.getStatus();
 
         switch (status) {
             case REJECTED_REQUEST:
@@ -142,19 +136,13 @@ public class SantanderRequestCardService {
     }
 
     private static SantanderEntryNew synchronizeFenixAndSantanderStates(Person person, SantanderEntryNew entryNew) {
-        RegisterData registerData = getRegister(person);
-
-        String status = registerData.getStatus().getValue();
-
-        if (status == null) {
-            status = registerData.getStatusDescription().getValue();
-        }
+        GetRegisterResponse registerData = getRegister(person);
+        GetRegisterStatus status = registerData.getStatus();
 
         SantanderEntryNew previousEntry = entryNew.getPrevious();
 
         if (previousEntry == null) {
-            if (status.equals(NO_RESULT)) {
-
+            if (status.equals(GetRegisterStatus.NO_RESULT)) {
                 entryNew.updateState(SantanderCardState.IGNORED);
                 return entryNew;
             } else {
@@ -162,16 +150,15 @@ public class SantanderRequestCardService {
             }
         }
 
-        if (registerData.getExpiryDate() == null || registerData.getExpiryDate().getValue() == null) {
+        DateTime expiryDate = registerData.getExpiryDate();
+
+        if (expiryDate == null) {
             throw new RuntimeException(); //TODO registerData is incomplete
         }
 
-        DateTime registerDataExpiryDate =
-                DateTime.parse(registerData.getExpiryDate().getValue(), DateTimeFormat.forPattern("dd-MM-yyyy"));
-
-        if (registerDataExpiryDate.equals(entryNew.getExpiryDate())) {
+        if (expiryDate.equals(entryNew.getExpiryDate())) {
             return checkState(entryNew, registerData);
-        } else if (registerDataExpiryDate.equals(previousEntry.getExpiryDate())) {
+        } else if (expiryDate.equals(previousEntry.getExpiryDate())) {
             entryNew.updateState(SantanderCardState.IGNORED);
             return entryNew;
         } else {
@@ -179,7 +166,7 @@ public class SantanderRequestCardService {
         }
     }
 
-    private static RegisterData getRegister(Person person) {
+    private static GetRegisterResponse getRegister(Person person) {
         
         logger.debug("Entering getRegister");
 
@@ -192,10 +179,9 @@ public class SantanderRequestCardService {
 
             //TODO use getRegister only when synchronizing and card is issued
             //Otherwise use getRegisterStatus
-            RegisterData statusInformation = santanderCardService.getRegister(userName);
+            GetRegisterResponse statusInformation = santanderCardService.getRegister(userName);
 
-            logger.debug("Result: " + statusInformation.getStatus().getValue() + " - "
-                    + statusInformation.getStatusDescription().getValue());
+            logger.debug("Result: " + statusInformation.getStatus());
 
             return statusInformation;
 

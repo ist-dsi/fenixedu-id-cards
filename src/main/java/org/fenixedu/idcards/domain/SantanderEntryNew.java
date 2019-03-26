@@ -10,6 +10,7 @@ import org.fenixedu.academic.domain.Person;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.idcards.utils.SantanderCardState;
 import org.fenixedu.idcards.utils.SantanderEntryUtils;
+import org.fenixedu.santandersdk.dto.GetRegisterResponse;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.YearMonthDay;
@@ -18,7 +19,6 @@ import org.joda.time.format.DateTimeFormat;
 import com.google.gson.JsonObject;
 
 import pt.ist.fenixframework.Atomic;
-import pt.sibscartoes.portal.wcf.register.info.dto.RegisterData;
 
 public class SantanderEntryNew extends SantanderEntryNew_Base {
 
@@ -55,7 +55,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
-    public void update(RegisterData registerData) {
+    public void update(GetRegisterResponse registerData) {
         //TODO create cartd info and update relevant information
     }
 
