@@ -214,9 +214,6 @@ public class SantanderRequestCardService {
 
         logger.debug("Entry: " + tuiEntry);
         logger.debug("Entry size: " + tuiEntry.length());
-        
-        TuiPhotoRegisterData photo = getOrCreateSantanderPhoto(person);
-        TuiSignatureRegisterData signature = new TuiSignatureRegisterData();
 
         /*
          * If there was an error on the previous entry update it
@@ -224,27 +221,12 @@ public class SantanderRequestCardService {
          */
         SantanderEntryNew entry = createOrResetEntry(person, tuiEntry);
 
-        JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
-        factory.setServiceClass(ITUIDetailService.class);
-        factory.setAddress("https://portal.sibscartoes.pt/tstwcfv2/services/TUIDetailService.svc");
-        factory.setBindingId("http://schemas.xmlsoap.org/wsdl/soap12/");
-        factory.getFeatures().add(new WSAddressingFeature());
-        //Add loggers to request
-        factory.getInInterceptors().add(new LoggingInInterceptor());
-        factory.getOutInterceptors().add(new LoggingOutInterceptor());
-        ITUIDetailService port = (ITUIDetailService) factory.create();
-
-        /*define WSDL policy*/
-        Client client = ClientProxy.getClient(port);
-        HTTPConduit http = (HTTPConduit) client.getConduit();
-        //Add username and password properties
-        http.getAuthorization().setUserName(IdCardsConfiguration.getConfiguration().sibsWebServiceUsername());
-        http.getAuthorization().setPassword(IdCardsConfiguration.getConfiguration().sibsWebServicePassword());
-
         TUIResponseData tuiResponse;
 
+        SantanderCardService santanderCardService = new SantanderCardService();
+
         try {
-            tuiResponse = port.saveRegister(tuiEntry, photo, signature);
+            tuiResponse = santanderCardService.createRegister(tuiEntry, getOrCreateSantanderPhoto(person));
             logger.debug("saveRegister result: %s" + tuiResponse.getTuiResponseLine().getValue());
         } catch (Throwable t) {
             entry.saveWithError("Erro ao comunicar com o Santander", SantanderCardState.PENDING);
@@ -256,30 +238,12 @@ public class SantanderRequestCardService {
         saveResponse(entry, tuiResponse);
     }
 
-    private static TuiPhotoRegisterData getOrCreateSantanderPhoto(Person person) throws SantanderCardMissingDataException {
-        final QName FILE_NAME =
-                new QName("http://schemas.datacontract.org/2004/07/SibsCards.Wcf.Services.DataContracts", "FileName");
-        final QName FILE_EXTENSION =
-                new QName("http://schemas.datacontract.org/2004/07/SibsCards.Wcf.Services.DataContracts", "Extension");
-        final QName FILE_CONTENTS =
-                new QName("http://schemas.datacontract.org/2004/07/SibsCards.Wcf.Services.DataContracts", "FileContents");
-        final QName FILE_SIZE = new QName("http://schemas.datacontract.org/2004/07/SibsCards.Wcf.Services.DataContracts", "Size");
-
-        final String EXTENSION = ".jpeg";
-
+    private static byte[] getOrCreateSantanderPhoto(Person person) throws SantanderCardMissingDataException {
         try {
-            TuiPhotoRegisterData photo = new TuiPhotoRegisterData();
-
-            SantanderPhotoEntry photoEntry;
-            photoEntry = SantanderPhotoEntry.getOrCreatePhotoEntryForPerson(person);
+            SantanderPhotoEntry photoEntry = SantanderPhotoEntry.getOrCreatePhotoEntryForPerson(person);
             byte[] photo_contents = photoEntry.getPhotoAsByteArray();
 
-            photo.setFileContents(new JAXBElement<>(FILE_CONTENTS, byte[].class, photo_contents));
-            photo.setSize(new JAXBElement<>(FILE_SIZE, String.class, Integer.toString(photo_contents.length)));
-            photo.setExtension(new JAXBElement<>(FILE_EXTENSION, String.class, EXTENSION));
-            photo.setFileName(new JAXBElement<>(FILE_NAME, String.class, "foto")); //TODO
-
-            return photo;
+            return photo_contents;
         } catch (Throwable t) {
             throw new SantanderCardMissingDataException("Missing photo");
         }
