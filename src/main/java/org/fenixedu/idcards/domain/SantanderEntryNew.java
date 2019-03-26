@@ -56,7 +56,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
 
     @Atomic(mode = Atomic.TxMode.WRITE)
     public void update(GetRegisterResponse registerData) {
-        //TODO create cartd info and update relevant information
+        //TODO create card info and update relevant information
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)

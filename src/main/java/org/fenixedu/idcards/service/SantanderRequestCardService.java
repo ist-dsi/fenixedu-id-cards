@@ -3,44 +3,23 @@ package org.fenixedu.idcards.service;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-
-import org.apache.cxf.endpoint.Client;
-import org.apache.cxf.frontend.ClientProxy;
-import org.apache.cxf.interceptor.LoggingInInterceptor;
-import org.apache.cxf.interceptor.LoggingOutInterceptor;
-import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
-import org.apache.cxf.transport.http.HTTPConduit;
-import org.apache.cxf.ws.addressing.WSAddressingFeature;
 import org.fenixedu.academic.domain.Person;
-import org.fenixedu.idcards.IdCardsConfiguration;
 import org.fenixedu.idcards.domain.RegisterAction;
 import org.fenixedu.idcards.domain.SantanderEntryNew;
 import org.fenixedu.idcards.domain.SantanderPhotoEntry;
 import org.fenixedu.idcards.utils.SantanderCardState;
+import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
 import org.fenixedu.santandersdk.dto.GetRegisterResponse;
 import org.fenixedu.santandersdk.dto.GetRegisterStatus;
 import org.fenixedu.santandersdk.service.SantanderCardService;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
-import pt.sibscartoes.portal.wcf.register.info.dto.RegisterData;
-import pt.sibscartoes.portal.wcf.tui.dto.TUIResponseData;
 
 public class SantanderRequestCardService {
-
-    private static final String READY_FOR_PRODUCTION = "Preparado para Produção";
-    private static final String PRODUCTION = "Em Produção";
-    private static final String REMI_REQUEST = "Pedido de Reemissão";
-    private static final String RENU_REQUEST = "Pedido de Renovação";
-    private static final String REJECTED_REQUEST = "Emissão Rejeitada";
-    private static final String ISSUED = "Expedido";
-    private static final String NO_RESULT = "NoResult";
 
     private static Logger logger = LoggerFactory.getLogger(SantanderRequestCardService.class);
 
@@ -207,13 +186,13 @@ public class SantanderRequestCardService {
          */
         SantanderEntryNew entry = createOrResetEntry(person, tuiEntry);
 
-        TUIResponseData tuiResponse;
+        CreateRegisterResponse response;
 
         SantanderCardService santanderCardService = new SantanderCardService();
 
         try {
-            tuiResponse = santanderCardService.createRegister(tuiEntry, getOrCreateSantanderPhoto(person));
-            logger.debug("saveRegister result: %s" + tuiResponse.getTuiResponseLine().getValue());
+            response = santanderCardService.createRegister(tuiEntry, getOrCreateSantanderPhoto(person));
+            logger.debug("saveRegister result: %s" + response.getResponseLine());
         } catch (Throwable t) {
             entry.saveWithError("Erro ao comunicar com o Santander", SantanderCardState.PENDING);
             logger.debug("Error connecting with santander");
@@ -221,7 +200,7 @@ public class SantanderRequestCardService {
             return;
         }
 
-        saveResponse(entry, tuiResponse);
+        saveResponse(entry, response);
     }
 
     private static byte[] getOrCreateSantanderPhoto(Person person) throws SantanderCardMissingDataException {
@@ -258,21 +237,11 @@ public class SantanderRequestCardService {
     }
 
 
-    private static void saveResponse(SantanderEntryNew entry, TUIResponseData response) {
-        String status = response.getStatus() == null || response.getStatus().getValue() == null ? "" : response
-                .getStatus().getValue().trim();
-        String errorDescription = response.getStatusDescription() == null
-                || response.getStatusDescription().getValue() == null ? "" : response.getStatusDescription().getValue()
-                .trim();
-        String responseLine = response.getTuiResponseLine() == null
-                || response.getTuiResponseLine().getValue() == null ? "" : response.getTuiResponseLine().getValue().trim();
-
-        boolean registerSuccessful = !status.isEmpty() && !status.toLowerCase().equals("error");
-
-        if (registerSuccessful) {
-            entry.saveSuccessful(responseLine);
+    private static void saveResponse(SantanderEntryNew entry, CreateRegisterResponse response) {
+        if (response.wasRegisterSuccessful()) {
+            entry.saveSuccessful(response.getResponseLine());
         } else {
-            entry.saveWithError(errorDescription, SantanderCardState.IGNORED);
+            entry.saveWithError(response.getErrorDescription(), SantanderCardState.IGNORED);
         }
     }
 }
