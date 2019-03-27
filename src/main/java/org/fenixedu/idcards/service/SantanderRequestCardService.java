@@ -44,7 +44,7 @@ public class SantanderRequestCardService {
         return actions;
     }
 
-    public static SantanderEntryNew getOrUpdateState(Person person) {
+    private static SantanderEntryNew getOrUpdateState(Person person) {
         SantanderEntryNew entryNew = person.getCurrentSantanderEntry();
 
         if (entryNew == null) {
