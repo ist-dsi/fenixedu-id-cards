@@ -26,7 +26,7 @@ public class SantanderRequestCardService {
     public static List<RegisterAction> getPersonAvailableActions(Person person) {
 
         List<RegisterAction> actions = new LinkedList<>();
-        SantanderEntryNew personEntry = person.getCurrentSantanderEntry();
+        SantanderEntryNew personEntry = getOrUpdateState(person);
 
         if (personEntry == null || personEntry.canRegisterNew()) {
             actions.add(RegisterAction.NOVO);
@@ -44,8 +44,7 @@ public class SantanderRequestCardService {
         return actions;
     }
 
-    public static SantanderEntryNew updateState(Person person) {
-
+    public static SantanderEntryNew getOrUpdateState(Person person) {
         SantanderEntryNew entryNew = person.getCurrentSantanderEntry();
 
         if (entryNew == null) {
@@ -54,11 +53,6 @@ public class SantanderRequestCardService {
 
         SantanderCardState cardState = entryNew.getState();
 
-        if (cardState == null) {
-            entryNew.updateState(SantanderCardState.NEW);
-            cardState = SantanderCardState.NEW;
-        }
-
         switch (cardState) {
             case IGNORED:
             case ISSUED:
@@ -66,19 +60,19 @@ public class SantanderRequestCardService {
             case PENDING:
                 return synchronizeFenixAndSantanderStates(person, entryNew);
             case NEW:
-                return checkState(person, entryNew);
+                return checkAndUpdateState(entryNew);
             default:
                 logger.debug("SantanderEntryNew " + entryNew.getExternalId() + " has unknown state (" + cardState.getName() + ")");
                 throw new RuntimeException();
         }
     }
 
-    private static SantanderEntryNew checkState(Person person, SantanderEntryNew entryNew) {
-        GetRegisterResponse registerData = getRegister(person);
-        return checkState(entryNew, registerData);
+    private static SantanderEntryNew checkAndUpdateState(SantanderEntryNew entryNew) {
+        GetRegisterResponse registerData = getRegister(entryNew.getPerson());
+        return checkAndUpdateState(entryNew, registerData);
     }
 
-    private static SantanderEntryNew checkState(SantanderEntryNew entryNew, GetRegisterResponse registerData) {
+    private static SantanderEntryNew checkAndUpdateState(SantanderEntryNew entryNew, GetRegisterResponse registerData) {
         if (registerData == null) {
             return entryNew;
         }
@@ -125,7 +119,7 @@ public class SantanderRequestCardService {
                 entryNew.updateState(SantanderCardState.IGNORED);
                 return entryNew;
             } else {
-                return checkState(entryNew, registerData);
+                return checkAndUpdateState(entryNew, registerData);
             }
         }
 
@@ -136,7 +130,7 @@ public class SantanderRequestCardService {
         }
 
         if (expiryDate.equals(entryNew.getExpiryDate())) {
-            return checkState(entryNew, registerData);
+            return checkAndUpdateState(entryNew, registerData);
         } else if (expiryDate.equals(previousEntry.getExpiryDate())) {
             entryNew.updateState(SantanderCardState.IGNORED);
             return entryNew;
