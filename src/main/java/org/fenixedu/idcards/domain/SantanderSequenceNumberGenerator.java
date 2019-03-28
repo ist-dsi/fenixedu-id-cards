@@ -28,7 +28,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.idcards.IdCardsConfiguration;
+import org.fenixedu.bennu.IdCardsConfiguration;
 
 import pt.ist.fenixframework.Atomic;
 

@@ -34,7 +34,7 @@ import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.idcards.IdCardsConfiguration;
+import org.fenixedu.bennu.IdCardsConfiguration;
 import org.joda.time.DateTime;
 
 import pt.ist.esw.advice.pt.ist.fenixframework.AtomicInstance;

@@ -18,35 +18,7 @@
  */
 package org.fenixedu.idcards.ui;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.cxf.endpoint.Client;
-import org.apache.cxf.frontend.ClientProxy;
-import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
-import org.apache.cxf.transport.http.HTTPConduit;
-import org.apache.cxf.ws.addressing.WSAddressingFeature;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.fenixedu.academic.domain.ExecutionYear;
-import org.fenixedu.academic.domain.Person;
-import org.fenixedu.academic.predicate.AccessControl;
 import org.fenixedu.academic.ui.struts.action.base.FenixDispatchAction;
-import org.fenixedu.academic.ui.struts.action.person.PersonApplication.PersonalAreaApp;
-import org.fenixedu.bennu.core.util.CoreConfiguration;
-import org.fenixedu.bennu.struts.annotations.Forward;
-import org.fenixedu.bennu.struts.annotations.Forwards;
-import org.fenixedu.bennu.struts.annotations.Mapping;
-import org.fenixedu.bennu.struts.portal.EntryPoint;
-import org.fenixedu.bennu.struts.portal.StrutsFunctionality;
-import org.fenixedu.idcards.IdCardsConfiguration;
-
-import org.fenixedu.idcards.service.SantanderRequestCardService;
-import pt.sibscartoes.portal.wcf.IRegistersInfo;
-import pt.sibscartoes.portal.wcf.dto.RegisterData;
-
-import com.google.common.base.Strings;
 
 /*@StrutsFunctionality(app = PersonalAreaApp.class, descriptionKey = "label.identification.card", path = "identification-card",
         titleKey = "label.identification.card")

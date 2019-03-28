@@ -16,14 +16,24 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
+@Service
 public class SantanderRequestCardService {
 
-    private static Logger logger = LoggerFactory.getLogger(SantanderRequestCardService.class);
+    private SantanderCardService santanderCardService;
 
-    public static List<RegisterAction> getPersonAvailableActions(Person person) {
+    @Autowired
+    public SantanderRequestCardService(SantanderCardService santanderCardService) {
+        this.santanderCardService = santanderCardService;
+    }
+
+    private Logger logger = LoggerFactory.getLogger(SantanderRequestCardService.class);
+
+    public List<RegisterAction> getPersonAvailableActions(Person person) {
 
         List<RegisterAction> actions = new LinkedList<>();
         SantanderEntryNew personEntry = getOrUpdateState(person);
@@ -44,7 +54,7 @@ public class SantanderRequestCardService {
         return actions;
     }
 
-    private static SantanderEntryNew getOrUpdateState(Person person) {
+    private SantanderEntryNew getOrUpdateState(Person person) {
         SantanderEntryNew entryNew = person.getCurrentSantanderEntry();
 
         if (entryNew == null) {
@@ -67,12 +77,12 @@ public class SantanderRequestCardService {
         }
     }
 
-    private static SantanderEntryNew checkAndUpdateState(SantanderEntryNew entryNew) {
+    private SantanderEntryNew checkAndUpdateState(SantanderEntryNew entryNew) {
         GetRegisterResponse registerData = getRegister(entryNew.getPerson());
         return checkAndUpdateState(entryNew, registerData);
     }
 
-    private static SantanderEntryNew checkAndUpdateState(SantanderEntryNew entryNew, GetRegisterResponse registerData) {
+    private SantanderEntryNew checkAndUpdateState(SantanderEntryNew entryNew, GetRegisterResponse registerData) {
         if (registerData == null) {
             return entryNew;
         }
@@ -108,7 +118,7 @@ public class SantanderRequestCardService {
         return entryNew;
     }
 
-    private static SantanderEntryNew synchronizeFenixAndSantanderStates(Person person, SantanderEntryNew entryNew) {
+    private SantanderEntryNew synchronizeFenixAndSantanderStates(Person person, SantanderEntryNew entryNew) {
         GetRegisterResponse registerData = getRegister(person);
         GetRegisterStatus status = registerData.getStatus();
 
@@ -139,14 +149,11 @@ public class SantanderRequestCardService {
         }
     }
 
-    private static GetRegisterResponse getRegister(Person person) {
+    private GetRegisterResponse getRegister(Person person) {
         
         logger.debug("Entering getRegister");
 
         final String userName = person.getUsername();
-
-        // Change to autowired
-        SantanderCardService santanderCardService = new SantanderCardService();
 
         try {
 
@@ -165,7 +172,7 @@ public class SantanderRequestCardService {
         }
     }
 
-    public static void createRegister(String tuiEntry, Person person) throws SantanderCardMissingDataException {
+    public void createRegister(String tuiEntry, Person person) throws SantanderCardMissingDataException {
         if (tuiEntry == null) {
             logger.debug("Null tuiEntry for user " + person.getUsername());
             return;
@@ -182,8 +189,6 @@ public class SantanderRequestCardService {
 
         CreateRegisterResponse response;
 
-        SantanderCardService santanderCardService = new SantanderCardService();
-
         try {
             response = santanderCardService.createRegister(tuiEntry, getOrCreateSantanderPhoto(person));
             logger.debug("saveRegister result: %s" + response.getResponseLine());
@@ -197,7 +202,7 @@ public class SantanderRequestCardService {
         saveResponse(entry, response);
     }
 
-    private static byte[] getOrCreateSantanderPhoto(Person person) throws SantanderCardMissingDataException {
+    private byte[] getOrCreateSantanderPhoto(Person person) throws SantanderCardMissingDataException {
         try {
             SantanderPhotoEntry photoEntry = SantanderPhotoEntry.getOrCreatePhotoEntryForPerson(person);
             byte[] photo_contents = photoEntry.getPhotoAsByteArray();
@@ -210,7 +215,7 @@ public class SantanderRequestCardService {
     }
 
     @Atomic(mode = TxMode.WRITE)
-    private static SantanderEntryNew createOrResetEntry(Person person, String request) {
+    private SantanderEntryNew createOrResetEntry(Person person, String request) {
         SantanderEntryNew entry = person.getCurrentSantanderEntry();
 
         if (entry == null) {
@@ -231,7 +236,7 @@ public class SantanderRequestCardService {
     }
 
 
-    private static void saveResponse(SantanderEntryNew entry, CreateRegisterResponse response) {
+    private void saveResponse(SantanderEntryNew entry, CreateRegisterResponse response) {
         if (response.wasRegisterSuccessful()) {
             entry.saveSuccessful(response.getResponseLine());
         } else {
