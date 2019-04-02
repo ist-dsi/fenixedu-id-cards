@@ -21,8 +21,6 @@ import org.springframework.stereotype.Service;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
-import javax.xml.ws.WebServiceException;
-
 @Service
 public class SantanderRequestCardService {
 
@@ -174,7 +172,7 @@ public class SantanderRequestCardService {
         }
     }
 
-    public void createRegister(String tuiEntry, Person person) {
+    public void createRegister(String tuiEntry, Person person) throws SantanderCardMissingDataException {
         if (tuiEntry == null) {
             logger.debug("Null tuiEntry for user " + person.getUsername());
             return;
@@ -190,12 +188,13 @@ public class SantanderRequestCardService {
         SantanderEntryNew entry = createOrResetEntry(person, tuiEntry);
 
         CreateRegisterResponse response;
+        byte[] photo =  getOrCreateSantanderPhoto(person);
 
         try {
-            response = santanderCardService.createRegister(tuiEntry, getOrCreateSantanderPhoto(person));
+            response = santanderCardService.createRegister(tuiEntry, photo);
             logger.debug("saveRegister result: %s" + response.getResponseLine());
         } catch (Throwable t) {
-            entry.saveWithError("Erro ao comunicar com o Santander", SantanderCardState.IGNORED);
+            entry.saveWithError("Erro ao comunicar com o Santander", SantanderCardState.PENDING);
             logger.debug("Error connecting with santander");
             t.printStackTrace();
             return;

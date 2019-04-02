@@ -32,7 +32,7 @@ public class SantanderRequestCardServiceTest {
     private static final String PHOTO_ENCODED = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
 
     @Test
-    public void createRegister_noPreviousEntry_success() {
+    public void createRegister_noPreviousEntry_success() throws SantanderCardMissingDataException {
         Person person = IdCardsTestUtils.createPerson("createRegisterSuccess");
         Photograph photo = new Photograph(PhotoType.INSTITUTIONAL, ContentType.PNG,
                 BaseEncoding.base64().decode(PHOTO_ENCODED));
@@ -60,7 +60,7 @@ public class SantanderRequestCardServiceTest {
     }
 
     @Test
-    public void createRegister_noPreviousEntry_failWithError() {
+    public void createRegister_noPreviousEntry_failWithError() throws SantanderCardMissingDataException {
         Person person = IdCardsTestUtils.createPerson("createRegisterFailWithError");
         Photograph photo = new Photograph(PhotoType.INSTITUTIONAL, ContentType.PNG,
                 BaseEncoding.base64().decode(PHOTO_ENCODED));
@@ -88,7 +88,7 @@ public class SantanderRequestCardServiceTest {
     }
 
     @Test
-    public void createRegister_noPreviousEntry_failCommunication() {
+    public void createRegister_noPreviousEntry_failCommunication() throws SantanderCardMissingDataException {
         Person person = IdCardsTestUtils.createPerson("createRegisterFailCommunication");
         Photograph photo = new Photograph(PhotoType.INSTITUTIONAL, ContentType.PNG,
                 BaseEncoding.base64().decode(PHOTO_ENCODED));
@@ -100,18 +100,13 @@ public class SantanderRequestCardServiceTest {
 
         SantanderRequestCardService service = new SantanderRequestCardService(mockedService);
 
-        try {
-            service.createRegister("entry", person);
-            fail();
-        } catch (Throwable e) {
-            assertNotNull(person.getCurrentSantanderEntry());
-            SantanderEntryNew entry = person.getCurrentSantanderEntry();
+        service.createRegister("entry", person);
+        assertNotNull(person.getCurrentSantanderEntry());
+        SantanderEntryNew entry = person.getCurrentSantanderEntry();
 
-            assertFalse(entry.wasRegisterSuccessful());
-            assertEquals("entry", entry.getRequestLine());
-            assertNotNull(entry.getErrorDescription());
-            assertEquals(SantanderCardState.IGNORED, entry.getState());
-        }
-
+        assertFalse(entry.wasRegisterSuccessful());
+        assertEquals("entry", entry.getRequestLine());
+        assertNotNull(entry.getErrorDescription());
+        assertEquals(SantanderCardState.PENDING, entry.getState());
     }
 }
