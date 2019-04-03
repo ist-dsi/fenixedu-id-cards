@@ -56,7 +56,9 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
 
     @Atomic(mode = Atomic.TxMode.WRITE)
     public void update(GetRegisterResponse registerData) {
-        //TODO create card info and update relevant information
+        //TODO add more info to the card;
+        SantanderCardInfo cardInfo = new SantanderCardInfo();
+        cardInfo.setMifareNumber(registerData.getMifare());
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)

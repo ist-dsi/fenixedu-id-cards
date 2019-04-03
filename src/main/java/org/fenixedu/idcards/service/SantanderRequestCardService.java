@@ -12,12 +12,13 @@ import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
 import org.fenixedu.santandersdk.dto.GetRegisterResponse;
 import org.fenixedu.santandersdk.dto.GetRegisterStatus;
 import org.fenixedu.santandersdk.service.SantanderCardService;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Strings;
+
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
@@ -91,7 +92,7 @@ public class SantanderRequestCardService {
 
         switch (status) {
             case REJECTED_REQUEST:
-                //TODO Create new state
+                entryNew.updateState(SantanderCardState.REJECTED);
                 return entryNew;
 
             case READY_FOR_PRODUCTION:
@@ -133,19 +134,15 @@ public class SantanderRequestCardService {
             }
         }
 
-        DateTime expiryDate = registerData.getExpiryDate();
+        String newMifare = registerData.getMifare();
+        String oldMifare =
+                previousEntry.getSantanderCardInfo() != null ? previousEntry.getSantanderCardInfo().getMifareNumber() : null;
 
-        if (expiryDate == null) {
-            throw new RuntimeException(); //TODO registerData is incomplete
-        }
-
-        if (expiryDate.equals(entryNew.getExpiryDate())) {
+        if (Strings.isNullOrEmpty(newMifare) || Strings.isNullOrEmpty(oldMifare) || !newMifare.equals(oldMifare)) {
             return checkAndUpdateState(entryNew, registerData);
-        } else if (expiryDate.equals(previousEntry.getExpiryDate())) {
+        } else {
             entryNew.updateState(SantanderCardState.IGNORED);
             return entryNew;
-        } else {
-            throw new RuntimeException(); //TODO should not be possible 
         }
     }
 
