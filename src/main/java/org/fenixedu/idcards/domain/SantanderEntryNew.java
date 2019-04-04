@@ -16,6 +16,7 @@ import org.joda.time.Days;
 import org.joda.time.YearMonthDay;
 import org.joda.time.format.DateTimeFormat;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 
 import pt.ist.fenixframework.Atomic;
@@ -59,6 +60,10 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         //TODO add more info to the card;
         SantanderCardInfo cardInfo = new SantanderCardInfo();
         cardInfo.setMifareNumber(registerData.getMifare());
+        setSantanderCardInfo(cardInfo);
+
+        setState(SantanderCardState.ISSUED);
+        setLastUpdate(DateTime.now());
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
@@ -145,14 +150,23 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         }
     }
 
-    public String getErrorDescriptionMessage() {
+    @Override
+    public String getErrorDescription() {
         if (wasRegisterSuccessful()) {
+            return "";
+        } else {
+            return super.getErrorDescription();
+        }
+
+    }
+
+    public String getErrorDescriptionMessage() {
+        if (wasRegisterSuccessful() || Strings.isNullOrEmpty(getErrorDescription())) {
             return "";
         }
 
-        // There was no response from the server
-        if (getResponseLine() == null) {
-            return "Didn't get a response from the server";
+        if (getErrorCode().isEmpty()) {
+            return getErrorDescription();
         }
 
         return getErrorCode() + " - " + getErrorDescription();

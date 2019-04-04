@@ -55,7 +55,7 @@ public class SantanderRequestCardService {
         return actions;
     }
 
-    private SantanderEntryNew getOrUpdateState(Person person) {
+    public SantanderEntryNew getOrUpdateState(Person person) {
         SantanderEntryNew entryNew = person.getCurrentSantanderEntry();
 
         if (entryNew == null) {
@@ -67,6 +67,7 @@ public class SantanderRequestCardService {
         switch (cardState) {
             case IGNORED:
             case ISSUED:
+            case REJECTED:
                 return entryNew;
             case PENDING:
                 return synchronizeFenixAndSantanderStates(person, entryNew);
@@ -103,17 +104,15 @@ public class SantanderRequestCardService {
                 break;
 
             case ISSUED:
-                entryNew.updateState(SantanderCardState.ISSUED);
-                entryNew.update(registerData); //TODO implement update
+                entryNew.update(registerData);
                 break;
 
             case NO_RESULT:
-                // May not be processed yet, do nothing
-                // throw new RuntimeException(); //TODO throw decent exception
+                entryNew.updateState(SantanderCardState.IGNORED);
                 break;
 
             default:
-                logger.debug("Not supported status:  " + status); //When can this happen?
+                logger.debug("Not supported status:  " + status);
         }
 
         return entryNew;
@@ -153,7 +152,6 @@ public class SantanderRequestCardService {
         final String userName = person.getUsername();
 
         try {
-
             //TODO use getRegister only when synchronizing and card is issued
             //Otherwise use getRegisterStatus
             GetRegisterResponse statusInformation = santanderCardService.getRegister(userName);
