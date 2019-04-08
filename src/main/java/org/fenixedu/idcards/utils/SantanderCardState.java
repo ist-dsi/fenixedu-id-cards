@@ -11,7 +11,9 @@ public enum SantanderCardState implements IPresentableEnum {
 
     PENDING,        //Initial state; If not changed it means that something went when communicating with santander
 
-    IGNORED,       //Request was rejected    
+    IGNORED,        //Request was rejected  
+
+    REJECTED,       //If a succeseful request is rejected later (can happen if photo is not appropriate)
 
     NEW,            //After first card request was successful
 

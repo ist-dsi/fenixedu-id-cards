@@ -12,12 +12,13 @@ import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
 import org.fenixedu.santandersdk.dto.GetRegisterResponse;
 import org.fenixedu.santandersdk.dto.GetRegisterStatus;
 import org.fenixedu.santandersdk.service.SantanderCardService;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Strings;
+
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
@@ -54,7 +55,7 @@ public class SantanderRequestCardService {
         return actions;
     }
 
-    private SantanderEntryNew getOrUpdateState(Person person) {
+    public SantanderEntryNew getOrUpdateState(Person person) {
         SantanderEntryNew entryNew = person.getCurrentSantanderEntry();
 
         if (entryNew == null) {
@@ -66,6 +67,7 @@ public class SantanderRequestCardService {
         switch (cardState) {
             case IGNORED:
             case ISSUED:
+            case REJECTED:
                 return entryNew;
             case PENDING:
                 return synchronizeFenixAndSantanderStates(person, entryNew);
@@ -91,7 +93,7 @@ public class SantanderRequestCardService {
 
         switch (status) {
             case REJECTED_REQUEST:
-                //TODO Create new state
+                entryNew.updateState(SantanderCardState.REJECTED);
                 return entryNew;
 
             case READY_FOR_PRODUCTION:
@@ -102,17 +104,15 @@ public class SantanderRequestCardService {
                 break;
 
             case ISSUED:
-                entryNew.updateState(SantanderCardState.ISSUED);
-                entryNew.update(registerData); //TODO implement update
+                entryNew.update(registerData);
                 break;
 
             case NO_RESULT:
-                // May not be processed yet, do nothing
-                // throw new RuntimeException(); //TODO throw decent exception
+                entryNew.updateState(SantanderCardState.IGNORED);
                 break;
 
             default:
-                logger.debug("Not supported status:  " + status); //When can this happen?
+                logger.debug("Not supported status:  " + status);
         }
 
         return entryNew;
@@ -133,19 +133,15 @@ public class SantanderRequestCardService {
             }
         }
 
-        DateTime expiryDate = registerData.getExpiryDate();
+        String newMifare = registerData.getMifare();
+        String oldMifare =
+                previousEntry.getSantanderCardInfo() != null ? previousEntry.getSantanderCardInfo().getMifareNumber() : null;
 
-        if (expiryDate == null) {
-            throw new RuntimeException(); //TODO registerData is incomplete
-        }
-
-        if (expiryDate.equals(entryNew.getExpiryDate())) {
+        if (Strings.isNullOrEmpty(newMifare) || Strings.isNullOrEmpty(oldMifare) || !newMifare.equals(oldMifare)) {
             return checkAndUpdateState(entryNew, registerData);
-        } else if (expiryDate.equals(previousEntry.getExpiryDate())) {
+        } else {
             entryNew.updateState(SantanderCardState.IGNORED);
             return entryNew;
-        } else {
-            throw new RuntimeException(); //TODO should not be possible 
         }
     }
 
@@ -156,7 +152,6 @@ public class SantanderRequestCardService {
         final String userName = person.getUsername();
 
         try {
-
             //TODO use getRegister only when synchronizing and card is issued
             //Otherwise use getRegisterStatus
             GetRegisterResponse statusInformation = santanderCardService.getRegister(userName);
