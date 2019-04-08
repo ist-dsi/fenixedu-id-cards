@@ -227,6 +227,31 @@ public class SantanderRequestCardServiceTest {
         assertEquals(availableActions.size(), 1);
     }
 
+    @Test(expected = Exception.class)
+    public void createRegister_noPreviousEntry_failCommunication_and_retryWithoutSynchronize() throws SantanderCardMissingDataException {
+        Person person = IdCardsTestUtils.createPerson("failCommunication_and_retryWithoutSynchronize");
+        Photograph photo = new Photograph(PhotoType.INSTITUTIONAL, ContentType.PNG,
+                BaseEncoding.base64().decode(PHOTO_ENCODED));
+        person.setPersonalPhoto(photo);
+
+        SantanderCardService mockedService = mock(SantanderCardService.class);
+
+        when(mockedService.createRegister(any(String.class), any(byte[].class))).thenThrow(WebServiceException.class);
+
+        SantanderRequestCardService service = new SantanderRequestCardService(mockedService);
+
+        service.createRegister("entry", person);
+        assertNotNull(person.getCurrentSantanderEntry());
+        SantanderEntryNew entry = person.getCurrentSantanderEntry();
+
+        assertTrue(!entry.wasRegisterSuccessful());
+        assertEquals("entry", entry.getRequestLine());
+        assertNotNull(entry.getErrorDescription());
+        assertEquals(SantanderCardState.PENDING, entry.getState());
+
+        service.createRegister("entry", person);
+    }
+
     @Test
     public void createRegister_withPreviousEntry_reemission_success() throws SantanderCardMissingDataException {
         Person person = IdCardsTestUtils.createPerson("createRegisterSuccessReemission");
