@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.idcards.utils.SantanderCardState;
 import org.fenixedu.idcards.utils.SantanderEntryUtils;
 import org.fenixedu.santandersdk.dto.GetRegisterResponse;
@@ -31,16 +32,17 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
 
     static public Comparator<SantanderEntryNew> REVERSE_COMPARATOR_BY_CREATED_DATE = COMPARATOR_BY_CREATED_DATE.reversed();
 
-    public SantanderEntryNew(Person person, String requestLine) {
+    public SantanderEntryNew(SantanderUser santanderUser) {
+        User user = santanderUser.getUser();
         setRootDomainObject(Bennu.getInstance());
-        SantanderEntryNew currentEntry = person.getCurrentSantanderEntry();
+        SantanderEntryNew currentEntry = user.getCurrentSantanderEntry();
         if (currentEntry != null) {
             setPrevious(currentEntry);
             currentEntry.setNext(this);
         }
-        person.setCurrentSantanderEntry(this);
-        setPhotograph(person.getPersonalPhoto());
-        setRequestLine(requestLine);
+        setUser(user);
+        setPhoto(santanderUser.getPhoto());
+        /*setPhotograph(santanderUser.getPersonalPhoto());*/
         setLastUpdate(DateTime.now());
 
         // No response from server yet
@@ -49,10 +51,11 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
-    public void update(Person person, String requestLine) {
+    public void update(SantanderUser user, String requestLine) {
         setLastUpdate(DateTime.now());
         setRequestLine(requestLine);
-        setPhotograph(person.getPersonalPhoto());
+        setPhoto(user.getPhoto());
+        /*setPhotograph(santanderUser.getPersonalPhoto());*/
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
@@ -67,22 +70,25 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
-    public void reset(Person person, String requestLine) {
+    public void reset(SantanderUser user) {
         setLastUpdate(DateTime.now());
         setState(SantanderCardState.PENDING);
-        setRequestLine(requestLine);
-        setPhotograph(person.getPersonalPhoto());
+        setRequestLine(null);
+        setPhoto(user.getPhoto());
+        /*setPhotograph(santanderUser.getPersonalPhoto());*/
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
-    public void saveSuccessful(String responseLine) {
+    public void saveSuccessful(String requestLine, String responseLine) {
+        setRequestLine(requestLine);
         setLastUpdate(DateTime.now());
         setResponseLine(responseLine);
         setState(SantanderCardState.NEW);
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
-    public void saveWithError(String errorDescription, SantanderCardState state) {
+    public void saveWithError(String requestLine, String errorDescription, SantanderCardState state) {
+        setRequestLine(requestLine);
         setLastUpdate(DateTime.now());
         setErrorDescription(errorDescription);
         setState(state);
@@ -94,18 +100,18 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         setState(state);
     }
 
-    public static List<SantanderEntryNew> getSantanderEntryHistory(Person person) {
+    public static List<SantanderEntryNew> getSantanderEntryHistory(User user) {
         LinkedList<SantanderEntryNew> history = new LinkedList<>();
 
-        for(SantanderEntryNew entry = person.getCurrentSantanderEntry(); entry != null; entry = entry.getPrevious()) {
+        for(SantanderEntryNew entry = user.getCurrentSantanderEntry(); entry != null; entry = entry.getPrevious()) {
             history.addFirst(entry);
         }
 
         return history;
     }
 
-    public static List<SantanderEntryNew> getSantanderCardHistory(Person person) {
-        return getSantanderEntryHistory(person).stream()
+    public static List<SantanderEntryNew> getSantanderCardHistory(User user) {
+        return getSantanderEntryHistory(user).stream()
                 .filter(SantanderEntryNew::wasRegisterSuccessful)
                 .sorted(REVERSE_COMPARATOR_BY_CREATED_DATE)
                 .collect(Collectors.toList());
@@ -165,7 +171,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
             return "";
         }
 
-        if (getErrorCode().isEmpty()) {
+        if (getErrorCode() == null) {
             return getErrorDescription();
         }
 

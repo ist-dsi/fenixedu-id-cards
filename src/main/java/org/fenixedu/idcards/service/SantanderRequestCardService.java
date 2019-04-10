@@ -3,14 +3,15 @@ package org.fenixedu.idcards.service;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.fenixedu.academic.domain.Person;
-import org.fenixedu.idcards.domain.RegisterAction;
+import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.idcards.domain.SantanderEntryNew;
-import org.fenixedu.idcards.domain.SantanderPhotoEntry;
+import org.fenixedu.idcards.domain.SantanderUser;
 import org.fenixedu.idcards.utils.SantanderCardState;
+import org.fenixedu.santandersdk.dto.CreateRegisterRequest;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
 import org.fenixedu.santandersdk.dto.GetRegisterResponse;
 import org.fenixedu.santandersdk.dto.GetRegisterStatus;
+import org.fenixedu.santandersdk.dto.RegisterAction;
 import org.fenixedu.santandersdk.service.SantanderCardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,18 +27,20 @@ import pt.ist.fenixframework.Atomic.TxMode;
 public class SantanderRequestCardService {
 
     private SantanderCardService santanderCardService;
+    private IUserInfoService userInfoService;
 
     @Autowired
-    public SantanderRequestCardService(SantanderCardService santanderCardService) {
+    public SantanderRequestCardService(SantanderCardService santanderCardService, IUserInfoService userInfoService) {
         this.santanderCardService = santanderCardService;
+        this.userInfoService = userInfoService;
     }
 
     private Logger logger = LoggerFactory.getLogger(SantanderRequestCardService.class);
 
-    public List<RegisterAction> getPersonAvailableActions(Person person) {
+    public List<RegisterAction> getPersonAvailableActions(User user) {
 
         List<RegisterAction> actions = new LinkedList<>();
-        SantanderEntryNew personEntry = getOrUpdateState(person);
+        SantanderEntryNew personEntry = getOrUpdateState(user);
 
         if (personEntry == null || personEntry.canRegisterNew()) {
             actions.add(RegisterAction.NOVO);
@@ -55,8 +58,8 @@ public class SantanderRequestCardService {
         return actions;
     }
 
-    public SantanderEntryNew getOrUpdateState(Person person) {
-        SantanderEntryNew entryNew = person.getCurrentSantanderEntry();
+    public SantanderEntryNew getOrUpdateState(User user) {
+        SantanderEntryNew entryNew = user.getCurrentSantanderEntry();
 
         if (entryNew == null) {
             return null;
@@ -70,7 +73,7 @@ public class SantanderRequestCardService {
             case REJECTED:
                 return entryNew;
             case PENDING:
-                return synchronizeFenixAndSantanderStates(person, entryNew);
+                return synchronizeFenixAndSantanderStates(user, entryNew);
             case NEW:
                 return checkAndUpdateState(entryNew);
             default:
@@ -80,7 +83,7 @@ public class SantanderRequestCardService {
     }
 
     private SantanderEntryNew checkAndUpdateState(SantanderEntryNew entryNew) {
-        GetRegisterResponse registerData = getRegister(entryNew.getPerson());
+        GetRegisterResponse registerData = getRegister(entryNew.getUser());
         return checkAndUpdateState(entryNew, registerData);
     }
 
@@ -118,8 +121,8 @@ public class SantanderRequestCardService {
         return entryNew;
     }
 
-    private SantanderEntryNew synchronizeFenixAndSantanderStates(Person person, SantanderEntryNew entryNew) {
-        GetRegisterResponse registerData = getRegister(person);
+    private SantanderEntryNew synchronizeFenixAndSantanderStates(User user, SantanderEntryNew entryNew) {
+        GetRegisterResponse registerData = getRegister(user);
         GetRegisterStatus status = registerData.getStatus();
 
         SantanderEntryNew previousEntry = entryNew.getPrevious();
@@ -145,11 +148,11 @@ public class SantanderRequestCardService {
         }
     }
 
-    private GetRegisterResponse getRegister(Person person) {
+    private GetRegisterResponse getRegister(User user) {
         
         logger.debug("Entering getRegister");
 
-        final String userName = person.getUsername();
+        final String userName = user.getUsername();
 
         try {
             //TODO use getRegister only when synchronizing and card is issued
@@ -167,65 +170,40 @@ public class SantanderRequestCardService {
         }
     }
 
-    public void createRegister(String tuiEntry, Person person) throws SantanderCardMissingDataException {
-        if (tuiEntry == null) {
-            logger.debug("Null tuiEntry for user " + person.getUsername());
-            return;
-        }
-
-        logger.debug("Entry: " + tuiEntry);
-        logger.debug("Entry size: " + tuiEntry.length());
+    public void createRegister(User user, RegisterAction action) {
+        SantanderUser santanderUser = new SantanderUser(user, userInfoService);
 
         /*
          * If there was an error on the previous entry update it
          * Else create a new entry
          */
-        SantanderEntryNew entry = createOrResetEntry(person, tuiEntry);
+        SantanderEntryNew entry = createOrResetEntry(user);
 
-        CreateRegisterResponse response;
-        byte[] photo =  getOrCreateSantanderPhoto(person);
 
-        try {
-            response = santanderCardService.createRegister(tuiEntry, photo);
-            logger.debug("saveRegister result: %s" + response.getResponseLine());
-        } catch (Throwable t) {
-            entry.saveWithError("Erro ao comunicar com o Santander", SantanderCardState.PENDING);
-            logger.debug("Error connecting with santander");
-            t.printStackTrace();
-            return;
-        }
+        CreateRegisterRequest createRegisterRequest = santanderUser.toCreateRegisterRequest();
+        createRegisterRequest.setAction(action);
+
+        CreateRegisterResponse response = santanderCardService.createRegister(createRegisterRequest);
 
         saveResponse(entry, response);
     }
 
-    private byte[] getOrCreateSantanderPhoto(Person person) throws SantanderCardMissingDataException {
-        try {
-            SantanderPhotoEntry photoEntry = SantanderPhotoEntry.getOrCreatePhotoEntryForPerson(person);
-            byte[] photo_contents = photoEntry.getPhotoAsByteArray();
-
-            return photo_contents;
-        } catch (Throwable t) {
-            throw new SantanderCardMissingDataException("Missing photo");
-        }
-
-    }
-
     @Atomic(mode = TxMode.WRITE)
-    private SantanderEntryNew createOrResetEntry(Person person, String request) {
-        SantanderEntryNew entry = person.getCurrentSantanderEntry();
-
+    private SantanderEntryNew createOrResetEntry(User user) {
+        SantanderEntryNew entry = user.getCurrentSantanderEntry();
+        SantanderUser santanderUser = new SantanderUser(user, userInfoService);
         if (entry == null) {
-            return new SantanderEntryNew(person, request);
+            return new SantanderEntryNew(santanderUser);
         }
 
         SantanderCardState cardState = entry.getState();
 
         switch (cardState) {
             case IGNORED:
-                entry.reset(person, request);
+                entry.reset(santanderUser);
                 return entry;
             case ISSUED:
-                return new SantanderEntryNew(person, request);
+                return new SantanderEntryNew(santanderUser);
             default:
                 throw new RuntimeException(); //TODO throw decent exception
         }
@@ -234,9 +212,14 @@ public class SantanderRequestCardService {
 
     private void saveResponse(SantanderEntryNew entry, CreateRegisterResponse response) {
         if (response.wasRegisterSuccessful()) {
-            entry.saveSuccessful(response.getResponseLine());
-        } else {
-            entry.saveWithError(response.getErrorDescription(), SantanderCardState.IGNORED);
+            entry.saveSuccessful(response.getRequestLine(), response.getResponseLine());
+        }
+        // TODO: Change this
+        else if ("communication error".equals(response.getErrorDescription())) {
+            entry.saveWithError(response.getRequestLine(), "Erro ao comunicar com o Santander", SantanderCardState.PENDING);
+        }
+        else {
+            entry.saveWithError(response.getRequestLine(), response.getErrorDescription(), SantanderCardState.IGNORED);
         }
     }
 }

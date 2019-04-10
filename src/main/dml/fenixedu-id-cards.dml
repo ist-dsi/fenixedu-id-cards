@@ -52,6 +52,7 @@ class SantanderEntryNew {
     DateTime lastUpdate;
     String errorDescription;
     SantanderCardState state;
+    bytearray photo;
 }
 
 class SantanderCardInfo {	
@@ -201,8 +202,8 @@ relation PersonSantanderEntry {
 	}
 }
 
-relation PersonSantanderEntryNew {
-	.org.fenixedu.academic.domain.Person playsRole person;
+relation UserSantanderEntryNew {
+	.org.fenixedu.bennu.core.domain.User playsRole user;
 	SantanderEntryNew playsRole currentSantanderEntry;
 }
 

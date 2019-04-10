@@ -22,7 +22,6 @@ import org.fenixedu.academic.domain.PhotoType;
 import org.fenixedu.academic.domain.Photograph;
 import org.fenixedu.academic.util.ContentType;
 import org.fenixedu.idcards.IdCardsTestUtils;
-import org.fenixedu.idcards.domain.RegisterAction;
 import org.fenixedu.idcards.domain.SantanderEntryNew;
 import org.fenixedu.idcards.utils.SantanderCardState;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
