@@ -40,7 +40,6 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         }
         setUser(user);
         setBase64Photo(santanderUser.getPhoto());
-        /*setPhotograph(santanderUser.getPersonalPhoto());*/
         setLastUpdate(DateTime.now());
 
         // No response from server yet
@@ -53,7 +52,6 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         setLastUpdate(DateTime.now());
         setRequestLine(requestLine);
         setBase64Photo(user.getPhoto());
-        /*setPhotograph(santanderUser.getPersonalPhoto());*/
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
@@ -73,7 +71,6 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         setState(SantanderCardState.PENDING);
         setRequestLine(null);
         setBase64Photo(user.getPhoto());
-        /*setPhotograph(santanderUser.getPersonalPhoto());*/
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
