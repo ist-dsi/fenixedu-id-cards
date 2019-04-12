@@ -70,10 +70,10 @@ public class SantanderRequestCardService {
         switch (cardState) {
             case IGNORED:
             case ISSUED:
-            case REJECTED:
                 return entryNew;
             case PENDING:
                 return synchronizeFenixAndSantanderStates(user, entryNew);
+            case REJECTED:
             case NEW:
                 return checkAndUpdateState(entryNew);
             default:
@@ -158,12 +158,8 @@ public class SantanderRequestCardService {
         final String userName = user.getUsername();
 
         try {
-            //TODO use getRegister only when synchronizing and card is issued
-            //Otherwise use getRegisterStatus
             GetRegisterResponse statusInformation = santanderCardService.getRegister(userName);
-
             logger.debug("Result: " + statusInformation.getStatus());
-
             return statusInformation;
 
         } catch (Throwable t) {
@@ -174,55 +170,40 @@ public class SantanderRequestCardService {
     }
 
     public void createRegister(User user, RegisterAction action) {
-        SantanderUser santanderUser = new SantanderUser(user, userInfoService);
+        if (!getPersonAvailableActions(user).contains(action)) {
+            throw new RuntimeException(
+                    "Action (" + action.getLocalizedName() + ") not available for user " + user.getUsername());
+        }
 
-        /*
-         * If there was an error on the previous entry update it
-         * Else create a new entry
-         */
         SantanderEntryNew entry = createOrResetEntry(user);
-
-
-        CreateRegisterRequest createRegisterRequest = santanderUser.toCreateRegisterRequest();
-        createRegisterRequest.setAction(action);
+        SantanderUser santanderUser = new SantanderUser(user, userInfoService);
+        CreateRegisterRequest createRegisterRequest = santanderUser.toCreateRegisterRequest(action);
 
         CreateRegisterResponse response = santanderCardService.createRegister(createRegisterRequest);
 
-        saveResponse(entry, response);
+        entry.update(response);
     }
 
     @Atomic(mode = TxMode.WRITE)
     private SantanderEntryNew createOrResetEntry(User user) {
         SantanderEntryNew entry = user.getCurrentSantanderEntry();
-        SantanderUser santanderUser = new SantanderUser(user, userInfoService);
+
         if (entry == null) {
-            return new SantanderEntryNew(santanderUser);
+            return new SantanderEntryNew(user);
         }
 
         SantanderCardState cardState = entry.getState();
 
         switch (cardState) {
-            case IGNORED:
-                entry.reset(santanderUser);
-                return entry;
-            case ISSUED:
-                return new SantanderEntryNew(santanderUser);
-            default:
-                throw new RuntimeException(); //TODO throw decent exception
-        }
-    }
-
-
-    private void saveResponse(SantanderEntryNew entry, CreateRegisterResponse response) {
-        if (response.wasRegisterSuccessful()) {
-            entry.saveSuccessful(response.getRequestLine(), response.getResponseLine());
-        }
-        // TODO: Change this
-        else if ("communication error".equals(response.getErrorDescription())) {
-            entry.saveWithError(response.getRequestLine(), "Erro ao comunicar com o Santander", SantanderCardState.PENDING);
-        }
-        else {
-            entry.saveWithError(response.getRequestLine(), response.getErrorDescription(), SantanderCardState.IGNORED);
+        case IGNORED:
+            entry.reset();
+            return entry;
+        case REJECTED:
+        case ISSUED:
+            new SantanderEntryNew(user);
+        default:
+            //should be impossible to reach;
+            throw new RuntimeException();
         }
     }
 }

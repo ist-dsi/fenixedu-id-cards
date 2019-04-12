@@ -8,17 +8,17 @@ import java.util.stream.Collectors;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
+import org.fenixedu.santandersdk.dto.CreateRegisterResponse.ErrorType;
 import org.fenixedu.santandersdk.dto.GetRegisterResponse;
-import org.fenixedu.santandersdk.service.SantanderEntryValidator;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.YearMonthDay;
-import org.joda.time.format.DateTimeFormat;
 
 import com.google.common.base.Strings;
-import com.google.gson.JsonObject;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.Atomic.TxMode;
 
 public class SantanderEntryNew extends SantanderEntryNew_Base {
 
@@ -30,8 +30,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
 
     static public Comparator<SantanderEntryNew> REVERSE_COMPARATOR_BY_CREATED_DATE = COMPARATOR_BY_CREATED_DATE.reversed();
 
-    public SantanderEntryNew(SantanderUser santanderUser) {
-        User user = santanderUser.getUser();
+    public SantanderEntryNew(User user) {
         setRootDomainObject(Bennu.getInstance());
         SantanderEntryNew currentEntry = user.getCurrentSantanderEntry();
         if (currentEntry != null) {
@@ -39,62 +38,70 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
             currentEntry.setNext(this);
         }
         setUser(user);
-        setBase64Photo(santanderUser.getPhoto());
         setLastUpdate(DateTime.now());
-
-        // No response from server yet
         setState(SantanderCardState.PENDING);
+        setSantanderCardInfo(new SantanderCardInfo());
+        setRequestLine("");
+        setResponseLine("");
         setErrorDescription("");
     }
+    
+    @Atomic(mode = TxMode.WRITE)
+    public void update(CreateRegisterResponse response) {
+        ErrorType errorType = response.getErrorType();
+        switch (errorType) {
+        case REQUEST_REFUSED:
+        case INVALID_INFORMATION:
+            update(SantanderCardState.IGNORED, response);
+        case SANTANDER_COMMUNICATION:
+            update(SantanderCardState.PENDING, response);
+            break;
+        case NONE:
+            update(SantanderCardState.NEW, response);
+            break;
+        default:
+            break;
+        }
 
-    @Atomic(mode = Atomic.TxMode.WRITE)
-    public void update(SantanderUser user, String requestLine) {
+        updateCardInfo(response);
         setLastUpdate(DateTime.now());
-        setRequestLine(requestLine);
-        setBase64Photo(user.getPhoto());
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
     public void update(GetRegisterResponse registerData) {
-        //TODO add more info to the card;
-        SantanderCardInfo cardInfo = new SantanderCardInfo();
+        SantanderCardInfo cardInfo = getSantanderCardInfo();
         cardInfo.setMifareNumber(registerData.getMifare());
-        setSantanderCardInfo(cardInfo);
-
         setState(SantanderCardState.ISSUED);
         setLastUpdate(DateTime.now());
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
-    public void reset(SantanderUser user) {
+    public void updateState(SantanderCardState state) {        
+        setState(state);
+        setLastUpdate(DateTime.now());
+    }
+
+    public void updateCardInfo(CreateRegisterResponse response) {
+        ErrorType errorType = response.getErrorType();
+        if (errorType != ErrorType.INVALID_INFORMATION) {
+            SantanderCardInfo cardInfo =
+                    new SantanderCardInfo(response.getCardName(), response.getCardExpiryDate(), response.getPhoto());
+            setSantanderCardInfo(cardInfo);
+        }
+    }
+
+    public void update(SantanderCardState state, CreateRegisterResponse response) {
+        updateState(state);
+        setRequestLine(Strings.isNullOrEmpty(response.getRequestLine()) ? "" : response.getRequestLine());
+        setResponseLine(Strings.isNullOrEmpty(response.getResponseLine()) ? "" : response.getResponseLine());
+        setErrorDescription(Strings.isNullOrEmpty(response.getErrorDescription()) ? "" : response.getErrorDescription());
+    }
+
+    public void reset() {
         setLastUpdate(DateTime.now());
         setState(SantanderCardState.PENDING);
-        setRequestLine(null);
-        setBase64Photo(user.getPhoto());
     }
-
-    @Atomic(mode = Atomic.TxMode.WRITE)
-    public void saveSuccessful(String requestLine, String responseLine) {
-        setRequestLine(requestLine);
-        setLastUpdate(DateTime.now());
-        setResponseLine(responseLine);
-        setState(SantanderCardState.NEW);
-    }
-
-    @Atomic(mode = Atomic.TxMode.WRITE)
-    public void saveWithError(String requestLine, String errorDescription, SantanderCardState state) {
-        setRequestLine(requestLine);
-        setLastUpdate(DateTime.now());
-        setErrorDescription(errorDescription);
-        setState(state);
-    }
-
-    @Atomic(mode = Atomic.TxMode.WRITE)
-    public void updateState(SantanderCardState state) {
-        setLastUpdate(DateTime.now());
-        setState(state);
-    }
-
+    
     public static List<SantanderEntryNew> getSantanderEntryHistory(User user) {
         LinkedList<SantanderEntryNew> history = new LinkedList<>();
 
@@ -125,31 +132,8 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         return ExecutionYear.getExecutionYearByDate(yearMonthDay);
     }
 
-    public String getIdentificationNumber() {
-        return new SantanderEntryValidator().getValue(getRequestLine(), 1);
-    }
-
-    public String getName() {
-        SantanderEntryValidator validator = new SantanderEntryValidator();
-        String firstName = validator.getValue(getRequestLine(), 2);
-        String surname = validator.getValue(getRequestLine(), 3);
-        return firstName.trim() + " " + surname.trim();
-    }
-
     public boolean wasRegisterSuccessful() {
         return getState() != SantanderCardState.IGNORED && getState() != SantanderCardState.PENDING;
-    }
-
-    public String getErrorCode() {
-        if (wasRegisterSuccessful()) {
-            return "";
-        }
-
-        try {
-            return getResponseLine().substring(18, 20);
-        } catch (StringIndexOutOfBoundsException soobe) {
-            return "-1";
-        }
     }
 
     @Override
@@ -162,40 +146,10 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
 
     }
 
-    public String getErrorDescriptionMessage() {
-        if (wasRegisterSuccessful() || Strings.isNullOrEmpty(getErrorDescription())) {
-            return "";
-        }
-
-        if (getErrorCode() == null) {
-            return getErrorDescription();
-        }
-
-        return getErrorCode() + " - " + getErrorDescription();
-    }
-
-    public DateTime getExpiryDate() {
-        String requestLine = getRequestLine();
-
-        SantanderEntryValidator validator = new SantanderEntryValidator();
-        String expiryMonth = validator.getValue(requestLine, 18).substring(2);
-        String expiryDateYear = validator.getValue(requestLine, 11).substring(5);
-        String expiryDateString = expiryMonth + expiryDateYear;
-
-        DateTime expiryDate = DateTime.parse(expiryDateString, DateTimeFormat.forPattern("MMyyyy"));
-
-        if (expiryDate.getDayOfMonth() == 1) {
-            expiryDate = expiryDate.plusMonths(1).minusDays(1);
-        }
-
-        return expiryDate;
-    }
-    
     public boolean canRegisterNew() {
         SantanderCardState state = getState();
         return state == SantanderCardState.IGNORED && getPrevious() == null;
     }
-    
     
     public boolean canReemitCard() {
         SantanderCardState state = getState();
@@ -205,31 +159,8 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     }
 
     public boolean canRenovateCard() {
-        return canReemitCard()
-                && Days.daysBetween(DateTime.now().withTimeAtStartOfDay(), getExpiryDate().withTimeAtStartOfDay()).getDays() < 60;
-    }
-
-    public JsonObject getResponseAsJson() {
-        //TODO
-        JsonObject response = new JsonObject();
-
-        if (getResponseLine() == null) {
-            response.addProperty("status", "");
-            response.addProperty("errorCode", "");
-            response.addProperty("errorDescription", "Didn't get a response from the server");
-        } else if (!wasRegisterSuccessful()) {
-            response.addProperty("status", "Error");
-            response.addProperty("errorCode", getErrorCode());
-            response.addProperty("errorDescription", getErrorDescription());
-        } else {
-            response.addProperty("status", "Ok");
-            response.addProperty("errorCode", "");
-            response.addProperty("errorDescription", "");
-        }
-        return response;
-    }
-
-    public JsonObject getRequestAsJson() {
-        return new SantanderEntryValidator().getRequestAsJson(getRequestLine());
+        DateTime expiryDate = getSantanderCardInfo().getExpiryDate();
+        return canReemitCard() && expiryDate != null
+                && Days.daysBetween(DateTime.now().withTimeAtStartOfDay(), expiryDate.withTimeAtStartOfDay()).getDays() < 60;
     }
 }
