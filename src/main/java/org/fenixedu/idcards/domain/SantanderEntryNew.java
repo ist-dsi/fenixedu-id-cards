@@ -5,14 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.santandersdk.dto.GetRegisterResponse;
 import org.fenixedu.santandersdk.service.SantanderEntryValidator;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
-import org.joda.time.YearMonthDay;
 import org.joda.time.format.DateTimeFormat;
 
 import com.google.common.base.Strings;
@@ -33,7 +31,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     public SantanderEntryNew(SantanderUser santanderUser) {
         User user = santanderUser.getUser();
         setRootDomainObject(Bennu.getInstance());
-        SantanderEntryNew currentEntry = user.getCurrentSantanderEntry();
+        SantanderEntryNew currentEntry = user.getCurrentSantanderEntryNew();
         if (currentEntry != null) {
             setPrevious(currentEntry);
             currentEntry.setNext(this);
@@ -98,7 +96,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     public static List<SantanderEntryNew> getSantanderEntryHistory(User user) {
         LinkedList<SantanderEntryNew> history = new LinkedList<>();
 
-        for(SantanderEntryNew entry = user.getCurrentSantanderEntry(); entry != null; entry = entry.getPrevious()) {
+        for(SantanderEntryNew entry = user.getCurrentSantanderEntryNew(); entry != null; entry = entry.getPrevious()) {
             history.addFirst(entry);
         }
 
@@ -110,19 +108,6 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
                 .filter(SantanderEntryNew::wasRegisterSuccessful)
                 .sorted(REVERSE_COMPARATOR_BY_CREATED_DATE)
                 .collect(Collectors.toList());
-    }
-
-    public static List<SantanderEntryNew> getSantanderEntryHistory(ExecutionYear executionYear) {
-        return Bennu.getInstance().getSantanderEntriesNewSet().stream()
-                .filter(sen -> sen.getExecutionYear().equals(executionYear))
-                .sorted(SantanderEntryNew.REVERSE_COMPARATOR_BY_CREATED_DATE).collect(Collectors.toList());
-    }
-
-    public ExecutionYear getExecutionYear() {
-        DateTime dateTime = getLastUpdate();
-        YearMonthDay yearMonthDay = new YearMonthDay(dateTime.getMillis());
-
-        return ExecutionYear.getExecutionYearByDate(yearMonthDay);
     }
 
     public String getIdentificationNumber() {

@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.idcards.domain.SantanderEntryNew;
-import org.fenixedu.idcards.dto.SantanderUser;
+import org.fenixedu.idcards.domain.SantanderUser;
 import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.santandersdk.dto.CreateRegisterRequest;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
