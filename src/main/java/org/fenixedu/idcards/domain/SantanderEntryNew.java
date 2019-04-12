@@ -12,7 +12,6 @@ import org.fenixedu.santandersdk.dto.CreateRegisterResponse.ErrorType;
 import org.fenixedu.santandersdk.dto.GetRegisterResponse;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
-import org.joda.time.YearMonthDay;
 
 import com.google.common.base.Strings;
 
@@ -116,19 +115,6 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
                 .filter(SantanderEntryNew::wasRegisterSuccessful)
                 .sorted(REVERSE_COMPARATOR_BY_CREATED_DATE)
                 .collect(Collectors.toList());
-    }
-
-    public static List<SantanderEntryNew> getSantanderEntryHistory(ExecutionYear executionYear) {
-        return Bennu.getInstance().getSantanderEntriesNewSet().stream()
-                .filter(sen -> sen.getExecutionYear().equals(executionYear))
-                .sorted(SantanderEntryNew.REVERSE_COMPARATOR_BY_CREATED_DATE).collect(Collectors.toList());
-    }
-
-    public ExecutionYear getExecutionYear() {
-        DateTime dateTime = getLastUpdate();
-        YearMonthDay yearMonthDay = new YearMonthDay(dateTime.getMillis());
-
-        return ExecutionYear.getExecutionYearByDate(yearMonthDay);
     }
 
     public boolean wasRegisterSuccessful() {

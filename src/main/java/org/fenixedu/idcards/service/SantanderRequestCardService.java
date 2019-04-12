@@ -192,7 +192,7 @@ public class SantanderRequestCardService {
             return new SantanderEntryNew(user);
         }
 
-        SantanderCardState cardState = entryNew.getState();
+        SantanderCardState cardState = entry.getState();
 
         switch (cardState) {
         case IGNORED:
