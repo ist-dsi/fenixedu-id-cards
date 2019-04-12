@@ -6,12 +6,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.ExecutionYear;
-import org.fenixedu.academic.domain.Person;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
-import org.fenixedu.idcards.utils.SantanderCardState;
-import org.fenixedu.idcards.utils.SantanderEntryUtils;
 import org.fenixedu.santandersdk.dto.GetRegisterResponse;
+import org.fenixedu.santandersdk.service.SantanderEntryValidator;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.YearMonthDay;
@@ -131,12 +129,13 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     }
 
     public String getIdentificationNumber() {
-        return SantanderEntryUtils.getValue(getRequestLine(), 1);
+        return new SantanderEntryValidator().getValue(getRequestLine(), 1);
     }
 
     public String getName() {
-        String firstName = SantanderEntryUtils.getValue(getRequestLine(), 2);
-        String surname = SantanderEntryUtils.getValue(getRequestLine(), 3);
+        SantanderEntryValidator validator = new SantanderEntryValidator();
+        String firstName = validator.getValue(getRequestLine(), 2);
+        String surname = validator.getValue(getRequestLine(), 3);
         return firstName.trim() + " " + surname.trim();
     }
 
@@ -181,8 +180,9 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     public DateTime getExpiryDate() {
         String requestLine = getRequestLine();
 
-        String expiryMonth = SantanderEntryUtils.getValue(requestLine, 18).substring(2);
-        String expiryDateYear = SantanderEntryUtils.getValue(requestLine, 11).substring(5);
+        SantanderEntryValidator validator = new SantanderEntryValidator();
+        String expiryMonth = validator.getValue(requestLine, 18).substring(2);
+        String expiryDateYear = validator.getValue(requestLine, 11).substring(5);
         String expiryDateString = expiryMonth + expiryDateYear;
 
         DateTime expiryDate = DateTime.parse(expiryDateString, DateTimeFormat.forPattern("MMyyyy"));
@@ -233,6 +233,6 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     }
 
     public JsonObject getRequestAsJson() {
-        return SantanderEntryUtils.getRequestAsJson(getRequestLine());
+        return new SantanderEntryValidator().getRequestAsJson(getRequestLine());
     }
 }

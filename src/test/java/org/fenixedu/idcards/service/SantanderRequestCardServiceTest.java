@@ -20,7 +20,7 @@ import javax.xml.ws.WebServiceException;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.idcards.IdCardsTestUtils;
 import org.fenixedu.idcards.domain.SantanderEntryNew;
-import org.fenixedu.idcards.utils.SantanderCardState;
+import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.santandersdk.dto.CreateRegisterRequest;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
 import org.fenixedu.santandersdk.dto.GetRegisterResponse;

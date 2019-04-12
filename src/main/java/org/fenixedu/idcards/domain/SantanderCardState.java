@@ -1,4 +1,4 @@
-package org.fenixedu.idcards.utils;
+package org.fenixedu.idcards.domain;
 
 import java.util.Locale;
 
