@@ -1,4 +1,4 @@
-package org.fenixedu.idcards.domain;
+package org.fenixedu.idcards.dto;
 
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.idcards.service.IUserInfoService;

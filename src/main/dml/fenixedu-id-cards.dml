@@ -23,29 +23,6 @@ enum org.fenixedu.idcards.domain.SantanderCardState as SantanderCardState;
  *
  */
 
-class SantanderBatch  {
-	DateTime created;
-	DateTime generated;
-	DateTime sent;
-	Integer sequenceNumber;
-}
-
-class SantanderBatchRequester  {
-}
-
-class SantanderBatchSender  {
-}
-
-class SantanderSequenceNumberGenerator  {
-	Integer sequenceNumber;
-	Integer photoSequenceNumber;
-}
-
-class SantanderEntry  {
-	String line;
-	DateTime created;
-}
-
 class SantanderEntryNew {
     String requestLine;
     String responseLine;
@@ -64,63 +41,10 @@ class SantanderCardInfo {
 	String nameOnCard;
 }
 
-class SantanderPhotoEntry {
-	Integer sequenceNumber;
-	DateTime whenGenerated;
-}
-
-class SantanderProblem  {
-	String descriptionKey;
-    String arg;
-}
-
-class SantanderPIN {
-	String encryptedPIN;
-}
-
-class SantanderCardInformation {
-    String dchpRegisteLine;
-}
- 
 /*
  * Relations definitions
  * 
  */
-
-relation RootDomainObjectSantanderBatch {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
-	SantanderBatch playsRole santanderBatches {
-		multiplicity *;
-	}
-}
-    
-relation RootDomainObjectSantanderBatchRequester {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
-	SantanderBatchRequester playsRole santanderBatchRequesters {
-		multiplicity *;
-	}
-}
-
-relation RootDomainObjectSantanderBatchSender {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
-	SantanderBatchSender playsRole santanderBatchSenders {
-		multiplicity *;
-	}
-}
-
-relation RootDomainObjectSantanderSequenceNumberGenerator {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
-	SantanderSequenceNumberGenerator playsRole santanderSequenceNumberGenerators {
-		multiplicity *;
-	}
-}	
-
-relation RootDomainObjectSantanderEntry {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
-	SantanderEntry playsRole santanderEntries {
-		multiplicity *;
-	}
-}
 
 relation RootDomainObjectSantanderEntryNew {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
@@ -129,135 +53,14 @@ relation RootDomainObjectSantanderEntryNew {
 	}
 }
 
-relation RootDomainObjectSantanderCardInformation {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
-	SantanderCardInformation playsRole santanderCardsInformation {
-		multiplicity *;
-	}
-}
-
-relation RootDomainObjectSantanderProblem {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
-	SantanderProblem playsRole santanderProblem {
-		multiplicity *;
-	}
-}
-
-relation ExecutionYearSantanderBatch {
-	.org.fenixedu.academic.domain.ExecutionYear playsRole executionYear;
-	SantanderBatch playsRole santanderBatches {
-		multiplicity *;
-	}
-}
-
-relation SantanderBatchSantanderEntry {
-	SantanderBatch playsRole santanderBatch;
-	SantanderEntry playsRole santanderEntries {
-		multiplicity *;
-	}
-}
-
-relation SantanderBatchSantanderSequenceNumberGenerator {
-	SantanderBatch playsRole santanderBatches {
-		multiplicity *;
-	}
-	SantanderSequenceNumberGenerator playsRole santanderSequenceNumberGenerator;
-}
-
-relation SantanderBatchSantanderBatchRequester {
-	SantanderBatch playsRole santanderBatch;
-	SantanderBatchRequester playsRole santanderBatchRequester;
-}
-
-relation SantanderBatchSantanderBatchSender {
-	SantanderBatch playsRole santanderBatch;
-	SantanderBatchSender playsRole santanderBatchSender;
-}
-
-relation SantanderBatchSantanderProblem {
-	SantanderBatch playsRole santanderBatch;
-    SantanderProblem playsRole santanderProblems {
-		multiplicity *;
-	}
-}
-
-relation PersonSantanderBatchRequester {
-	.org.fenixedu.academic.domain.Person playsRole person;
-	SantanderBatchRequester playsRole santanderBatchRequesters {
-		multiplicity *;
-	}
-}
-
-relation PersonSantanderBatchSender {
-	.org.fenixedu.academic.domain.Person playsRole person;
-	SantanderBatchSender playsRole santanderBatchSenders {
-		multiplicity *;
-	}
-}
-
-relation PersonSantanderEntry {
-	.org.fenixedu.academic.domain.Person playsRole person;
-	SantanderEntry playsRole santanderEntries {
-		multiplicity *;
-	}
-}
-
 relation UserSantanderEntryNew {
 	.org.fenixedu.bennu.core.domain.User playsRole user;
-	SantanderEntryNew playsRole currentSantanderEntry;
+	SantanderEntryNew playsRole currentSantanderEntryNew;
 }
 
-relation PersonSantanderCardInformation {
-	.org.fenixedu.academic.domain.Person playsRole person;
-	SantanderCardInformation playsRole santanderCardsInformation {
-		multiplicity *;
-	}
-}
-
-relation SantanderPhotoEntrySantanderEntry {
-	SantanderEntry playsRole santanderEntry;
-	SantanderPhotoEntry playsRole santanderPhotoEntry;
-}
-
-relation PreviousSantanderEntry {
+relation PreviousSantanderEntryNew {
    SantanderEntryNew playsRole previous;
    SantanderEntryNew playsRole next;
-}
-
-relation PhotographSantanderEntryNew {
-	SantanderEntryNew playsRole santanderEntryNew {
-	    multiplicity *;
-	}
-	.org.fenixedu.academic.domain.Photograph playsRole photograph;
-}
-
-relation PersonSantanderPIN {
-	.org.fenixedu.academic.domain.Person playsRole person;
-	SantanderPIN playsRole santanderPIN;
-}
-
-relation RootDomainObjectSantanderPhotoEntry {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject; 
-	SantanderPhotoEntry playsRole santanderPhotoEntry {
-		multiplicity *;
-	}
-}
-
-relation SantanderEntryPerson {
-	.org.fenixedu.academic.domain.Person playsRole person; 
-	SantanderPhotoEntry playsRole santanderPhotoEntry;
-}
-
-relation SantanderEntrySantanderPhotoEntry {
-	SantanderPhotoEntry playsRole previous;
-	SantanderPhotoEntry playsRole next;
-}
-
-relation PhotographSantanderPhotoEntry {
-	.org.fenixedu.academic.domain.Photograph playsRole photograph; 
-	SantanderPhotoEntry playsRole santanderPhotoEntry {
-		multiplicity *;
-	}
 }
 
 relation SantanderCardSantanderEntryNew {

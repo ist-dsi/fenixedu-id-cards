@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.idcards.domain.SantanderEntryNew;
-import org.fenixedu.idcards.domain.SantanderUser;
+import org.fenixedu.idcards.dto.SantanderUser;
 import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.santandersdk.dto.CreateRegisterRequest;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
@@ -59,7 +59,7 @@ public class SantanderRequestCardService {
     }
 
     public SantanderEntryNew getOrUpdateState(User user) {
-        SantanderEntryNew entryNew = user.getCurrentSantanderEntry();
+        SantanderEntryNew entryNew = user.getCurrentSantanderEntryNew();
 
         if (entryNew == null) {
             return null;
@@ -82,38 +82,38 @@ public class SantanderRequestCardService {
         }
     }
 
-    private SantanderEntryNew checkAndUpdateState(SantanderEntryNew entryNew) {
-        GetRegisterResponse registerData = getRegister(entryNew.getUser());
-        return checkAndUpdateState(entryNew, registerData);
+    private SantanderEntryNew checkAndUpdateState(SantanderEntryNew entry) {
+        GetRegisterResponse registerData = getRegister(entry.getUser());
+        return checkAndUpdateState(entry, registerData);
     }
 
-    private SantanderEntryNew checkAndUpdateState(SantanderEntryNew entryNew, GetRegisterResponse registerData) {
+    private SantanderEntryNew checkAndUpdateState(SantanderEntryNew entry, GetRegisterResponse registerData) {
         if (registerData == null) {
-            return entryNew;
+            return entry;
         }
 
         GetRegisterStatus status = registerData.getStatus();
 
         switch (status) {
             case REJECTED_REQUEST:
-                entryNew.updateState(SantanderCardState.REJECTED);
-                return entryNew;
+                entry.updateState(SantanderCardState.REJECTED);
+                return entry;
 
             case READY_FOR_PRODUCTION:
             case REMI_REQUEST:
             case RENU_REQUEST:
             case PRODUCTION:
-                entryNew.updateState(SantanderCardState.NEW);
+                entry.updateState(SantanderCardState.NEW);
                 break;
 
             case ISSUED:
-                entryNew.update(registerData);
+                entry.update(registerData);
                 break;
 
             case NO_RESULT:
                 // syncing problem between both services
-                if (!entryNew.wasRegisterSuccessful()) {
-                    entryNew.updateState(SantanderCardState.IGNORED);
+                if (!entry.wasRegisterSuccessful()) {
+                    entry.updateState(SantanderCardState.IGNORED);
                 }
                 break;
 
@@ -121,21 +121,21 @@ public class SantanderRequestCardService {
                 logger.debug("Not supported status:  " + status);
         }
 
-        return entryNew;
+        return entry;
     }
 
-    private SantanderEntryNew synchronizeFenixAndSantanderStates(User user, SantanderEntryNew entryNew) {
+    private SantanderEntryNew synchronizeFenixAndSantanderStates(User user, SantanderEntryNew entry) {
         GetRegisterResponse registerData = getRegister(user);
         GetRegisterStatus status = registerData.getStatus();
 
-        SantanderEntryNew previousEntry = entryNew.getPrevious();
+        SantanderEntryNew previousEntry = entry.getPrevious();
 
         if (previousEntry == null) {
             if (status.equals(GetRegisterStatus.NO_RESULT)) {
-                entryNew.updateState(SantanderCardState.IGNORED);
-                return entryNew;
+                entry.updateState(SantanderCardState.IGNORED);
+                return entry;
             } else {
-                return checkAndUpdateState(entryNew, registerData);
+                return checkAndUpdateState(entry, registerData);
             }
         }
 
@@ -144,10 +144,10 @@ public class SantanderRequestCardService {
                 previousEntry.getSantanderCardInfo() != null ? previousEntry.getSantanderCardInfo().getMifareNumber() : null;
 
         if (Strings.isNullOrEmpty(newMifare) || Strings.isNullOrEmpty(oldMifare) || !newMifare.equals(oldMifare)) {
-            return checkAndUpdateState(entryNew, registerData);
+            return checkAndUpdateState(entry, registerData);
         } else {
-            entryNew.updateState(SantanderCardState.IGNORED);
-            return entryNew;
+            entry.updateState(SantanderCardState.IGNORED);
+            return entry;
         }
     }
 
@@ -193,18 +193,18 @@ public class SantanderRequestCardService {
 
     @Atomic(mode = TxMode.WRITE)
     private SantanderEntryNew createOrResetEntry(User user) {
-        SantanderEntryNew entry = user.getCurrentSantanderEntry();
+        SantanderEntryNew entryNew = user.getCurrentSantanderEntryNew();
         SantanderUser santanderUser = new SantanderUser(user, userInfoService);
-        if (entry == null) {
+        if (entryNew == null) {
             return new SantanderEntryNew(santanderUser);
         }
 
-        SantanderCardState cardState = entry.getState();
+        SantanderCardState cardState = entryNew.getState();
 
         switch (cardState) {
             case IGNORED:
-                entry.reset(santanderUser);
-                return entry;
+                entryNew.reset(santanderUser);
+                return entryNew;
             case ISSUED:
                 return new SantanderEntryNew(santanderUser);
             default:
