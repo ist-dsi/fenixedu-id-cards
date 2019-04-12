@@ -21,12 +21,16 @@ import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.PhotoType;
 import org.fenixedu.academic.domain.Photograph;
 import org.fenixedu.academic.util.ContentType;
+import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.idcards.IdCardsTestUtils;
 import org.fenixedu.idcards.domain.SantanderEntryNew;
+import org.fenixedu.idcards.domain.SantanderUser;
 import org.fenixedu.idcards.utils.SantanderCardState;
+import org.fenixedu.santandersdk.dto.CreateRegisterRequest;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
 import org.fenixedu.santandersdk.dto.GetRegisterResponse;
 import org.fenixedu.santandersdk.dto.GetRegisterStatus;
+import org.fenixedu.santandersdk.dto.RegisterAction;
 import org.fenixedu.santandersdk.service.SantanderCardService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -82,24 +86,18 @@ public class SantanderRequestCardServiceTest {
     }
 
     @Test
-    public void createRegister_noPreviousEntry_success() throws SantanderCardMissingDataException {
-        Person person = IdCardsTestUtils.createPerson("createRegisterSuccess");
-        Photograph photo = new Photograph(PhotoType.INSTITUTIONAL, ContentType.PNG,
-                BaseEncoding.base64().decode(PHOTO_ENCODED));
-        person.setPersonalPhoto(photo);
-
+    public void createRegister_noPreviousEntry_success() {
         SantanderCardService mockedService = mock(SantanderCardService.class);
+        when(mockedService.createRegister(any(CreateRegisterRequest.class))).thenReturn(successResponse());
 
-        when(mockedService.createRegister(any(String.class), any(byte[].class))).thenReturn(successResponse());
+
+        User user = IdCardsTestUtils.createPerson("createRegisterSuccess");
+        SantanderRequestCardService service = new SantanderRequestCardService(mockedService, mock(IUserInfoService.class));
+        service.createRegister(user, RegisterAction.NOVO);
 
 
-        SantanderRequestCardService service = new SantanderRequestCardService(mockedService);
-
-        service.createRegister("entry", person);
-
-        assertNotNull(person.getCurrentSantanderEntry());
-        SantanderEntryNew entry = person.getCurrentSantanderEntry();
-
+        assertNotNull(user.getCurrentSantanderEntry());
+        SantanderEntryNew entry = user.getCurrentSantanderEntry();
         assertTrue(entry.wasRegisterSuccessful());
         assertEquals("entry", entry.getRequestLine());
         assertEquals("response", entry.getResponseLine());
@@ -107,25 +105,18 @@ public class SantanderRequestCardServiceTest {
     }
 
     @Test
-    public void createRegister_noPreviousEntry_failWithError() throws SantanderCardMissingDataException {
-        Person person = IdCardsTestUtils.createPerson("createRegisterFailWithError");
-        Photograph photo = new Photograph(PhotoType.INSTITUTIONAL, ContentType.PNG,
-                BaseEncoding.base64().decode(PHOTO_ENCODED));
-        person.setPersonalPhoto(photo);
-
+    public void createRegister_noPreviousEntry_failWithError() {
         SantanderCardService mockedService = mock(SantanderCardService.class);
+        when(mockedService.createRegister(any(CreateRegisterRequest.class))).thenReturn(errorResponse());
 
 
-        when(mockedService.createRegister(any(String.class), any(byte[].class))).thenReturn(errorResponse());
+        User user = IdCardsTestUtils.createPerson("createRegisterFailWithError");
+        SantanderRequestCardService service = new SantanderRequestCardService(mockedService, mock(IUserInfoService.class));
+        service.createRegister(user, mock(RegisterAction.class));
 
 
-        SantanderRequestCardService service = new SantanderRequestCardService(mockedService);
-
-        service.createRegister("entry", person);
-
-        assertNotNull(person.getCurrentSantanderEntry());
-        SantanderEntryNew entry = person.getCurrentSantanderEntry();
-
+        assertNotNull(user.getCurrentSantanderEntry());
+        SantanderEntryNew entry = user.getCurrentSantanderEntry();
         assertTrue(!entry.wasRegisterSuccessful());
         assertEquals("entry", entry.getRequestLine());
         assertEquals("error", entry.getErrorDescription());
@@ -133,22 +124,18 @@ public class SantanderRequestCardServiceTest {
     }
 
     @Test
-    public void createRegister_noPreviousEntry_failCommunication() throws SantanderCardMissingDataException {
-        Person person = IdCardsTestUtils.createPerson("createRegisterFailCommunication");
-        Photograph photo = new Photograph(PhotoType.INSTITUTIONAL, ContentType.PNG,
-                BaseEncoding.base64().decode(PHOTO_ENCODED));
-        person.setPersonalPhoto(photo);
-
+    public void createRegister_noPreviousEntry_failCommunication() {
         SantanderCardService mockedService = mock(SantanderCardService.class);
+        when(mockedService.createRegister(any(CreateRegisterRequest.class))).thenThrow(WebServiceException.class);
 
-        when(mockedService.createRegister(any(String.class), any(byte[].class))).thenThrow(WebServiceException.class);
 
-        SantanderRequestCardService service = new SantanderRequestCardService(mockedService);
+        User user = IdCardsTestUtils.createPerson("createRegisterFailCommunication");
+        SantanderRequestCardService service = new SantanderRequestCardService(mockedService, mock(IUserInfoService.class));
+        service.createRegister(user, mock(RegisterAction.class));
 
-        service.createRegister("entry", person);
-        assertNotNull(person.getCurrentSantanderEntry());
-        SantanderEntryNew entry = person.getCurrentSantanderEntry();
 
+        assertNotNull(user.getCurrentSantanderEntry());
+        SantanderEntryNew entry = user.getCurrentSantanderEntry();
         assertTrue(!entry.wasRegisterSuccessful());
         assertEquals("entry", entry.getRequestLine());
         assertNotNull(entry.getErrorDescription());
@@ -156,29 +143,26 @@ public class SantanderRequestCardServiceTest {
     }
     
     @Test
-    public void createRegister_noPreviousEntry_failCommunication_getRegister_readyForProduction() throws SantanderCardMissingDataException {
+    public void createRegister_noPreviousEntry_failCommunication_getRegister_readyForProduction() {
         // ##### Arrange #####
         SantanderCardService mockedService = mock(SantanderCardService.class);
-        when(mockedService.createRegister(any(String.class), any(byte[].class))).thenThrow(WebServiceException.class);
+        when(mockedService.createRegister(any(CreateRegisterRequest.class))).thenThrow(WebServiceException.class);
         when(mockedService.getRegister(any(String.class))).thenReturn(getRegisterReadyForProduction());
 
         // ##### Act #####
-        Person person = IdCardsTestUtils.createPerson("createRegisterFailCommunicationAndSyncNew");
-        Photograph photo = new Photograph(PhotoType.INSTITUTIONAL, ContentType.PNG,
-                BaseEncoding.base64().decode(PHOTO_ENCODED));
-        person.setPersonalPhoto(photo);
-        SantanderRequestCardService service = new SantanderRequestCardService(mockedService);
+        User user = IdCardsTestUtils.createPerson("createRegisterFailCommunicationAndSyncNew");
+        SantanderRequestCardService service = new SantanderRequestCardService(mockedService, mock(IUserInfoService.class));
         String TUI_ENTRY = "entry";
-        service.createRegister(TUI_ENTRY, person); //createRegister fails with communicayiom error
-        service.getOrUpdateState(person); //getRegister is called and state is synched with santander
+        service.createRegister(user, RegisterAction.NOVO); //createRegister fails with communicayiom error
+        service.getOrUpdateState(user); //getRegister is called and state is synched with santander
         
         // ##### Assert #####
-        List<RegisterAction> availableActions = service.getPersonAvailableActions(person); //getRegister is called
-        verify(mockedService, times(1)).createRegister(any(String.class), any(byte[].class));
+        List<RegisterAction> availableActions = service.getPersonAvailableActions(user); //getRegister is called
+        verify(mockedService, times(1)).createRegister(any(CreateRegisterRequest.class));
         verify(mockedService, times(2)).getRegister(any(String.class));
         assertTrue(availableActions.isEmpty());
 
-        SantanderEntryNew entry = person.getCurrentSantanderEntry();
+        SantanderEntryNew entry = user.getCurrentSantanderEntry();
         assertNotNull(entry);
         assertTrue(entry.wasRegisterSuccessful());
         assertEquals(TUI_ENTRY, entry.getRequestLine());
@@ -189,30 +173,28 @@ public class SantanderRequestCardServiceTest {
     }
 
     @Test
-    public void createRegister_noPreviousEntry_failCommunication_getRegister_issued() throws SantanderCardMissingDataException {
+    public void createRegister_noPreviousEntry_failCommunication_getRegister_issued() {
         // ##### Arrange #####
         SantanderCardService mockedService = mock(SantanderCardService.class);
-        when(mockedService.createRegister(any(String.class), any(byte[].class))).thenThrow(WebServiceException.class);
+        when(mockedService.createRegister(any(CreateRegisterRequest.class))).thenThrow(WebServiceException.class);
         when(mockedService.getRegister(any(String.class))).thenReturn(getRegisterIssued(MIFARE1));
 
         // ##### Act #####
-        Person person = IdCardsTestUtils.createPerson("createRegisterFailCommunicationAndSyncIssued");
-        Photograph photo = new Photograph(PhotoType.INSTITUTIONAL, ContentType.PNG, BaseEncoding.base64().decode(PHOTO_ENCODED));
-        person.setPersonalPhoto(photo);
-        SantanderRequestCardService service = new SantanderRequestCardService(mockedService);
+        User user = IdCardsTestUtils.createPerson("createRegisterFailCommunicationAndSyncIssued");
+        SantanderRequestCardService service = new SantanderRequestCardService(mockedService, mock(IUserInfoService.class));
         String TUI_ENTRY = expiredEntry();
-        service.createRegister(TUI_ENTRY, person); //createRegister fails with communicayiom error
-        service.getOrUpdateState(person); //getRegister is called and state is synched with santander
+        service.createRegister(user, mock(RegisterAction)); //createRegister fails with communicayiom error
+        service.getOrUpdateState(user); //getRegister is called and state is synched with santander
         
         // ##### Assert #####
-        List<RegisterAction> availableActions = service.getPersonAvailableActions(person); //getRegister should not be called
-        verify(mockedService, times(1)).createRegister(any(String.class), any(byte[].class));
+        List<RegisterAction> availableActions = service.getPersonAvailableActions(user); //getRegister should not be called
+        verify(mockedService, times(1)).createRegister(any(CreateRegisterRequest.class));
         verify(mockedService, times(1)).getRegister(any(String.class));
         assertTrue(availableActions.stream().anyMatch(a -> a.equals(RegisterAction.REMI)));
         assertTrue(availableActions.stream().anyMatch(a -> a.equals(RegisterAction.RENU)));
         assertEquals(availableActions.size(), 2);
 
-        SantanderEntryNew entry = person.getCurrentSantanderEntry();
+        SantanderEntryNew entry = user.getCurrentSantanderEntry();
         assertNotNull(entry);
         assertTrue(entry.wasRegisterSuccessful());
         assertEquals(TUI_ENTRY, entry.getRequestLine());

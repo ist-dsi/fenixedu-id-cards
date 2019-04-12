@@ -32,7 +32,7 @@ public class SantanderUser {
         return userInfoService.getUserRoles(user);
     }
 
-    public byte[] getPhoto() {
+    public String getPhoto() {
         return userInfoService.getUserPhoto(user);
     }
 

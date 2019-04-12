@@ -111,7 +111,10 @@ public class SantanderRequestCardService {
                 break;
 
             case NO_RESULT:
-                entryNew.updateState(SantanderCardState.IGNORED);
+                // syncing problem between both services
+                if (!entryNew.wasRegisterSuccessful()) {
+                    entryNew.updateState(SantanderCardState.IGNORED);
+                }
                 break;
 
             default:

@@ -52,7 +52,7 @@ class SantanderEntryNew {
     DateTime lastUpdate;
     String errorDescription;
     SantanderCardState state;
-    bytearray photo;
+    String base64Photo;
 }
 
 class SantanderCardInfo {	

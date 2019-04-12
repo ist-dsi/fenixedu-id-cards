@@ -41,7 +41,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
             currentEntry.setNext(this);
         }
         setUser(user);
-        setPhoto(santanderUser.getPhoto());
+        setBase64Photo(santanderUser.getPhoto());
         /*setPhotograph(santanderUser.getPersonalPhoto());*/
         setLastUpdate(DateTime.now());
 
@@ -54,7 +54,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     public void update(SantanderUser user, String requestLine) {
         setLastUpdate(DateTime.now());
         setRequestLine(requestLine);
-        setPhoto(user.getPhoto());
+        setBase64Photo(user.getPhoto());
         /*setPhotograph(santanderUser.getPersonalPhoto());*/
     }
 
@@ -74,7 +74,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         setLastUpdate(DateTime.now());
         setState(SantanderCardState.PENDING);
         setRequestLine(null);
-        setPhoto(user.getPhoto());
+        setBase64Photo(user.getPhoto());
         /*setPhotograph(santanderUser.getPersonalPhoto());*/
     }
 
