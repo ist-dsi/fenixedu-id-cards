@@ -55,7 +55,7 @@ relation RootDomainObjectSantanderEntryNew {
 
 relation UserSantanderEntryNew {
 	.org.fenixedu.bennu.core.domain.User playsRole user;
-	SantanderEntryNew playsRole currentSantanderEntryNew;
+	SantanderEntryNew playsRole currentSantanderEntry;
 }
 
 relation PreviousSantanderEntryNew {

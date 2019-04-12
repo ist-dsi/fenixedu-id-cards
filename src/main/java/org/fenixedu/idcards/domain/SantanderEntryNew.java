@@ -31,7 +31,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     public SantanderEntryNew(SantanderUser santanderUser) {
         User user = santanderUser.getUser();
         setRootDomainObject(Bennu.getInstance());
-        SantanderEntryNew currentEntry = user.getCurrentSantanderEntryNew();
+        SantanderEntryNew currentEntry = user.getCurrentSantanderEntry();
         if (currentEntry != null) {
             setPrevious(currentEntry);
             currentEntry.setNext(this);
@@ -96,7 +96,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     public static List<SantanderEntryNew> getSantanderEntryHistory(User user) {
         LinkedList<SantanderEntryNew> history = new LinkedList<>();
 
-        for(SantanderEntryNew entry = user.getCurrentSantanderEntryNew(); entry != null; entry = entry.getPrevious()) {
+        for(SantanderEntryNew entry = user.getCurrentSantanderEntry(); entry != null; entry = entry.getPrevious()) {
             history.addFirst(entry);
         }
 

@@ -59,7 +59,7 @@ public class SantanderRequestCardService {
     }
 
     public SantanderEntryNew getOrUpdateState(User user) {
-        SantanderEntryNew entryNew = user.getCurrentSantanderEntryNew();
+        SantanderEntryNew entryNew = user.getCurrentSantanderEntry();
 
         if (entryNew == null) {
             return null;
@@ -193,7 +193,7 @@ public class SantanderRequestCardService {
 
     @Atomic(mode = TxMode.WRITE)
     private SantanderEntryNew createOrResetEntry(User user) {
-        SantanderEntryNew entryNew = user.getCurrentSantanderEntryNew();
+        SantanderEntryNew entryNew = user.getCurrentSantanderEntry();
         SantanderUser santanderUser = new SantanderUser(user, userInfoService);
         if (entryNew == null) {
             return new SantanderEntryNew(santanderUser);
