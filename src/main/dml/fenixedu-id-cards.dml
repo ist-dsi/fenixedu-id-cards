@@ -24,21 +24,18 @@ enum org.fenixedu.idcards.domain.SantanderCardState as SantanderCardState;
  */
 
 class SantanderEntryNew {
+	DateTime lastUpdate;
     String requestLine;
-    String responseLine;
-    DateTime lastUpdate;
+    String responseLine;    
     String errorDescription;
     SantanderCardState state;
-    String base64Photo;
 }
 
 class SantanderCardInfo {	
-	DateTime lastUpdate;
-	String serialNumber;
 	String mifareNumber;
-	DateTime expeditionDate;
 	DateTime expiryDate;
-	String nameOnCard;
+	String cardName;
+	bytearray photo;
 }
 
 /*

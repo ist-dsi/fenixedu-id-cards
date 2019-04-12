@@ -1,10 +1,12 @@
 package org.fenixedu.idcards.domain;
 
+import java.awt.image.BufferedImage;
+import java.util.List;
+
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.idcards.service.IUserInfoService;
 import org.fenixedu.santandersdk.dto.CreateRegisterRequest;
-
-import java.util.List;
+import org.fenixedu.santandersdk.dto.RegisterAction;
 
 public class SantanderUser {
     private User user;
@@ -15,7 +17,7 @@ public class SantanderUser {
         this.userInfoService = userInfoService;
     }
 
-    public CreateRegisterRequest toCreateRegisterRequest() {
+    public CreateRegisterRequest toCreateRegisterRequest(RegisterAction action) {
         CreateRegisterRequest createRegisterRequest = new CreateRegisterRequest();
 
         createRegisterRequest.setRoles(getRoles());
@@ -24,6 +26,7 @@ public class SantanderUser {
         createRegisterRequest.setDepartmentAcronym(getDepartmentAcronym());
         createRegisterRequest.setCampus(getCampus());
         createRegisterRequest.setUsername(user.getUsername());
+        createRegisterRequest.setAction(action);
 
         return createRegisterRequest;
     }
@@ -32,7 +35,7 @@ public class SantanderUser {
         return userInfoService.getUserRoles(user);
     }
 
-    public String getPhoto() {
+    public BufferedImage getPhoto() {
         return userInfoService.getUserPhoto(user);
     }
 
