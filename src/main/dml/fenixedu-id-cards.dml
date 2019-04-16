@@ -35,7 +35,13 @@ class SantanderCardInfo {
 	String mifareNumber;
 	DateTime expiryDate;
 	String cardName;
+	String identificationNumber;
 	bytearray photo;
+}
+
+class SantanderCardStateTransition {
+	SantanderCardState state;
+	DateTime transitionDate;
 }
 
 /*
@@ -64,6 +70,13 @@ relation SantanderCardSantanderEntryNew {
 	SantanderEntryNew playsRole santanderEntriesNew;
 	SantanderCardInfo playsRole SantanderCardInfo {
 		multiplicity 0..1;
+	}
+}
+
+relation SantanderCardTransitions {
+	SantanderCardInfo playsRole santanderCard;
+	SantanderCardStateTransition playsRole santanderCardStateTransitions {
+		multiplicity 0..*;
 	}
 }
 

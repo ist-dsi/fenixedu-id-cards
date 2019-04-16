@@ -35,10 +35,9 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
             setPrevious(currentEntry);
             currentEntry.setNext(this);
         }
-        setUser(user);
         setLastUpdate(DateTime.now());
+        setUser(user);
         setState(SantanderCardState.PENDING);
-        setSantanderCardInfo(new SantanderCardInfo());
         setRequestLine("");
         setResponseLine("");
         setErrorDescription("");
@@ -46,19 +45,23 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     
     @Atomic(mode = TxMode.WRITE)
     public void update(CreateRegisterResponse response) {
+
+        if (response.wasRegisterSuccessful()) {
+            update(SantanderCardState.NEW, response);
+            return;
+        }
+
         ErrorType errorType = response.getErrorType();
         switch (errorType) {
-        case REQUEST_REFUSED:
-        case INVALID_INFORMATION:
-            update(SantanderCardState.IGNORED, response);
-        case SANTANDER_COMMUNICATION:
-            update(SantanderCardState.PENDING, response);
-            break;
-        case NONE:
-            update(SantanderCardState.NEW, response);
-            break;
-        default:
-            break;
+            case REQUEST_REFUSED:
+            case INVALID_INFORMATION:
+                update(SantanderCardState.IGNORED, response);
+                break;
+            case SANTANDER_COMMUNICATION:
+                update(SantanderCardState.PENDING, response);
+                break;
+            default:
+                break;
         }
 
         updateCardInfo(response);
@@ -66,35 +69,51 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
-    public void update(GetRegisterResponse registerData) {
+    public void updateIssued(GetRegisterResponse registerData) {
+        updateState(SantanderCardState.ISSUED);
+
         SantanderCardInfo cardInfo = getSantanderCardInfo();
         cardInfo.setMifareNumber(registerData.getMifare());
-        setState(SantanderCardState.ISSUED);
+
         setLastUpdate(DateTime.now());
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
-    public void updateState(SantanderCardState state) {        
-        setState(state);
-        setLastUpdate(DateTime.now());
-    }
+    public void updateState(SantanderCardState state) {
+        if (state != SantanderCardState.IGNORED && state != SantanderCardState.REJECTED) {
+            SantanderCardInfo cardInfo = getSantanderCardInfo();
 
-    public void updateCardInfo(CreateRegisterResponse response) {
-        ErrorType errorType = response.getErrorType();
-        if (errorType != ErrorType.INVALID_INFORMATION) {
-            SantanderCardInfo cardInfo =
-                    new SantanderCardInfo(response.getCardName(), response.getCardExpiryDate(), response.getPhoto());
-            setSantanderCardInfo(cardInfo);
+            if (cardInfo == null) {
+                cardInfo = new SantanderCardInfo();
+                setSantanderCardInfo(cardInfo);
+            } else if (cardInfo.getCurrentState() == SantanderCardState.PENDING) {
+                cardInfo.deleteTransitions();
+            }
+
+            if (cardInfo.getCurrentState() != state) {
+                new SantanderCardStateTransition(getSantanderCardInfo(), state, DateTime.now());
+            }
+        } else {
+            setState(state);
         }
     }
 
+    public void updateCardInfo(CreateRegisterResponse response) {
+        if (response.wasRegisterSuccessful() || response.getErrorType() == ErrorType.SANTANDER_COMMUNICATION) {
+            getSantanderCardInfo().update(response);
+        }
+    }
+
+    @Atomic(mode = Atomic.TxMode.WRITE)
     public void update(SantanderCardState state, CreateRegisterResponse response) {
         updateState(state);
+        updateCardInfo(response);
         setRequestLine(Strings.isNullOrEmpty(response.getRequestLine()) ? "" : response.getRequestLine());
         setResponseLine(Strings.isNullOrEmpty(response.getResponseLine()) ? "" : response.getResponseLine());
         setErrorDescription(Strings.isNullOrEmpty(response.getErrorDescription()) ? "" : response.getErrorDescription());
     }
 
+    @Atomic(mode = Atomic.TxMode.WRITE)
     public void reset() {
         setLastUpdate(DateTime.now());
         setState(SantanderCardState.PENDING);
@@ -110,10 +129,11 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         return history;
     }
 
-    public static List<SantanderEntryNew> getSantanderCardHistory(User user) {
+    public static List<SantanderCardInfo> getSantanderCardHistory(User user) {
         return getSantanderEntryHistory(user).stream()
-                .filter(SantanderEntryNew::wasRegisterSuccessful)
+                .filter(e -> e.getSantanderCardInfo() != null)
                 .sorted(REVERSE_COMPARATOR_BY_CREATED_DATE)
+                .map(SantanderEntryNew::getSantanderCardInfo)
                 .collect(Collectors.toList());
     }
 
@@ -144,8 +164,25 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     }
 
     public boolean canRenovateCard() {
+        SantanderCardInfo cardInfo = getSantanderCardInfo();
+
+        if (cardInfo == null) {
+            return false;
+        }
+
         DateTime expiryDate = getSantanderCardInfo().getExpiryDate();
         return canReemitCard() && expiryDate != null
                 && Days.daysBetween(DateTime.now().withTimeAtStartOfDay(), expiryDate.withTimeAtStartOfDay()).getDays() < 60;
+    }
+
+    @Override
+    public SantanderCardState getState() {
+        SantanderCardInfo cardInfo = getSantanderCardInfo();
+
+        if (cardInfo == null) {
+            return super.getState();
+        }
+
+        return getSantanderCardInfo().getCurrentState();
     }
 }

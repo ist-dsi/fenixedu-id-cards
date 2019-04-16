@@ -2,8 +2,10 @@ package org.fenixedu.idcards.service;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.dto.SantanderCardInfoDto;
 import org.fenixedu.idcards.domain.SantanderEntryNew;
 import org.fenixedu.idcards.domain.SantanderUser;
 import org.fenixedu.idcards.domain.SantanderCardState;
@@ -37,6 +39,14 @@ public class SantanderRequestCardService {
 
     private Logger logger = LoggerFactory.getLogger(SantanderRequestCardService.class);
 
+    public List<SantanderCardInfoDto> getUserSantanderCards(String username) {
+        User user = User.findByUsername(username);
+
+        return SantanderEntryNew.getSantanderCardHistory(user)
+                .stream().map(SantanderCardInfoDto::new)
+                .collect(Collectors.toList());
+    }
+
     public List<RegisterAction> getPersonAvailableActions(User user) {
 
         List<RegisterAction> actions = new LinkedList<>();
@@ -59,7 +69,7 @@ public class SantanderRequestCardService {
     }
 
     public SantanderEntryNew getOrUpdateState(User user) {
-        SantanderEntryNew entryNew = user.getCurrentSantanderEntry();
+         SantanderEntryNew entryNew = user.getCurrentSantanderEntry();
 
         if (entryNew == null) {
             return null;
@@ -107,7 +117,7 @@ public class SantanderRequestCardService {
                 break;
 
             case ISSUED:
-                entry.update(registerData);
+                entry.updateIssued(registerData);
                 break;
 
             case NO_RESULT:
@@ -131,6 +141,7 @@ public class SantanderRequestCardService {
         SantanderEntryNew previousEntry = entry.getPrevious();
 
         if (previousEntry == null) {
+            // TODO: check synchronization between the 2 webservices
             if (status.equals(GetRegisterStatus.NO_RESULT)) {
                 entry.updateState(SantanderCardState.IGNORED);
                 return entry;
@@ -200,7 +211,7 @@ public class SantanderRequestCardService {
             return entry;
         case REJECTED:
         case ISSUED:
-            new SantanderEntryNew(user);
+            return new SantanderEntryNew(user);
         default:
             //should be impossible to reach;
             throw new RuntimeException();
