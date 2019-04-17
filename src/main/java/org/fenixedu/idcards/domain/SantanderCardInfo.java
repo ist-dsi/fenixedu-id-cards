@@ -1,7 +1,7 @@
 package org.fenixedu.idcards.domain;
 
-import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
-import org.joda.time.DateTime;
+import org.fenixedu.santandersdk.dto.CardPreviewBean;
+
 import pt.ist.fenixframework.Atomic;
 
 public class SantanderCardInfo extends SantanderCardInfo_Base {
@@ -10,16 +10,15 @@ public class SantanderCardInfo extends SantanderCardInfo_Base {
         super();
     }
     
-    public SantanderCardInfo(String cardName, DateTime expiryDate, byte[] photo) {
-        setCardName(cardName);
-        setExpiryDate(expiryDate);
-        setPhoto(photo);
+    public SantanderCardInfo(CardPreviewBean cardPreviewBean) {
+        update(cardPreviewBean);
     }
 
-    public void update(CreateRegisterResponse response) {
-        setCardName(response.getCardName());
-        setExpiryDate(response.getCardExpiryDate());
-        setPhoto(response.getPhoto());
+    public void update(CardPreviewBean cardPreviewBean) {
+        setIdentificationNumber(cardPreviewBean.getIdentificationNumber());
+        setCardName(cardPreviewBean.getCardName());
+        setExpiryDate(cardPreviewBean.getExpiryDate());
+        setPhoto(cardPreviewBean.getPhoto());
     }
     public SantanderCardState getCurrentState() {
         SantanderCardStateTransition stateTransition = getSantanderCardStateTransitionsSet().stream()

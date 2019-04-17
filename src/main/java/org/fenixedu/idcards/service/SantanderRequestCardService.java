@@ -6,14 +6,16 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.dto.SantanderCardInfoDto;
+import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.idcards.domain.SantanderEntryNew;
 import org.fenixedu.idcards.domain.SantanderUser;
-import org.fenixedu.idcards.domain.SantanderCardState;
+import org.fenixedu.santandersdk.dto.CardPreviewBean;
 import org.fenixedu.santandersdk.dto.CreateRegisterRequest;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
 import org.fenixedu.santandersdk.dto.GetRegisterResponse;
 import org.fenixedu.santandersdk.dto.GetRegisterStatus;
 import org.fenixedu.santandersdk.dto.RegisterAction;
+import org.fenixedu.santandersdk.exception.SantanderValidationException;
 import org.fenixedu.santandersdk.service.SantanderCardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +50,13 @@ public class SantanderRequestCardService {
     }
 
     public List<RegisterAction> getPersonAvailableActions(User user) {
+        SantanderEntryNew personEntry = getOrUpdateState(user);
+        return getPersonAvailableActions(user, personEntry);
+    }
+
+    public List<RegisterAction> getPersonAvailableActions(User user, SantanderEntryNew personEntry) {
 
         List<RegisterAction> actions = new LinkedList<>();
-        SantanderEntryNew personEntry = getOrUpdateState(user);
 
         if (personEntry == null || personEntry.canRegisterNew()) {
             actions.add(RegisterAction.NOVO);
@@ -181,37 +187,46 @@ public class SantanderRequestCardService {
     }
 
     public void createRegister(User user, RegisterAction action) {
-        if (!getPersonAvailableActions(user).contains(action)) {
+        if (!getPersonAvailableActions(user, user.getCurrentSantanderEntry()).contains(action)) {
             throw new RuntimeException(
                     "Action (" + action.getLocalizedName() + ") not available for user " + user.getUsername());
         }
 
-        SantanderEntryNew entry = createOrResetEntry(user);
         SantanderUser santanderUser = new SantanderUser(user, userInfoService);
         CreateRegisterRequest createRegisterRequest = santanderUser.toCreateRegisterRequest(action);
+        CardPreviewBean cardPreviewBean;
 
-        CreateRegisterResponse response = santanderCardService.createRegister(createRegisterRequest);
+        try {
+            cardPreviewBean = santanderCardService.generateCardRequest(createRegisterRequest);
+        } catch (SantanderValidationException sve) {
+            //TODO send proper error
+            throw new RuntimeException(sve.getMessage());
+        }
+
+        SantanderEntryNew entry = createOrResetEntry(user, cardPreviewBean);
+
+        CreateRegisterResponse response = santanderCardService.createRegister(cardPreviewBean);
 
         entry.update(response);
     }
 
     @Atomic(mode = TxMode.WRITE)
-    private SantanderEntryNew createOrResetEntry(User user) {
+    private SantanderEntryNew createOrResetEntry(User user, CardPreviewBean cardPreviewBean) {
         SantanderEntryNew entry = user.getCurrentSantanderEntry();
 
         if (entry == null) {
-            return new SantanderEntryNew(user);
+            return new SantanderEntryNew(user, cardPreviewBean);
         }
 
         SantanderCardState cardState = entry.getState();
 
         switch (cardState) {
         case IGNORED:
-            entry.reset();
+            entry.reset(cardPreviewBean);
             return entry;
         case REJECTED:
         case ISSUED:
-            return new SantanderEntryNew(user);
+            return new SantanderEntryNew(user, cardPreviewBean);
         default:
             //should be impossible to reach;
             throw new RuntimeException();

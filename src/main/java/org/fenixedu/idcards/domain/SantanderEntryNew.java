@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.santandersdk.dto.CardPreviewBean;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse.ErrorType;
 import org.fenixedu.santandersdk.dto.GetRegisterResponse;
@@ -28,19 +29,15 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
 
     static public Comparator<SantanderEntryNew> REVERSE_COMPARATOR_BY_CREATED_DATE = COMPARATOR_BY_CREATED_DATE.reversed();
 
-    public SantanderEntryNew(User user) {
+    public SantanderEntryNew(User user, CardPreviewBean cardPreviewBean) {
         setRootDomainObject(Bennu.getInstance());
         SantanderEntryNew currentEntry = user.getCurrentSantanderEntry();
         if (currentEntry != null) {
             setPrevious(currentEntry);
             currentEntry.setNext(this);
         }
-        setLastUpdate(DateTime.now());
         setUser(user);
-        setState(SantanderCardState.PENDING);
-        setRequestLine("");
-        setResponseLine("");
-        setErrorDescription("");
+        reset(cardPreviewBean);
     }
     
     @Atomic(mode = TxMode.WRITE)
@@ -54,7 +51,6 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         ErrorType errorType = response.getErrorType();
         switch (errorType) {
             case REQUEST_REFUSED:
-            case INVALID_INFORMATION:
                 update(SantanderCardState.IGNORED, response);
                 break;
             case SANTANDER_COMMUNICATION:
@@ -64,7 +60,6 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
                 break;
         }
 
-        updateCardInfo(response);
         setLastUpdate(DateTime.now());
     }
 
@@ -74,7 +69,6 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
 
         SantanderCardInfo cardInfo = getSantanderCardInfo();
         cardInfo.setMifareNumber(registerData.getMifare());
-
         setLastUpdate(DateTime.now());
     }
 
@@ -83,10 +77,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         if (state != SantanderCardState.IGNORED && state != SantanderCardState.REJECTED) {
             SantanderCardInfo cardInfo = getSantanderCardInfo();
 
-            if (cardInfo == null) {
-                cardInfo = new SantanderCardInfo();
-                setSantanderCardInfo(cardInfo);
-            } else if (cardInfo.getCurrentState() == SantanderCardState.PENDING) {
+            if (cardInfo.getCurrentState() == SantanderCardState.PENDING && state != SantanderCardState.PENDING) {
                 cardInfo.deleteTransitions();
             }
 
@@ -98,25 +89,21 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         }
     }
 
-    public void updateCardInfo(CreateRegisterResponse response) {
-        if (response.wasRegisterSuccessful() || response.getErrorType() == ErrorType.SANTANDER_COMMUNICATION) {
-            getSantanderCardInfo().update(response);
-        }
-    }
-
     @Atomic(mode = Atomic.TxMode.WRITE)
     public void update(SantanderCardState state, CreateRegisterResponse response) {
         updateState(state);
-        updateCardInfo(response);
-        setRequestLine(Strings.isNullOrEmpty(response.getRequestLine()) ? "" : response.getRequestLine());
         setResponseLine(Strings.isNullOrEmpty(response.getResponseLine()) ? "" : response.getResponseLine());
         setErrorDescription(Strings.isNullOrEmpty(response.getErrorDescription()) ? "" : response.getErrorDescription());
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
-    public void reset() {
+    public void reset(CardPreviewBean cardPreviewBean) {
         setLastUpdate(DateTime.now());
         setState(SantanderCardState.PENDING);
+        setRequestLine(cardPreviewBean.getRequestLine());
+        setSantanderCardInfo(new SantanderCardInfo(cardPreviewBean));
+        setResponseLine("");
+        setErrorDescription("");
     }
     
     public static List<SantanderEntryNew> getSantanderEntryHistory(User user) {
