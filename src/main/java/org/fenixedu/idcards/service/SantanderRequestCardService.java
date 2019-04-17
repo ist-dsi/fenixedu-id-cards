@@ -51,10 +51,10 @@ public class SantanderRequestCardService {
 
     public List<RegisterAction> getPersonAvailableActions(User user) {
         SantanderEntryNew personEntry = getOrUpdateState(user);
-        return getPersonAvailableActions(user, personEntry);
+        return getPersonAvailableActions(personEntry);
     }
 
-    public List<RegisterAction> getPersonAvailableActions(User user, SantanderEntryNew personEntry) {
+    public List<RegisterAction> getPersonAvailableActions(SantanderEntryNew personEntry) {
 
         List<RegisterAction> actions = new LinkedList<>();
 
@@ -120,18 +120,18 @@ public class SantanderRequestCardService {
             case RENU_REQUEST:
             case PRODUCTION:
                 entry.updateState(SantanderCardState.NEW);
-                break;
+                return entry;
 
             case ISSUED:
                 entry.updateIssued(registerData);
-                break;
+                return entry;
 
             case NO_RESULT:
                 // syncing problem between both services
                 if (!entry.wasRegisterSuccessful()) {
                     entry.updateState(SantanderCardState.IGNORED);
                 }
-                break;
+                return entry;
 
             default:
                 logger.debug("Not supported status:  " + status);
@@ -187,7 +187,7 @@ public class SantanderRequestCardService {
     }
 
     public void createRegister(User user, RegisterAction action) {
-        if (!getPersonAvailableActions(user, user.getCurrentSantanderEntry()).contains(action)) {
+        if (!getPersonAvailableActions(user.getCurrentSantanderEntry()).contains(action)) {
             throw new RuntimeException(
                     "Action (" + action.getLocalizedName() + ") not available for user " + user.getUsername());
         }

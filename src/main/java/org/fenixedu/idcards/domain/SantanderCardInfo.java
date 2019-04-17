@@ -32,6 +32,11 @@ public class SantanderCardInfo extends SantanderCardInfo_Base {
         return stateTransition.getState();
     }
 
+    public boolean isNotPendingOrIgnored() {
+        SantanderCardState state = getCurrentState();
+        return state != SantanderCardState.PENDING && state != SantanderCardState.IGNORED && state != SantanderCardState.REJECTED;
+    }
+
     @Atomic
     public void deleteTransitions() {
         for (SantanderCardStateTransition transition: getSantanderCardStateTransitionsSet()) {

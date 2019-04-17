@@ -118,7 +118,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
 
     public static List<SantanderCardInfo> getSantanderCardHistory(User user) {
         return getSantanderEntryHistory(user).stream()
-                .filter(e -> e.getSantanderCardInfo() != null)
+                .filter(e -> e.getSantanderCardInfo() != null && e.getState() != SantanderCardState.IGNORED)
                 .sorted(REVERSE_COMPARATOR_BY_CREATED_DATE)
                 .map(SantanderEntryNew::getSantanderCardInfo)
                 .collect(Collectors.toList());
@@ -164,12 +164,8 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
 
     @Override
     public SantanderCardState getState() {
-        SantanderCardInfo cardInfo = getSantanderCardInfo();
+        SantanderCardState state = getSantanderCardInfo().getCurrentState();
 
-        if (cardInfo == null) {
-            return super.getState();
-        }
-
-        return getSantanderCardInfo().getCurrentState();
+        return state == null ? super.getState() : state;
     }
 }
