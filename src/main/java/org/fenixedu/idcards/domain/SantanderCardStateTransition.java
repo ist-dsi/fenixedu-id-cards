@@ -9,8 +9,10 @@ public class SantanderCardStateTransition extends SantanderCardStateTransition_B
     public static Comparator<SantanderCardStateTransition> COMPARATOR_BY_TRANSITION_DATE = (p1, p2) -> {
         DateTime date1 = p1.getTransitionDate();
         DateTime date2 = p2.getTransitionDate();
-        return date2.compareTo(date1);
+        return date1.compareTo(date2);
     };
+
+    public static Comparator<SantanderCardStateTransition> REVERSED_COMPARATOR_BY_TRANSITION_DATE = COMPARATOR_BY_TRANSITION_DATE.reversed();
 
     public SantanderCardStateTransition() {
         super();

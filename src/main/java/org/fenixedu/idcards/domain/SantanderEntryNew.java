@@ -66,7 +66,6 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     @Atomic(mode = Atomic.TxMode.WRITE)
     public void updateIssued(GetRegisterResponse registerData) {
         updateState(SantanderCardState.ISSUED);
-
         SantanderCardInfo cardInfo = getSantanderCardInfo();
         cardInfo.setMifareNumber(registerData.getMifare());
         setLastUpdate(DateTime.now());
@@ -118,7 +117,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
 
     public static List<SantanderCardInfo> getSantanderCardHistory(User user) {
         return getSantanderEntryHistory(user).stream()
-                .filter(e -> e.getSantanderCardInfo() != null && e.getState() != SantanderCardState.IGNORED)
+                .filter(e -> e.getSantanderCardInfo() != null && e.getState() != SantanderCardState.IGNORED && e.getState() != SantanderCardState.PENDING)
                 .sorted(REVERSE_COMPARATOR_BY_CREATED_DATE)
                 .map(SantanderEntryNew::getSantanderCardInfo)
                 .collect(Collectors.toList());

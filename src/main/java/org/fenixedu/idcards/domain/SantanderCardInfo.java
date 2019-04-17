@@ -14,6 +14,7 @@ public class SantanderCardInfo extends SantanderCardInfo_Base {
         update(cardPreviewBean);
     }
 
+    @Atomic(mode = Atomic.TxMode.WRITE)
     public void update(CardPreviewBean cardPreviewBean) {
         setIdentificationNumber(cardPreviewBean.getIdentificationNumber());
         setCardName(cardPreviewBean.getCardName());
@@ -22,7 +23,7 @@ public class SantanderCardInfo extends SantanderCardInfo_Base {
     }
     public SantanderCardState getCurrentState() {
         SantanderCardStateTransition stateTransition = getSantanderCardStateTransitionsSet().stream()
-                .min(SantanderCardStateTransition.COMPARATOR_BY_TRANSITION_DATE)
+                .min(SantanderCardStateTransition.REVERSED_COMPARATOR_BY_TRANSITION_DATE)
                 .orElse(null);
 
         if (stateTransition == null) {
@@ -30,11 +31,6 @@ public class SantanderCardInfo extends SantanderCardInfo_Base {
         }
 
         return stateTransition.getState();
-    }
-
-    public boolean isNotPendingOrIgnored() {
-        SantanderCardState state = getCurrentState();
-        return state != SantanderCardState.PENDING && state != SantanderCardState.IGNORED && state != SantanderCardState.REJECTED;
     }
 
     @Atomic
