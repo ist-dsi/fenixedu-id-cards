@@ -37,7 +37,20 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
             currentEntry.setNext(this);
         }
         setUser(user);
+
         reset(cardPreviewBean);
+    }
+
+    public void reset(CardPreviewBean cardPreviewBean) {
+        setState(SantanderCardState.PENDING);
+        setRequestLine(cardPreviewBean.getRequestLine());
+        setResponseLine("");
+        setErrorDescription("");
+        setSantanderCardInfo(new SantanderCardInfo(cardPreviewBean));
+
+        DateTime now = DateTime.now();
+        createSantanderCardStateTransition(SantanderCardState.PENDING, now);
+        setLastUpdate(now);
     }
     
     @Atomic(mode = TxMode.WRITE)
@@ -59,52 +72,49 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
             default:
                 break;
         }
-
         setLastUpdate(DateTime.now());
     }
 
-    @Atomic(mode = Atomic.TxMode.WRITE)
-    public void updateIssued(GetRegisterResponse registerData) {
-        updateState(SantanderCardState.ISSUED);
-        SantanderCardInfo cardInfo = getSantanderCardInfo();
-        cardInfo.setMifareNumber(registerData.getMifare());
-        setLastUpdate(DateTime.now());
-    }
-
-    @Atomic(mode = Atomic.TxMode.WRITE)
-    public void updateState(SantanderCardState state) {
-        if (state != SantanderCardState.IGNORED && state != SantanderCardState.REJECTED) {
-            SantanderCardInfo cardInfo = getSantanderCardInfo();
-
-            if (cardInfo.getCurrentState() == SantanderCardState.PENDING && state != SantanderCardState.PENDING) {
-                cardInfo.deleteTransitions();
-            }
-
-            if (cardInfo.getCurrentState() != state) {
-                new SantanderCardStateTransition(getSantanderCardInfo(), state, DateTime.now());
-            }
-        } else {
-            setState(state);
-        }
-    }
-
-    @Atomic(mode = Atomic.TxMode.WRITE)
-    public void update(SantanderCardState state, CreateRegisterResponse response) {
+    private void update(SantanderCardState state, CreateRegisterResponse response) {
         updateState(state);
         setResponseLine(Strings.isNullOrEmpty(response.getResponseLine()) ? "" : response.getResponseLine());
         setErrorDescription(Strings.isNullOrEmpty(response.getErrorDescription()) ? "" : response.getErrorDescription());
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
-    public void reset(CardPreviewBean cardPreviewBean) {
-        setLastUpdate(DateTime.now());
-        setState(SantanderCardState.PENDING);
-        setRequestLine(cardPreviewBean.getRequestLine());
-        setSantanderCardInfo(new SantanderCardInfo(cardPreviewBean));
-        setResponseLine("");
-        setErrorDescription("");
+    public void updateIssued(GetRegisterResponse registerData) {
+        SantanderCardInfo cardInfo = getSantanderCardInfo();
+        cardInfo.setMifareNumber(registerData.getMifare());
+        setState(SantanderCardState.ISSUED);
+
+        DateTime now = DateTime.now();
+        createSantanderCardStateTransition(SantanderCardState.ISSUED, now);
+        setLastUpdate(now);
     }
-    
+
+    @Atomic(mode = Atomic.TxMode.WRITE)
+    public void updateState(SantanderCardState state) {
+        DateTime now = DateTime.now();
+
+        if (getState() != state && state != SantanderCardState.ISSUED) {
+            createSantanderCardStateTransition(state, now);
+            setState(state);
+        }
+        setLastUpdate(now);
+    }
+
+    public void createSantanderCardStateTransition(SantanderCardState state, DateTime now) {
+        SantanderCardInfo cardInfo = getSantanderCardInfo();
+        SantanderCardStateTransition transation = cardInfo.getLastTransition();
+
+        if (transation != null && transation.getTransitionDate().equals(now)) {
+            new SantanderCardStateTransition(getSantanderCardInfo(), state, now.plusMillis(1));
+        } else {
+            new SantanderCardStateTransition(getSantanderCardInfo(), state, now);
+        }
+
+    }
+
     public static List<SantanderEntryNew> getSantanderEntryHistory(User user) {
         LinkedList<SantanderEntryNew> history = new LinkedList<>();
 
@@ -161,10 +171,11 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
                 && Days.daysBetween(DateTime.now().withTimeAtStartOfDay(), expiryDate.withTimeAtStartOfDay()).getDays() < 60;
     }
 
-    @Override
-    public SantanderCardState getState() {
-        SantanderCardState state = getSantanderCardInfo().getCurrentState();
+    public static boolean hasMifare(User user, String mifare) {
+        if (Strings.isNullOrEmpty(mifare)) {
+            return false;
+        }
 
-        return state == null ? super.getState() : state;
+        return getSantanderCardHistory(user).stream().anyMatch(e -> e.getMifareNumber().equals(mifare));
     }
 }

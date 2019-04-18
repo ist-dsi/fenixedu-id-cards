@@ -157,10 +157,9 @@ public class SantanderRequestCardService {
         }
 
         String newMifare = registerData.getMifare();
-        String oldMifare =
-                previousEntry.getSantanderCardInfo() != null ? previousEntry.getSantanderCardInfo().getMifareNumber() : null;
 
-        if (Strings.isNullOrEmpty(newMifare) || Strings.isNullOrEmpty(oldMifare) || !newMifare.equals(oldMifare)) {
+        if (Strings.isNullOrEmpty(newMifare) || !SantanderEntryNew.hasMifare(user, newMifare)) {
+
             return checkAndUpdateState(entry, registerData);
         } else {
             entry.updateState(SantanderCardState.IGNORED);

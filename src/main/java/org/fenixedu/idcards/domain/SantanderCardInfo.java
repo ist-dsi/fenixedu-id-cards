@@ -1,5 +1,8 @@
 package org.fenixedu.idcards.domain;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.fenixedu.santandersdk.dto.CardPreviewBean;
 
 import pt.ist.fenixframework.Atomic;
@@ -21,6 +24,17 @@ public class SantanderCardInfo extends SantanderCardInfo_Base {
         setExpiryDate(cardPreviewBean.getExpiryDate());
         setPhoto(cardPreviewBean.getPhoto());
     }
+
+    public List<SantanderCardStateTransition> getOrderedTransitions() {
+        return getSantanderCardStateTransitionsSet().stream()
+                .sorted(SantanderCardStateTransition.COMPARATOR_BY_TRANSITION_DATE).collect(Collectors.toList());
+    }
+
+    public SantanderCardStateTransition getLastTransition() {
+        return getSantanderCardStateTransitionsSet().stream()
+                .min(SantanderCardStateTransition.REVERSED_COMPARATOR_BY_TRANSITION_DATE).orElse(null);
+    }
+
     public SantanderCardState getCurrentState() {
         SantanderCardStateTransition stateTransition = getSantanderCardStateTransitionsSet().stream()
                 .min(SantanderCardStateTransition.REVERSED_COMPARATOR_BY_TRANSITION_DATE)
