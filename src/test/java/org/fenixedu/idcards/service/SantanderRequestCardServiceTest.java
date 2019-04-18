@@ -380,7 +380,7 @@ public class SantanderRequestCardServiceTest {
 
         // Finalize transition to ISSUED
         when(mockedService.getRegister(any(String.class))).thenReturn(getRegisterIssued(MIFARE1));
-        Thread.sleep(1000);
+        Thread.sleep(1);
 
         List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
         assertTrue(availableActions.stream().anyMatch(a -> a.equals(RegisterAction.REMI)));
@@ -436,7 +436,7 @@ public class SantanderRequestCardServiceTest {
 
         // We need to wait, to ensure that the state transition for both transitions is at the same time
         // giving inconsistent ordering in the getCurrentState method... TODO: ?
-        Thread.sleep(1000);
+        Thread.sleep(1);
         List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
 
         entry = user.getCurrentSantanderEntry();
@@ -489,7 +489,7 @@ public class SantanderRequestCardServiceTest {
 
         // Finalize transition to ISSUED
         when(mockedService.getRegister(any(String.class))).thenReturn(getRegisterIssued(MIFARE1));
-        Thread.sleep(1000);
+        Thread.sleep(1);
 
         List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
         assertTrue(availableActions.stream().anyMatch(a -> a.equals(RegisterAction.REMI)));
@@ -520,11 +520,10 @@ public class SantanderRequestCardServiceTest {
         assertEquals(2, SantanderEntryNew.getSantanderEntryHistory(user).size());
     }
 
-    /*@Test
-    public void createRegister_withPreviousEntry_failWithCommunication_getRegister_readyForProduction() {
+    @Test
+    public void createRegister_withPreviousEntry_failWithCommunication_getRegister_readyForProduction() throws SantanderValidationException, InterruptedException {
         // ##### Arrange #####
-        CreateRegisterResponse communicationResponse = communicationErrorResponse();
-        communicationResponse.setRequestLine("entry2");
+        when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview()); // expired
         when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(successResponse()).thenReturn(communicationErrorResponse());
         when(mockedService.getRegister(any(String.class))).thenReturn(getRegisterIssued(MIFARE1), getRegisterReadyForProduction(),
                 getRegisterReadyForProduction());
@@ -533,13 +532,19 @@ public class SantanderRequestCardServiceTest {
         User user = IdCardsTestUtils.createPerson("createRegisterWithPreviousFailCommunicationAndSyncNew");
         SantanderRequestCardService service = new SantanderRequestCardService(mockedService, userInfoService);
         service.createRegister(user, RegisterAction.NOVO); //success
+        Thread.sleep(1);
         service.getOrUpdateState(user); //first card is issued
+
+        CardPreviewBean cardPreview2 = createCardPreview();
+        cardPreview2.setLine("entry2");
+        when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(cardPreview2); // expired
+
         service.createRegister(user, RegisterAction.REMI); //new card with communication error
         service.getOrUpdateState(user); //sync card state with santander
 
         // ##### Assert #####
         List<RegisterAction> availableActions = service.getPersonAvailableActions(user); //getRegister is called
-        verify(mockedService, times(2)).createRegister(any(CreateRegisterRequest.class));
+        verify(mockedService, times(2)).createRegister(any(CardPreviewBean.class));
         verify(mockedService, times(3)).getRegister(any(String.class));
         assertTrue(availableActions.isEmpty());
 
@@ -550,7 +555,7 @@ public class SantanderRequestCardServiceTest {
         assertNotNull(newEntry.getErrorDescription());
         assertTrue(newEntry.getErrorDescription().isEmpty());
         assertEquals(SantanderCardState.NEW, newEntry.getState());
-        assertNull(newEntry.getSantanderCardInfo());
+        assertNotNull(newEntry.getSantanderCardInfo());
         assertNotNull(newEntry.getPrevious());
 
         SantanderEntryNew oldEntry = newEntry.getPrevious();
@@ -569,27 +574,26 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderEntryNew.getSantanderEntryHistory(user).size(), 2);
     }
 
-    /*@Test
-    public void createRegister_withPreviousEntry_failWithCommunication_getRegister_issued() {
+    @Test
+    public void createRegister_withPreviousEntry_failWithCommunication_getRegister_issued() throws SantanderValidationException, InterruptedException {
         // ##### Arrange #####
-        CreateRegisterResponse communicationResponse = communicationErrorResponse();
-        String expiredEntry = expiredEntry();
-        communicationResponse.setRequestLine(expiredEntry);
-        when(mockedService.createRegister(any(CreateRegisterRequest.class))).thenReturn(successResponse())
-                .thenReturn(communicationResponse);
+        when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview()); // expired
+        when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(successResponse())
+                .thenReturn(communicationErrorResponse());
         when(mockedService.getRegister(any(String.class))).thenReturn(getRegisterIssued(MIFARE1), getRegisterIssued(MIFARE2));
 
         // ##### Act #####
         User user = IdCardsTestUtils.createPerson("createRegisterWithPreviousFailCommunicationAndSyncIssued");
         SantanderRequestCardService service = new SantanderRequestCardService(mockedService, userInfoService);
         service.createRegister(user, RegisterAction.NOVO); //success
+        Thread.sleep(1);
         service.getOrUpdateState(user); //first card is issued
         service.createRegister(user, RegisterAction.REMI); //new card with communication error
         service.getOrUpdateState(user); //sync card state with santander
 
         // ##### Assert #####
         List<RegisterAction> availableActions = service.getPersonAvailableActions(user); //getRegister is called
-        verify(mockedService, times(2)).createRegister(any(CreateRegisterRequest.class));
+        verify(mockedService, times(2)).createRegister(any(CardPreviewBean.class));
         verify(mockedService, times(2)).getRegister(any(String.class));
         assertTrue(availableActions.stream().anyMatch(a -> a.equals(RegisterAction.REMI)));
         assertTrue(availableActions.stream().anyMatch(a -> a.equals(RegisterAction.RENU)));
@@ -598,7 +602,7 @@ public class SantanderRequestCardServiceTest {
         SantanderEntryNew newEntry = user.getCurrentSantanderEntry();
         assertNotNull(newEntry);
         assertTrue(newEntry.wasRegisterSuccessful());
-        assertEquals(expiredEntry, newEntry.getRequestLine());
+        assertEquals("entry", newEntry.getRequestLine());
         assertNotNull(newEntry.getErrorDescription());
         assertTrue(newEntry.getErrorDescription().isEmpty());
         assertEquals(SantanderCardState.ISSUED, newEntry.getState());
@@ -622,7 +626,7 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderEntryNew.getSantanderEntryHistory(user).size(), 2);
     }
 
-    @Test
+    /*@Test
     public void createRegister_withPreviousEntry_failWithCommunication_getRegister_oldCard() {
         // ##### Arrange #####
         CreateRegisterResponse communicationResponse = communicationErrorResponse();
