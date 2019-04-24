@@ -42,15 +42,11 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     }
 
     public void reset(CardPreviewBean cardPreviewBean) {
-        setState(SantanderCardState.PENDING);
         setRequestLine(cardPreviewBean.getRequestLine());
         setResponseLine("");
         setErrorDescription("");
         setSantanderCardInfo(new SantanderCardInfo(cardPreviewBean));
-
-        DateTime now = DateTime.now();
-        createSantanderCardStateTransition(SantanderCardState.PENDING, now);
-        setLastUpdate(now);
+        updateState(SantanderCardState.PENDING);
     }
     
     @Atomic(mode = TxMode.WRITE)
@@ -85,32 +81,30 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     public void updateIssued(GetRegisterResponse registerData) {
         SantanderCardInfo cardInfo = getSantanderCardInfo();
         cardInfo.setMifareNumber(registerData.getMifare());
-        setState(SantanderCardState.ISSUED);
 
-        DateTime now = DateTime.now();
-        createSantanderCardStateTransition(SantanderCardState.ISSUED, now);
-        setLastUpdate(now);
+        updateState(SantanderCardState.ISSUED);
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
     public void updateState(SantanderCardState state) {
         DateTime now = DateTime.now();
 
-        if (getState() != state && state != SantanderCardState.ISSUED) {
+        if (getState() != state) {
             createSantanderCardStateTransition(state, now);
             setState(state);
         }
         setLastUpdate(now);
     }
 
-    public void createSantanderCardStateTransition(SantanderCardState state, DateTime now) {
+    public void createSantanderCardStateTransition(SantanderCardState state, DateTime date) {
         SantanderCardInfo cardInfo = getSantanderCardInfo();
         SantanderCardStateTransition transation = cardInfo.getLastTransition();
+        DateTime lastTransactionTime = transation != null ? transation.getTransitionDate() : null;
 
-        if (transation != null && transation.getTransitionDate().equals(now)) {
-            new SantanderCardStateTransition(getSantanderCardInfo(), state, now.plusMillis(1));
+        if (lastTransactionTime != null && lastTransactionTime.compareTo(date) >= 0) {
+            new SantanderCardStateTransition(getSantanderCardInfo(), state, lastTransactionTime.plusMillis(1));
         } else {
-            new SantanderCardStateTransition(getSantanderCardInfo(), state, now);
+            new SantanderCardStateTransition(getSantanderCardInfo(), state, date);
         }
 
     }
@@ -176,6 +170,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
             return false;
         }
 
-        return getSantanderCardHistory(user).stream().anyMatch(e -> e.getMifareNumber().equals(mifare));
+        return getSantanderCardHistory(user).stream()
+                .anyMatch(e -> e.getMifareNumber() != null && e.getMifareNumber().equals(mifare));
     }
 }

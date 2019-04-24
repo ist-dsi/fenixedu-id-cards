@@ -123,7 +123,9 @@ public class SantanderRequestCardService {
                 return entry;
 
             case ISSUED:
-                entry.updateIssued(registerData);
+                if (!SantanderEntryNew.hasMifare(entry.getUser(), registerData.getMifare())) {
+                    entry.updateIssued(registerData);
+                }
                 return entry;
 
             case NO_RESULT:
@@ -168,18 +170,13 @@ public class SantanderRequestCardService {
     }
 
     private GetRegisterResponse getRegister(User user) {
-        
-        logger.debug("Entering getRegister");
-
         final String userName = user.getUsername();
 
         try {
             GetRegisterResponse statusInformation = santanderCardService.getRegister(userName);
-            logger.debug("Result: " + statusInformation.getStatus());
             return statusInformation;
 
         } catch (Throwable t) {
-            logger.debug("failed trying to communicate with santander");
             t.printStackTrace();
             return null;
         }
@@ -193,20 +190,19 @@ public class SantanderRequestCardService {
 
         SantanderUser santanderUser = new SantanderUser(user, userInfoService);
         CreateRegisterRequest createRegisterRequest = santanderUser.toCreateRegisterRequest(action);
-        CardPreviewBean cardPreviewBean;
 
         try {
-            cardPreviewBean = santanderCardService.generateCardRequest(createRegisterRequest);
+            CardPreviewBean cardPreviewBean = santanderCardService.generateCardRequest(createRegisterRequest);
+            SantanderEntryNew entry = createOrResetEntry(user, cardPreviewBean);
+            CreateRegisterResponse response = santanderCardService.createRegister(cardPreviewBean);
+
+            entry.update(response);
         } catch (SantanderValidationException sve) {
             //TODO send proper error
             throw new RuntimeException(sve.getMessage());
+        } catch (RuntimeException rte) {
+            return;
         }
-
-        SantanderEntryNew entry = createOrResetEntry(user, cardPreviewBean);
-
-        CreateRegisterResponse response = santanderCardService.createRegister(cardPreviewBean);
-
-        entry.update(response);
     }
 
     @Atomic(mode = TxMode.WRITE)
