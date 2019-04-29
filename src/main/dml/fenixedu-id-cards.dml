@@ -23,7 +23,7 @@ enum org.fenixedu.idcards.domain.SantanderCardState as SantanderCardState;
  *
  */
 
-class SantanderEntryNew {
+class SantanderEntry {
 	DateTime lastUpdate;
     String requestLine;
     String responseLine;    
@@ -49,25 +49,25 @@ class SantanderCardStateTransition {
  * 
  */
 
-relation RootDomainObjectSantanderEntryNew {
+relation RootDomainObjectSantanderEntry {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
-	SantanderEntryNew playsRole santanderEntriesNew {
+	SantanderEntry playsRole santanderEntries {
 		multiplicity *;
 	}
 }
 
-relation UserSantanderEntryNew {
+relation UserSantanderEntry {
 	.org.fenixedu.bennu.core.domain.User playsRole user;
-	SantanderEntryNew playsRole currentSantanderEntry;
+	SantanderEntry playsRole currentSantanderEntry;
 }
 
-relation PreviousSantanderEntryNew {
-   SantanderEntryNew playsRole previous;
-   SantanderEntryNew playsRole next;
+relation PreviousSantanderEntry {
+   SantanderEntry playsRole previous;
+   SantanderEntry playsRole next;
 }
 
-relation SantanderCardSantanderEntryNew {
-	SantanderEntryNew playsRole santanderEntriesNew;
+relation SantanderCardSantanderEntry {
+	SantanderEntry playsRole santanderEntry;
 	SantanderCardInfo playsRole SantanderCardInfo {
 		multiplicity 0..1;
 	}

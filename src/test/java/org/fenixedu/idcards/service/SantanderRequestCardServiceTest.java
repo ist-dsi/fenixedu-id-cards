@@ -1,6 +1,7 @@
 package org.fenixedu.idcards.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -19,7 +20,7 @@ import org.fenixedu.idcards.IdCardsTestUtils;
 import org.fenixedu.idcards.domain.SantanderCardInfo;
 import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.idcards.domain.SantanderCardStateTransition;
-import org.fenixedu.idcards.domain.SantanderEntryNew;
+import org.fenixedu.idcards.domain.SantanderEntry;
 import org.fenixedu.santandersdk.dto.CardPreviewBean;
 import org.fenixedu.santandersdk.dto.CreateRegisterRequest;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
@@ -147,9 +148,98 @@ public class SantanderRequestCardServiceTest {
         return getRegisterResponse;
     }
 
+    private GetRegisterResponse getRegister(GetRegisterStatus status) {
+        GetRegisterResponse getRegisterResponse = new GetRegisterResponse();
+        getRegisterResponse.setStatus(status);
+        return getRegisterResponse;
+    }
+
     //TODO Tests
     //Make tests where the createRegister fails and then try different possibilities with getRegister and getAvailableActions
     //Make test where createRegister receives wrong action
+
+    @Test
+    public void createRegister_fails_getRegister_noResult() throws SantanderValidationException {
+        when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview());
+        when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(communicationErrorResponse());
+        when(mockedService.getRegister(any(String.class))).thenReturn(getRegisterNoResult());
+
+        User user = IdCardsTestUtils.createPerson("createRegisterRejected");
+        SantanderRequestCardService service = new SantanderRequestCardService(mockedService, userInfoService);
+        service.createRegister(user, RegisterAction.NOVO);
+
+        verify(mockedService, times(1)).createRegister(any(CardPreviewBean.class));
+
+        SantanderEntry entry = user.getCurrentSantanderEntry();
+        assertNotNull(entry);
+        assertFalse(entry.wasRegisterSuccessful());
+        assertEquals(SantanderCardState.PENDING, entry.getState());
+
+        List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
+
+        verify(mockedService, times(1)).getRegister(any(String.class));
+
+        assertEquals(1, availableActions.size());
+        assertEquals(RegisterAction.NOVO, availableActions.get(0));
+        assertEquals(SantanderCardState.IGNORED, user.getCurrentSantanderEntry().getState());
+        assertFalse(entry.wasRegisterSuccessful());
+    }
+
+    @Test
+    public void createRegister_fails_getRegister_unknown() throws SantanderValidationException {
+        when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview());
+        when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(communicationErrorResponse());
+        when(mockedService.getRegister(any(String.class))).thenReturn(getRegister(GetRegisterStatus.UNKNOWN));
+
+        User user = IdCardsTestUtils.createPerson("createRegisterUnknown");
+        SantanderRequestCardService service = new SantanderRequestCardService(mockedService, userInfoService);
+        service.createRegister(user, RegisterAction.NOVO);
+
+        verify(mockedService, times(1)).createRegister(any(CardPreviewBean.class));
+
+        SantanderEntry entry = user.getCurrentSantanderEntry();
+        assertNotNull(entry);
+        assertFalse(entry.wasRegisterSuccessful());
+        assertEquals(SantanderCardState.PENDING, entry.getState());
+
+        List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
+
+        verify(mockedService, times(1)).getRegister(any(String.class));
+
+        // TODO: should this be the correct behaviour when state is unknown?
+        assertEquals(0, availableActions.size());
+        assertEquals(SantanderCardState.PENDING, user.getCurrentSantanderEntry().getState());
+        assertFalse(entry.wasRegisterSuccessful());
+    }
+
+
+    // TODO: check transition to PRODUCTION... we are always transitioning to new
+    /*@Test
+    public void createRegister_fails_getRegister_production() throws SantanderValidationException {
+        when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview());
+        when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(communicationErrorResponse());
+        when(mockedService.getRegister(any(String.class))).thenReturn(getRegister(GetRegisterStatus.PRODUCTION));
+
+        User user = IdCardsTestUtils.createPerson("createRegisterProduction");
+        SantanderRequestCardService service = new SantanderRequestCardService(mockedService, userInfoService);
+        service.createRegister(user, RegisterAction.NOVO);
+
+        verify(mockedService, times(1)).createRegister(any(CardPreviewBean.class));
+
+        SantanderEntry entry = user.getCurrentSantanderEntry();
+        assertNotNull(entry);
+        assertFalse(entry.wasRegisterSuccessful());
+        assertEquals(SantanderCardState.PENDING, entry.getState());
+
+        List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
+
+        verify(mockedService, times(1)).getRegister(any(String.class));
+
+        assertEquals(0, availableActions.size());
+        assertEquals(SantanderCardState., user.getCurrentSantanderEntry().getState());
+        assertFalse(entry.wasRegisterSuccessful());
+    }
+*/
 
     @Test
     public void createRegister_noPreviousEntry_success() throws SantanderValidationException {
@@ -165,7 +255,7 @@ public class SantanderRequestCardServiceTest {
         // ##### Assert #####
         verify(mockedService, times(1)).createRegister(any(CardPreviewBean.class));
 
-        SantanderEntryNew entry = user.getCurrentSantanderEntry();
+        SantanderEntry entry = user.getCurrentSantanderEntry();
         assertNotNull(entry);
         assertTrue(entry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE1, entry.getRequestLine());
@@ -174,8 +264,8 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.NEW, entry.getState());
         assertNull(entry.getNext());
         assertNull(entry.getPrevious());
-        assertEquals(1, SantanderEntryNew.getSantanderEntryHistory(user).size());
-        assertEquals(entry, SantanderEntryNew.getSantanderEntryHistory(user).get(0));
+        assertEquals(1, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(entry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         SantanderCardInfo cardInfo = entry.getSantanderCardInfo();
         assertNotNull(cardInfo);
@@ -185,9 +275,9 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, cardInfo.getPhoto());
         assertNull(cardInfo.getMifareNumber());
         assertEquals(SantanderCardState.NEW, cardInfo.getCurrentState());
-        assertEquals(entry, cardInfo.getSantanderEntriesNew());
-        assertEquals(1, SantanderEntryNew.getSantanderCardHistory(user).size());
-        assertEquals(cardInfo, SantanderEntryNew.getSantanderCardHistory(user).get(0));
+        assertEquals(entry, cardInfo.getSantanderEntry());
+        assertEquals(1, SantanderEntry.getSantanderCardHistory(user).size());
+        assertEquals(cardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
 
         List<SantanderCardStateTransition> transitions = cardInfo.getOrderedTransitions();
         assertEquals(2, cardInfo.getSantanderCardStateTransitionsSet().size());
@@ -214,7 +304,7 @@ public class SantanderRequestCardServiceTest {
         verify(mockedService, times(2)).getRegister(any(String.class));
         assertTrue(availableActions.isEmpty());
 
-        SantanderEntryNew entry = user.getCurrentSantanderEntry();
+        SantanderEntry entry = user.getCurrentSantanderEntry();
         assertNotNull(entry);        
         assertTrue(entry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE1, entry.getRequestLine());
@@ -223,8 +313,8 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.NEW, entry.getState());
         assertNull(entry.getNext());
         assertNull(entry.getPrevious());
-        assertEquals(1, SantanderEntryNew.getSantanderEntryHistory(user).size());
-        assertEquals(entry, SantanderEntryNew.getSantanderEntryHistory(user).get(0));
+        assertEquals(1, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(entry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         SantanderCardInfo cardInfo = entry.getSantanderCardInfo();
         assertNotNull(cardInfo);
@@ -234,9 +324,9 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, cardInfo.getPhoto());
         assertNull(cardInfo.getMifareNumber());
         assertEquals(SantanderCardState.NEW, cardInfo.getCurrentState());
-        assertEquals(entry, cardInfo.getSantanderEntriesNew());
-        assertEquals(1, SantanderEntryNew.getSantanderCardHistory(user).size());
-        assertEquals(cardInfo, SantanderEntryNew.getSantanderCardHistory(user).get(0));
+        assertEquals(entry, cardInfo.getSantanderEntry());
+        assertEquals(1, SantanderEntry.getSantanderCardHistory(user).size());
+        assertEquals(cardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
 
         List<SantanderCardStateTransition> transitions = cardInfo.getOrderedTransitions();
         assertEquals(2, cardInfo.getSantanderCardStateTransitionsSet().size());
@@ -265,7 +355,7 @@ public class SantanderRequestCardServiceTest {
         assertTrue(availableActions.stream().anyMatch(a -> a.equals(RegisterAction.RENU)));
         assertEquals(2, availableActions.size());
 
-        SantanderEntryNew entry = user.getCurrentSantanderEntry();
+        SantanderEntry entry = user.getCurrentSantanderEntry();
         assertNotNull(entry);
         assertTrue(entry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE1, entry.getRequestLine());
@@ -274,8 +364,8 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.ISSUED, entry.getState());
         assertNull(entry.getNext());
         assertNull(entry.getPrevious());
-        assertEquals(1, SantanderEntryNew.getSantanderEntryHistory(user).size());
-        assertEquals(entry, SantanderEntryNew.getSantanderEntryHistory(user).get(0));
+        assertEquals(1, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(entry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         SantanderCardInfo cardInfo = entry.getSantanderCardInfo();
         assertNotNull(cardInfo);
@@ -285,9 +375,9 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, cardInfo.getPhoto());
         assertEquals(MIFARE1, cardInfo.getMifareNumber());
         assertEquals(SantanderCardState.ISSUED, cardInfo.getCurrentState());
-        assertEquals(entry, cardInfo.getSantanderEntriesNew());
-        assertEquals(1, SantanderEntryNew.getSantanderCardHistory(user).size());
-        assertEquals(cardInfo, SantanderEntryNew.getSantanderCardHistory(user).get(0));
+        assertEquals(entry, cardInfo.getSantanderEntry());
+        assertEquals(1, SantanderEntry.getSantanderCardHistory(user).size());
+        assertEquals(cardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
 
         List<SantanderCardStateTransition> transitions = cardInfo.getOrderedTransitions();
         assertEquals(3, cardInfo.getSantanderCardStateTransitionsSet().size());
@@ -319,7 +409,7 @@ public class SantanderRequestCardServiceTest {
         assertTrue(availableActions.stream().anyMatch(a -> a.equals(RegisterAction.RENU)));
         assertEquals(2, availableActions.size());
 
-        SantanderEntryNew entry = user.getCurrentSantanderEntry();
+        SantanderEntry entry = user.getCurrentSantanderEntry();
         assertNotNull(entry);
         assertTrue(entry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE1, entry.getRequestLine());
@@ -328,8 +418,8 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.ISSUED, entry.getState());
         assertNull(entry.getNext());
         assertNull(entry.getPrevious());
-        assertEquals(1, SantanderEntryNew.getSantanderEntryHistory(user).size());
-        assertEquals(entry, SantanderEntryNew.getSantanderEntryHistory(user).get(0));
+        assertEquals(1, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(entry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         SantanderCardInfo cardInfo = entry.getSantanderCardInfo();
         assertNotNull(cardInfo);
@@ -339,9 +429,9 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, cardInfo.getPhoto());
         assertEquals(MIFARE1, cardInfo.getMifareNumber());
         assertEquals(SantanderCardState.ISSUED, cardInfo.getCurrentState());
-        assertEquals(entry, cardInfo.getSantanderEntriesNew());
-        assertEquals(1, SantanderEntryNew.getSantanderCardHistory(user).size());
-        assertEquals(cardInfo, SantanderEntryNew.getSantanderCardHistory(user).get(0));
+        assertEquals(entry, cardInfo.getSantanderEntry());
+        assertEquals(1, SantanderEntry.getSantanderCardHistory(user).size());
+        assertEquals(cardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
 
         List<SantanderCardStateTransition> transitions = cardInfo.getOrderedTransitions();
         assertEquals(3, cardInfo.getSantanderCardStateTransitionsSet().size());
@@ -364,7 +454,7 @@ public class SantanderRequestCardServiceTest {
         // ##### Assert #####
         verify(mockedService, times(1)).createRegister(any(CardPreviewBean.class));
 
-        SantanderEntryNew entry = user.getCurrentSantanderEntry();
+        SantanderEntry entry = user.getCurrentSantanderEntry();
         assertNotNull(entry);
         assertTrue(!entry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE1, entry.getRequestLine());
@@ -373,8 +463,8 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.IGNORED, entry.getState());
         assertNull(entry.getNext());
         assertNull(entry.getPrevious());
-        assertEquals(1, SantanderEntryNew.getSantanderEntryHistory(user).size());
-        assertEquals(entry, SantanderEntryNew.getSantanderEntryHistory(user).get(0));
+        assertEquals(1, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(entry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         SantanderCardInfo cardInfo = entry.getSantanderCardInfo();
         assertNotNull(cardInfo);
@@ -384,8 +474,8 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, cardInfo.getPhoto());
         assertNull(cardInfo.getMifareNumber());
         assertEquals(SantanderCardState.IGNORED, cardInfo.getCurrentState());
-        assertEquals(entry, cardInfo.getSantanderEntriesNew());
-        assertTrue(SantanderEntryNew.getSantanderCardHistory(user).isEmpty());
+        assertEquals(entry, cardInfo.getSantanderEntry());
+        assertTrue(SantanderEntry.getSantanderCardHistory(user).isEmpty());
 
         List<SantanderCardStateTransition> transitions = cardInfo.getOrderedTransitions();
         assertEquals(2, cardInfo.getSantanderCardStateTransitionsSet().size());
@@ -413,7 +503,7 @@ public class SantanderRequestCardServiceTest {
         assertTrue(availableActions.stream().anyMatch(a -> a.equals(RegisterAction.NOVO)));
         assertEquals(1, availableActions.size());
 
-        SantanderEntryNew entry = user.getCurrentSantanderEntry();
+        SantanderEntry entry = user.getCurrentSantanderEntry();
         assertNotNull(entry);
         assertTrue(!entry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE1, entry.getRequestLine());
@@ -422,8 +512,8 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.IGNORED, entry.getState());
         assertNull(entry.getNext());
         assertNull(entry.getPrevious());
-        assertEquals(1, SantanderEntryNew.getSantanderEntryHistory(user).size());
-        assertEquals(entry, SantanderEntryNew.getSantanderEntryHistory(user).get(0));
+        assertEquals(1, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(entry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         SantanderCardInfo cardInfo = entry.getSantanderCardInfo();
         assertNotNull(cardInfo);
@@ -433,8 +523,8 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, cardInfo.getPhoto());
         assertNull(cardInfo.getMifareNumber());
         assertEquals(SantanderCardState.IGNORED, cardInfo.getCurrentState());
-        assertEquals(entry, cardInfo.getSantanderEntriesNew());
-        assertTrue(SantanderEntryNew.getSantanderCardHistory(user).isEmpty());
+        assertEquals(entry, cardInfo.getSantanderEntry());
+        assertTrue(SantanderEntry.getSantanderCardHistory(user).isEmpty());
 
         List<SantanderCardStateTransition> transitions = cardInfo.getOrderedTransitions();
         assertEquals(2, cardInfo.getSantanderCardStateTransitionsSet().size());
@@ -455,7 +545,7 @@ public class SantanderRequestCardServiceTest {
         service.createRegister(user, RegisterAction.NOVO); //success response
 
         // ##### Assert #####
-        SantanderEntryNew entry = user.getCurrentSantanderEntry();
+        SantanderEntry entry = user.getCurrentSantanderEntry();
         assertNotNull(entry);
         assertTrue(entry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE1, entry.getRequestLine());
@@ -464,8 +554,8 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.NEW, entry.getState());
         assertNull(entry.getNext());
         assertNull(entry.getPrevious());
-        assertEquals(1, SantanderEntryNew.getSantanderEntryHistory(user).size());
-        assertEquals(entry, SantanderEntryNew.getSantanderEntryHistory(user).get(0));
+        assertEquals(1, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(entry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         SantanderCardInfo cardInfo = entry.getSantanderCardInfo();
         assertNotNull(cardInfo);
@@ -475,9 +565,9 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, cardInfo.getPhoto());
         assertNull(cardInfo.getMifareNumber());
         assertEquals(SantanderCardState.NEW, cardInfo.getCurrentState());
-        assertEquals(entry, cardInfo.getSantanderEntriesNew());
-        assertEquals(1, SantanderEntryNew.getSantanderCardHistory(user).size());
-        assertEquals(cardInfo, SantanderEntryNew.getSantanderCardHistory(user).get(0));
+        assertEquals(entry, cardInfo.getSantanderEntry());
+        assertEquals(1, SantanderEntry.getSantanderCardHistory(user).size());
+        assertEquals(cardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
 
         List<SantanderCardStateTransition> transitions = cardInfo.getOrderedTransitions();
         assertEquals(2, cardInfo.getSantanderCardStateTransitionsSet().size());
@@ -501,7 +591,7 @@ public class SantanderRequestCardServiceTest {
         // ##### Assert #####
         verify(mockedService, times(2)).createRegister(any(CardPreviewBean.class));
 
-        SantanderEntryNew entry = user.getCurrentSantanderEntry();
+        SantanderEntry entry = user.getCurrentSantanderEntry();
         assertNotNull(entry);
         assertTrue(!entry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE2, entry.getRequestLine());
@@ -510,8 +600,8 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.IGNORED, entry.getState());
         assertNull(entry.getNext());
         assertNull(entry.getPrevious());
-        assertEquals(1, SantanderEntryNew.getSantanderEntryHistory(user).size());
-        assertEquals(entry, SantanderEntryNew.getSantanderEntryHistory(user).get(0));
+        assertEquals(1, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(entry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         SantanderCardInfo cardInfo = entry.getSantanderCardInfo();
         assertNotNull(cardInfo);
@@ -521,8 +611,8 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, cardInfo.getPhoto());
         assertNull(cardInfo.getMifareNumber());
         assertEquals(SantanderCardState.IGNORED, cardInfo.getCurrentState());
-        assertEquals(entry, cardInfo.getSantanderEntriesNew());
-        assertTrue(SantanderEntryNew.getSantanderCardHistory(user).isEmpty());
+        assertEquals(entry, cardInfo.getSantanderEntry());
+        assertTrue(SantanderEntry.getSantanderCardHistory(user).isEmpty());
 
         List<SantanderCardStateTransition> transitions = cardInfo.getOrderedTransitions();
         assertEquals(2, cardInfo.getSantanderCardStateTransitionsSet().size());
@@ -544,7 +634,7 @@ public class SantanderRequestCardServiceTest {
         // ##### Assert #####
         verify(mockedService, times(1)).createRegister(any(CardPreviewBean.class));
 
-        SantanderEntryNew entry = user.getCurrentSantanderEntry();
+        SantanderEntry entry = user.getCurrentSantanderEntry();
         assertNotNull(entry);
         assertTrue(!entry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE1, entry.getRequestLine());
@@ -553,8 +643,8 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.PENDING, entry.getState());
         assertNull(entry.getNext());
         assertNull(entry.getPrevious());
-        assertEquals(1, SantanderEntryNew.getSantanderEntryHistory(user).size());
-        assertEquals(entry, SantanderEntryNew.getSantanderEntryHistory(user).get(0));
+        assertEquals(1, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(entry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         SantanderCardInfo cardInfo = entry.getSantanderCardInfo();
         assertNotNull(cardInfo);
@@ -564,8 +654,8 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, cardInfo.getPhoto());
         assertNull(cardInfo.getMifareNumber());
         assertEquals(SantanderCardState.PENDING, cardInfo.getCurrentState());
-        assertEquals(entry, cardInfo.getSantanderEntriesNew());
-        assertTrue(SantanderEntryNew.getSantanderCardHistory(user).isEmpty());
+        assertEquals(entry, cardInfo.getSantanderEntry());
+        assertTrue(SantanderEntry.getSantanderCardHistory(user).isEmpty());
 
         List<SantanderCardStateTransition> transitions = cardInfo.getOrderedTransitions();
         assertEquals(1, cardInfo.getSantanderCardStateTransitionsSet().size());
@@ -592,7 +682,7 @@ public class SantanderRequestCardServiceTest {
         assertTrue(availableActions.stream().anyMatch(a -> a.equals(RegisterAction.NOVO)));
         assertEquals(1, availableActions.size());
 
-        SantanderEntryNew entry = user.getCurrentSantanderEntry();
+        SantanderEntry entry = user.getCurrentSantanderEntry();
         assertNotNull(entry);
         assertTrue(!entry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE1, entry.getRequestLine());
@@ -601,8 +691,8 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.IGNORED, entry.getState());
         assertNull(entry.getNext());
         assertNull(entry.getPrevious());
-        assertEquals(1, SantanderEntryNew.getSantanderEntryHistory(user).size());
-        assertEquals(entry, SantanderEntryNew.getSantanderEntryHistory(user).get(0));
+        assertEquals(1, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(entry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         SantanderCardInfo cardInfo = entry.getSantanderCardInfo();
         assertNotNull(cardInfo);
@@ -612,8 +702,8 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, cardInfo.getPhoto());
         assertNull(cardInfo.getMifareNumber());
         assertEquals(SantanderCardState.IGNORED, cardInfo.getCurrentState());
-        assertEquals(entry, cardInfo.getSantanderEntriesNew());
-        assertTrue(SantanderEntryNew.getSantanderCardHistory(user).isEmpty());
+        assertEquals(entry, cardInfo.getSantanderEntry());
+        assertTrue(SantanderEntry.getSantanderCardHistory(user).isEmpty());
 
         List<SantanderCardStateTransition> transitions = cardInfo.getOrderedTransitions();
         assertEquals(2, cardInfo.getSantanderCardStateTransitionsSet().size());
@@ -640,7 +730,7 @@ public class SantanderRequestCardServiceTest {
         verify(mockedService, times(2)).getRegister(any(String.class));
         assertTrue(availableActions.isEmpty());
 
-        SantanderEntryNew entry = user.getCurrentSantanderEntry();
+        SantanderEntry entry = user.getCurrentSantanderEntry();
         assertNotNull(entry);
         assertTrue(entry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE1, entry.getRequestLine());
@@ -649,8 +739,8 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.NEW, entry.getState());
         assertNull(entry.getNext());
         assertNull(entry.getPrevious());
-        assertEquals(1, SantanderEntryNew.getSantanderEntryHistory(user).size());
-        assertEquals(entry, SantanderEntryNew.getSantanderEntryHistory(user).get(0));
+        assertEquals(1, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(entry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         SantanderCardInfo cardInfo = entry.getSantanderCardInfo();
         assertNotNull(cardInfo);
@@ -660,9 +750,9 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, cardInfo.getPhoto());
         assertNull(cardInfo.getMifareNumber());
         assertEquals(SantanderCardState.NEW, cardInfo.getCurrentState());
-        assertEquals(entry, cardInfo.getSantanderEntriesNew());
-        assertEquals(1, SantanderEntryNew.getSantanderCardHistory(user).size());
-        assertEquals(cardInfo, SantanderEntryNew.getSantanderCardHistory(user).get(0));
+        assertEquals(entry, cardInfo.getSantanderEntry());
+        assertEquals(1, SantanderEntry.getSantanderCardHistory(user).size());
+        assertEquals(cardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
 
         List<SantanderCardStateTransition> transitions = cardInfo.getOrderedTransitions();
         assertEquals(2, cardInfo.getSantanderCardStateTransitionsSet().size());
@@ -692,7 +782,7 @@ public class SantanderRequestCardServiceTest {
         assertTrue(availableActions.stream().anyMatch(a -> a.equals(RegisterAction.RENU)));
         assertEquals(availableActions.size(), 2);
 
-        SantanderEntryNew entry = user.getCurrentSantanderEntry();
+        SantanderEntry entry = user.getCurrentSantanderEntry();
         assertNotNull(entry);
         assertTrue(entry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE1, entry.getRequestLine());
@@ -701,8 +791,8 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.ISSUED, entry.getState());
         assertNull(entry.getNext());
         assertNull(entry.getPrevious());
-        assertEquals(1, SantanderEntryNew.getSantanderEntryHistory(user).size());
-        assertEquals(entry, SantanderEntryNew.getSantanderEntryHistory(user).get(0));
+        assertEquals(1, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(entry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         SantanderCardInfo cardInfo = entry.getSantanderCardInfo();
         assertNotNull(cardInfo);
@@ -712,9 +802,9 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, cardInfo.getPhoto());
         assertEquals(MIFARE1, cardInfo.getMifareNumber());
         assertEquals(SantanderCardState.ISSUED, cardInfo.getCurrentState());
-        assertEquals(entry, cardInfo.getSantanderEntriesNew());
-        assertEquals(1, SantanderEntryNew.getSantanderCardHistory(user).size());
-        assertEquals(cardInfo, SantanderEntryNew.getSantanderCardHistory(user).get(0));
+        assertEquals(entry, cardInfo.getSantanderEntry());
+        assertEquals(1, SantanderEntry.getSantanderCardHistory(user).size());
+        assertEquals(cardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
 
         List<SantanderCardStateTransition> transitions = cardInfo.getOrderedTransitions();
         assertEquals(2, cardInfo.getSantanderCardStateTransitionsSet().size());
@@ -740,7 +830,7 @@ public class SantanderRequestCardServiceTest {
         // ##### Assert #####
         verify(mockedService, times(1)).createRegister(any(CardPreviewBean.class));
 
-        SantanderEntryNew entry = user.getCurrentSantanderEntry();
+        SantanderEntry entry = user.getCurrentSantanderEntry();
         assertNotNull(entry);
         assertTrue(!entry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE1, entry.getRequestLine());
@@ -749,8 +839,8 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.PENDING, entry.getState());
         assertNull(entry.getNext());
         assertNull(entry.getPrevious());
-        assertEquals(1, SantanderEntryNew.getSantanderEntryHistory(user).size());
-        assertEquals(entry, SantanderEntryNew.getSantanderEntryHistory(user).get(0));
+        assertEquals(1, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(entry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         SantanderCardInfo cardInfo = entry.getSantanderCardInfo();
         assertNotNull(cardInfo);
@@ -760,8 +850,8 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, cardInfo.getPhoto());
         assertNull(cardInfo.getMifareNumber());
         assertEquals(SantanderCardState.PENDING, cardInfo.getCurrentState());
-        assertEquals(entry, cardInfo.getSantanderEntriesNew());
-        assertTrue(SantanderEntryNew.getSantanderCardHistory(user).isEmpty());
+        assertEquals(entry, cardInfo.getSantanderEntry());
+        assertTrue(SantanderEntry.getSantanderCardHistory(user).isEmpty());
 
         List<SantanderCardStateTransition> transitions = cardInfo.getOrderedTransitions();
         assertEquals(1, cardInfo.getSantanderCardStateTransitionsSet().size());
@@ -788,7 +878,7 @@ public class SantanderRequestCardServiceTest {
         verify(mockedService, times(2)).createRegister(any(CardPreviewBean.class));
         verify(mockedService, times(1)).getRegister(any(String.class));
 
-        SantanderEntryNew newEntry = user.getCurrentSantanderEntry();
+        SantanderEntry newEntry = user.getCurrentSantanderEntry();
         assertNotNull(newEntry);
         assertTrue(newEntry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE2, newEntry.getRequestLine());
@@ -805,14 +895,14 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, newCardInfo.getPhoto());
         assertNull(newCardInfo.getMifareNumber());
         assertEquals(SantanderCardState.NEW, newCardInfo.getCurrentState());
-        assertEquals(newEntry, newCardInfo.getSantanderEntriesNew());
+        assertEquals(newEntry, newCardInfo.getSantanderEntry());
 
         List<SantanderCardStateTransition> newTransitions = newCardInfo.getOrderedTransitions();
         assertEquals(2, newCardInfo.getSantanderCardStateTransitionsSet().size());
         assertEquals(SantanderCardState.PENDING, newTransitions.get(0).getState());
         assertEquals(SantanderCardState.NEW, newTransitions.get(1).getState());
 
-        SantanderEntryNew oldEntry = newEntry.getPrevious();
+        SantanderEntry oldEntry = newEntry.getPrevious();
         assertNotNull(oldEntry);
         assertTrue(oldEntry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE1, oldEntry.getRequestLine());
@@ -830,7 +920,7 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, oldCardInfo.getPhoto());
         assertEquals(MIFARE1, oldCardInfo.getMifareNumber());
         assertEquals(SantanderCardState.ISSUED, oldCardInfo.getCurrentState());
-        assertEquals(oldEntry, oldCardInfo.getSantanderEntriesNew());
+        assertEquals(oldEntry, oldCardInfo.getSantanderEntry());
 
         List<SantanderCardStateTransition> oldTransitions = oldCardInfo.getOrderedTransitions();
         assertEquals(3, oldCardInfo.getSantanderCardStateTransitionsSet().size());
@@ -838,13 +928,13 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.NEW, oldTransitions.get(1).getState());
         assertEquals(SantanderCardState.ISSUED, oldTransitions.get(2).getState());
 
-        assertEquals(2, SantanderEntryNew.getSantanderEntryHistory(user).size());
-        assertEquals(oldEntry, SantanderEntryNew.getSantanderEntryHistory(user).get(0));
-        assertEquals(newEntry, SantanderEntryNew.getSantanderEntryHistory(user).get(1));
+        assertEquals(2, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
+        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
 
-        assertEquals(2, SantanderEntryNew.getSantanderCardHistory(user).size());
-        assertEquals(newCardInfo, SantanderEntryNew.getSantanderCardHistory(user).get(0));
-        assertEquals(oldCardInfo, SantanderEntryNew.getSantanderCardHistory(user).get(1));
+        assertEquals(2, SantanderEntry.getSantanderCardHistory(user).size());
+        assertEquals(newCardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
+        assertEquals(oldCardInfo, SantanderEntry.getSantanderCardHistory(user).get(1));
     }
 
     @Test
@@ -867,7 +957,7 @@ public class SantanderRequestCardServiceTest {
         verify(mockedService, times(2)).createRegister(any(CardPreviewBean.class));
         verify(mockedService, times(1)).getRegister(any(String.class));
 
-        SantanderEntryNew newEntry = user.getCurrentSantanderEntry();
+        SantanderEntry newEntry = user.getCurrentSantanderEntry();
         assertNotNull(newEntry);
         assertTrue(!newEntry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE2, newEntry.getRequestLine());
@@ -884,14 +974,14 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, newCardInfo.getPhoto());
         assertNull(newCardInfo.getMifareNumber());
         assertEquals(SantanderCardState.IGNORED, newCardInfo.getCurrentState());
-        assertEquals(newEntry, newCardInfo.getSantanderEntriesNew());
+        assertEquals(newEntry, newCardInfo.getSantanderEntry());
 
         List<SantanderCardStateTransition> newTransitions = newCardInfo.getOrderedTransitions();
         assertEquals(2, newCardInfo.getSantanderCardStateTransitionsSet().size());
         assertEquals(SantanderCardState.PENDING, newTransitions.get(0).getState());
         assertEquals(SantanderCardState.IGNORED, newTransitions.get(1).getState());
 
-        SantanderEntryNew oldEntry = newEntry.getPrevious();
+        SantanderEntry oldEntry = newEntry.getPrevious();
         assertNotNull(oldEntry);
         assertTrue(oldEntry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE1, oldEntry.getRequestLine());
@@ -909,7 +999,7 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, oldCardInfo.getPhoto());
         assertEquals(MIFARE1, oldCardInfo.getMifareNumber());
         assertEquals(SantanderCardState.ISSUED, oldCardInfo.getCurrentState());
-        assertEquals(oldEntry, oldCardInfo.getSantanderEntriesNew());
+        assertEquals(oldEntry, oldCardInfo.getSantanderEntry());
 
         List<SantanderCardStateTransition> oldTransitions = oldCardInfo.getOrderedTransitions();
         assertEquals(3, oldCardInfo.getSantanderCardStateTransitionsSet().size());
@@ -917,12 +1007,12 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.NEW, oldTransitions.get(1).getState());
         assertEquals(SantanderCardState.ISSUED, oldTransitions.get(2).getState());
 
-        assertEquals(2, SantanderEntryNew.getSantanderEntryHistory(user).size());
-        assertEquals(oldEntry, SantanderEntryNew.getSantanderEntryHistory(user).get(0));
-        assertEquals(newEntry, SantanderEntryNew.getSantanderEntryHistory(user).get(1));
+        assertEquals(2, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
+        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
 
-        assertEquals(1, SantanderEntryNew.getSantanderCardHistory(user).size());
-        assertEquals(oldCardInfo, SantanderEntryNew.getSantanderCardHistory(user).get(0));
+        assertEquals(1, SantanderEntry.getSantanderCardHistory(user).size());
+        assertEquals(oldCardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
 
     }
 
@@ -949,7 +1039,7 @@ public class SantanderRequestCardServiceTest {
         verify(mockedService, times(2)).createRegister(any(CardPreviewBean.class));
         verify(mockedService, times(1)).getRegister(any(String.class));
 
-        SantanderEntryNew newEntry = user.getCurrentSantanderEntry();
+        SantanderEntry newEntry = user.getCurrentSantanderEntry();
         assertNotNull(newEntry);
         assertTrue(!newEntry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE2, newEntry.getRequestLine());
@@ -966,13 +1056,13 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, newCardInfo.getPhoto());
         assertNull(newCardInfo.getMifareNumber());
         assertEquals(SantanderCardState.PENDING, newCardInfo.getCurrentState());
-        assertEquals(newEntry, newCardInfo.getSantanderEntriesNew());
+        assertEquals(newEntry, newCardInfo.getSantanderEntry());
 
         List<SantanderCardStateTransition> newTransitions = newCardInfo.getOrderedTransitions();
         assertEquals(1, newCardInfo.getSantanderCardStateTransitionsSet().size());
         assertEquals(SantanderCardState.PENDING, newTransitions.get(0).getState());
 
-        SantanderEntryNew oldEntry = newEntry.getPrevious();
+        SantanderEntry oldEntry = newEntry.getPrevious();
         assertNotNull(oldEntry);
         assertTrue(oldEntry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE1, oldEntry.getRequestLine());
@@ -990,7 +1080,7 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, oldCardInfo.getPhoto());
         assertEquals(MIFARE1, oldCardInfo.getMifareNumber());
         assertEquals(SantanderCardState.ISSUED, oldCardInfo.getCurrentState());
-        assertEquals(oldEntry, oldCardInfo.getSantanderEntriesNew());
+        assertEquals(oldEntry, oldCardInfo.getSantanderEntry());
 
         List<SantanderCardStateTransition> oldTransitions = oldCardInfo.getOrderedTransitions();
         assertEquals(3, oldCardInfo.getSantanderCardStateTransitionsSet().size());
@@ -998,12 +1088,12 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.NEW, oldTransitions.get(1).getState());
         assertEquals(SantanderCardState.ISSUED, oldTransitions.get(2).getState());
 
-        assertEquals(2, SantanderEntryNew.getSantanderEntryHistory(user).size());
-        assertEquals(oldEntry, SantanderEntryNew.getSantanderEntryHistory(user).get(0));
-        assertEquals(newEntry, SantanderEntryNew.getSantanderEntryHistory(user).get(1));
+        assertEquals(2, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
+        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
 
-        assertEquals(1, SantanderEntryNew.getSantanderCardHistory(user).size());
-        assertEquals(oldCardInfo, SantanderEntryNew.getSantanderCardHistory(user).get(0));
+        assertEquals(1, SantanderEntry.getSantanderCardHistory(user).size());
+        assertEquals(oldCardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
     }
 
     @Test
@@ -1034,7 +1124,7 @@ public class SantanderRequestCardServiceTest {
         verify(mockedService, times(3)).getRegister(any(String.class));
         assertTrue(availableActions.isEmpty());
 
-        SantanderEntryNew newEntry = user.getCurrentSantanderEntry();
+        SantanderEntry newEntry = user.getCurrentSantanderEntry();
         assertNotNull(newEntry);
         assertTrue(newEntry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE2, newEntry.getRequestLine());
@@ -1051,14 +1141,14 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, newCardInfo.getPhoto());
         assertNull(newCardInfo.getMifareNumber());
         assertEquals(SantanderCardState.NEW, newCardInfo.getCurrentState());
-        assertEquals(newEntry, newCardInfo.getSantanderEntriesNew());
+        assertEquals(newEntry, newCardInfo.getSantanderEntry());
 
         List<SantanderCardStateTransition> newTransitions = newCardInfo.getOrderedTransitions();
         assertEquals(2, newCardInfo.getSantanderCardStateTransitionsSet().size());
         assertEquals(SantanderCardState.PENDING, newTransitions.get(0).getState());
         assertEquals(SantanderCardState.NEW, newTransitions.get(1).getState());
 
-        SantanderEntryNew oldEntry = newEntry.getPrevious();
+        SantanderEntry oldEntry = newEntry.getPrevious();
         assertNotNull(oldEntry);
         assertTrue(oldEntry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE1, oldEntry.getRequestLine());
@@ -1076,7 +1166,7 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, oldCardInfo.getPhoto());
         assertEquals(MIFARE1, oldCardInfo.getMifareNumber());
         assertEquals(SantanderCardState.ISSUED, oldCardInfo.getCurrentState());
-        assertEquals(oldEntry, oldCardInfo.getSantanderEntriesNew());
+        assertEquals(oldEntry, oldCardInfo.getSantanderEntry());
 
         List<SantanderCardStateTransition> oldTransitions = oldCardInfo.getOrderedTransitions();
         assertEquals(3, oldCardInfo.getSantanderCardStateTransitionsSet().size());
@@ -1084,13 +1174,13 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.NEW, oldTransitions.get(1).getState());
         assertEquals(SantanderCardState.ISSUED, oldTransitions.get(2).getState());
 
-        assertEquals(2, SantanderEntryNew.getSantanderEntryHistory(user).size());
-        assertEquals(oldEntry, SantanderEntryNew.getSantanderEntryHistory(user).get(0));
-        assertEquals(newEntry, SantanderEntryNew.getSantanderEntryHistory(user).get(1));
+        assertEquals(2, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
+        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
 
-        assertEquals(2, SantanderEntryNew.getSantanderCardHistory(user).size());
-        assertEquals(newCardInfo, SantanderEntryNew.getSantanderCardHistory(user).get(0));
-        assertEquals(oldCardInfo, SantanderEntryNew.getSantanderCardHistory(user).get(1));
+        assertEquals(2, SantanderEntry.getSantanderCardHistory(user).size());
+        assertEquals(newCardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
+        assertEquals(oldCardInfo, SantanderEntry.getSantanderCardHistory(user).get(1));
     }
 
     @Test
@@ -1119,7 +1209,7 @@ public class SantanderRequestCardServiceTest {
         assertTrue(availableActions.stream().anyMatch(a -> a.equals(RegisterAction.RENU)));
         assertEquals(availableActions.size(), 2);
 
-        SantanderEntryNew newEntry = user.getCurrentSantanderEntry();
+        SantanderEntry newEntry = user.getCurrentSantanderEntry();
         assertNotNull(newEntry);
         assertTrue(newEntry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE2, newEntry.getRequestLine());
@@ -1136,7 +1226,7 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, newCardInfo.getPhoto());
         assertEquals(MIFARE2, newCardInfo.getMifareNumber());
         assertEquals(SantanderCardState.ISSUED, newCardInfo.getCurrentState());
-        assertEquals(newEntry, newCardInfo.getSantanderEntriesNew());
+        assertEquals(newEntry, newCardInfo.getSantanderEntry());
 
         List<SantanderCardStateTransition> newTransitions = newCardInfo.getOrderedTransitions();
         //TODO should NEW state be skiped?
@@ -1144,7 +1234,7 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.PENDING, newTransitions.get(0).getState());
         assertEquals(SantanderCardState.ISSUED, newTransitions.get(1).getState());
 
-        SantanderEntryNew oldEntry = newEntry.getPrevious();
+        SantanderEntry oldEntry = newEntry.getPrevious();
         assertNotNull(oldEntry);
         assertTrue(oldEntry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE1, oldEntry.getRequestLine());
@@ -1162,7 +1252,7 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, oldCardInfo.getPhoto());
         assertEquals(MIFARE1, oldCardInfo.getMifareNumber());
         assertEquals(SantanderCardState.ISSUED, oldCardInfo.getCurrentState());
-        assertEquals(oldEntry, oldCardInfo.getSantanderEntriesNew());
+        assertEquals(oldEntry, oldCardInfo.getSantanderEntry());
 
         List<SantanderCardStateTransition> oldTransitions = oldCardInfo.getOrderedTransitions();
         assertEquals(3, oldCardInfo.getSantanderCardStateTransitionsSet().size());
@@ -1170,13 +1260,13 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.NEW, oldTransitions.get(1).getState());
         assertEquals(SantanderCardState.ISSUED, oldTransitions.get(2).getState());
 
-        assertEquals(2, SantanderEntryNew.getSantanderEntryHistory(user).size());
-        assertEquals(oldEntry, SantanderEntryNew.getSantanderEntryHistory(user).get(0));
-        assertEquals(newEntry, SantanderEntryNew.getSantanderEntryHistory(user).get(1));
+        assertEquals(2, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
+        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
 
-        assertEquals(2, SantanderEntryNew.getSantanderCardHistory(user).size());
-        assertEquals(newCardInfo, SantanderEntryNew.getSantanderCardHistory(user).get(0));
-        assertEquals(oldCardInfo, SantanderEntryNew.getSantanderCardHistory(user).get(1));
+        assertEquals(2, SantanderEntry.getSantanderCardHistory(user).size());
+        assertEquals(newCardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
+        assertEquals(oldCardInfo, SantanderEntry.getSantanderCardHistory(user).get(1));
     }
 
     @Test
@@ -1205,7 +1295,7 @@ public class SantanderRequestCardServiceTest {
         assertTrue(availableActions.stream().anyMatch(a -> a.equals(RegisterAction.RENU)));
         assertEquals(availableActions.size(), 2);
 
-        SantanderEntryNew newEntry = user.getCurrentSantanderEntry();
+        SantanderEntry newEntry = user.getCurrentSantanderEntry();
         assertNotNull(newEntry);
         assertTrue(!newEntry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE2, newEntry.getRequestLine());
@@ -1222,14 +1312,14 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, newCardInfo.getPhoto());
         assertNull(newCardInfo.getMifareNumber());
         assertEquals(SantanderCardState.IGNORED, newCardInfo.getCurrentState());
-        assertEquals(newEntry, newCardInfo.getSantanderEntriesNew());
+        assertEquals(newEntry, newCardInfo.getSantanderEntry());
 
         List<SantanderCardStateTransition> newTransitions = newCardInfo.getOrderedTransitions();
         assertEquals(2, newCardInfo.getSantanderCardStateTransitionsSet().size());
         assertEquals(SantanderCardState.PENDING, newTransitions.get(0).getState());
         assertEquals(SantanderCardState.IGNORED, newTransitions.get(1).getState());
 
-        SantanderEntryNew oldEntry = newEntry.getPrevious();
+        SantanderEntry oldEntry = newEntry.getPrevious();
         assertNotNull(oldEntry);
         assertTrue(oldEntry.wasRegisterSuccessful());
         assertEquals(REQUEST_LINE1, oldEntry.getRequestLine());
@@ -1247,7 +1337,7 @@ public class SantanderRequestCardServiceTest {
         assertEquals(PHOTO_DECODED, oldCardInfo.getPhoto());
         assertEquals(MIFARE1, oldCardInfo.getMifareNumber());
         assertEquals(SantanderCardState.ISSUED, oldCardInfo.getCurrentState());
-        assertEquals(oldEntry, oldCardInfo.getSantanderEntriesNew());
+        assertEquals(oldEntry, oldCardInfo.getSantanderEntry());
 
         List<SantanderCardStateTransition> oldTransitions = oldCardInfo.getOrderedTransitions();
         assertEquals(3, oldCardInfo.getSantanderCardStateTransitionsSet().size());
@@ -1255,11 +1345,11 @@ public class SantanderRequestCardServiceTest {
         assertEquals(SantanderCardState.NEW, oldTransitions.get(1).getState());
         assertEquals(SantanderCardState.ISSUED, oldTransitions.get(2).getState());
 
-        assertEquals(2, SantanderEntryNew.getSantanderEntryHistory(user).size());
-        assertEquals(oldEntry, SantanderEntryNew.getSantanderEntryHistory(user).get(0));
-        assertEquals(newEntry, SantanderEntryNew.getSantanderEntryHistory(user).get(1));
+        assertEquals(2, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
+        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
 
-        assertEquals(1, SantanderEntryNew.getSantanderCardHistory(user).size());
-        assertEquals(oldCardInfo, SantanderEntryNew.getSantanderCardHistory(user).get(0));
+        assertEquals(1, SantanderEntry.getSantanderCardHistory(user).size());
+        assertEquals(oldCardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
     }
 }

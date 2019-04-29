@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.dto.SantanderCardInfoDto;
 import org.fenixedu.idcards.domain.SantanderCardState;
-import org.fenixedu.idcards.domain.SantanderEntryNew;
+import org.fenixedu.idcards.domain.SantanderEntry;
 import org.fenixedu.idcards.domain.SantanderUser;
 import org.fenixedu.santandersdk.dto.CardPreviewBean;
 import org.fenixedu.santandersdk.dto.CreateRegisterRequest;
@@ -44,17 +44,17 @@ public class SantanderRequestCardService {
     public List<SantanderCardInfoDto> getUserSantanderCards(String username) {
         User user = User.findByUsername(username);
 
-        return SantanderEntryNew.getSantanderCardHistory(user)
+        return SantanderEntry.getSantanderCardHistory(user)
                 .stream().map(SantanderCardInfoDto::new)
                 .collect(Collectors.toList());
     }
 
     public List<RegisterAction> getPersonAvailableActions(User user) {
-        SantanderEntryNew personEntry = getOrUpdateState(user);
+        SantanderEntry personEntry = getOrUpdateState(user);
         return getPersonAvailableActions(personEntry);
     }
 
-    public List<RegisterAction> getPersonAvailableActions(SantanderEntryNew personEntry) {
+    public List<RegisterAction> getPersonAvailableActions(SantanderEntry personEntry) {
 
         List<RegisterAction> actions = new LinkedList<>();
 
@@ -74,36 +74,36 @@ public class SantanderRequestCardService {
         return actions;
     }
 
-    public SantanderEntryNew getOrUpdateState(User user) {
-         SantanderEntryNew entryNew = user.getCurrentSantanderEntry();
+    public SantanderEntry getOrUpdateState(User user) {
+         SantanderEntry entry = user.getCurrentSantanderEntry();
 
-        if (entryNew == null) {
+        if (entry == null) {
             return null;
         }
 
-        SantanderCardState cardState = entryNew.getState();
+        SantanderCardState cardState = entry.getState();
 
         switch (cardState) {
             case IGNORED:
             case ISSUED:
-                return entryNew;
+                return entry;
             case PENDING:
-                return synchronizeFenixAndSantanderStates(user, entryNew);
+                return synchronizeFenixAndSantanderStates(user, entry);
             case REJECTED:
             case NEW:
-                return checkAndUpdateState(entryNew);
+                return checkAndUpdateState(entry);
             default:
-                logger.debug("SantanderEntryNew " + entryNew.getExternalId() + " has unknown state (" + cardState.getName() + ")");
+                logger.debug("SantanderEntry " + entry.getExternalId() + " has unknown state (" + cardState.getName() + ")");
                 throw new RuntimeException();
         }
     }
 
-    private SantanderEntryNew checkAndUpdateState(SantanderEntryNew entry) {
+    private SantanderEntry checkAndUpdateState(SantanderEntry entry) {
         GetRegisterResponse registerData = getRegister(entry.getUser());
         return checkAndUpdateState(entry, registerData);
     }
 
-    private SantanderEntryNew checkAndUpdateState(SantanderEntryNew entry, GetRegisterResponse registerData) {
+    private SantanderEntry checkAndUpdateState(SantanderEntry entry, GetRegisterResponse registerData) {
         if (registerData == null) {
             return entry;
         }
@@ -115,6 +115,7 @@ public class SantanderRequestCardService {
                 entry.updateState(SantanderCardState.REJECTED);
                 return entry;
 
+            // TODO: Should this transition to PRODUCTION?
             case READY_FOR_PRODUCTION:
             case REMI_REQUEST:
             case RENU_REQUEST:
@@ -123,7 +124,7 @@ public class SantanderRequestCardService {
                 return entry;
 
             case ISSUED:
-                if (!SantanderEntryNew.hasMifare(entry.getUser(), registerData.getMifare())) {
+                if (!SantanderEntry.hasMifare(entry.getUser(), registerData.getMifare())) {
                     entry.updateIssued(registerData);
                 }
                 return entry;
@@ -142,11 +143,11 @@ public class SantanderRequestCardService {
         return entry;
     }
 
-    private SantanderEntryNew synchronizeFenixAndSantanderStates(User user, SantanderEntryNew entry) {
+    private SantanderEntry synchronizeFenixAndSantanderStates(User user, SantanderEntry entry) {
         GetRegisterResponse registerData = getRegister(user);
         GetRegisterStatus status = registerData.getStatus();
 
-        SantanderEntryNew previousEntry = entry.getPrevious();
+        SantanderEntry previousEntry = entry.getPrevious();
 
         if (previousEntry == null) {
             // TODO: check synchronization between the 2 webservices
@@ -160,7 +161,7 @@ public class SantanderRequestCardService {
 
         String newMifare = registerData.getMifare();
 
-        if (Strings.isNullOrEmpty(newMifare) || !SantanderEntryNew.hasMifare(user, newMifare)) {
+        if (Strings.isNullOrEmpty(newMifare) || !SantanderEntry.hasMifare(user, newMifare)) {
 
             return checkAndUpdateState(entry, registerData);
         } else {
@@ -193,7 +194,7 @@ public class SantanderRequestCardService {
 
         try {
             CardPreviewBean cardPreviewBean = santanderCardService.generateCardRequest(createRegisterRequest);
-            SantanderEntryNew entry = createOrResetEntry(user, cardPreviewBean);
+            SantanderEntry entry = createOrResetEntry(user, cardPreviewBean);
             CreateRegisterResponse response = santanderCardService.createRegister(cardPreviewBean);
 
             entry.update(response);
@@ -206,11 +207,11 @@ public class SantanderRequestCardService {
     }
 
     @Atomic(mode = TxMode.WRITE)
-    private SantanderEntryNew createOrResetEntry(User user, CardPreviewBean cardPreviewBean) {
-        SantanderEntryNew entry = user.getCurrentSantanderEntry();
+    private SantanderEntry createOrResetEntry(User user, CardPreviewBean cardPreviewBean) {
+        SantanderEntry entry = user.getCurrentSantanderEntry();
 
         if (entry == null) {
-            return new SantanderEntryNew(user, cardPreviewBean);
+            return new SantanderEntry(user, cardPreviewBean);
         }
 
         SantanderCardState cardState = entry.getState();
@@ -221,7 +222,7 @@ public class SantanderRequestCardService {
             return entry;
         case REJECTED:
         case ISSUED:
-            return new SantanderEntryNew(user, cardPreviewBean);
+            return new SantanderEntry(user, cardPreviewBean);
         default:
             //should be impossible to reach;
             throw new RuntimeException();

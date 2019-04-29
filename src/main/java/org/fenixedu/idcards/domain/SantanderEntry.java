@@ -19,19 +19,19 @@ import com.google.common.base.Strings;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
-public class SantanderEntryNew extends SantanderEntryNew_Base {
+public class SantanderEntry extends SantanderEntry_Base {
 
-    static public Comparator<SantanderEntryNew> COMPARATOR_BY_CREATED_DATE = (p1, p2) -> {
+    static public Comparator<SantanderEntry> COMPARATOR_BY_CREATED_DATE = (p1, p2) -> {
         DateTime date1 = p1.getLastUpdate();
         DateTime date2 = p2.getLastUpdate();
         return date1.compareTo(date2);
     };
 
-    static public Comparator<SantanderEntryNew> REVERSE_COMPARATOR_BY_CREATED_DATE = COMPARATOR_BY_CREATED_DATE.reversed();
+    static public Comparator<SantanderEntry> REVERSE_COMPARATOR_BY_CREATED_DATE = COMPARATOR_BY_CREATED_DATE.reversed();
 
-    public SantanderEntryNew(User user, CardPreviewBean cardPreviewBean) {
+    public SantanderEntry(User user, CardPreviewBean cardPreviewBean) {
         setRootDomainObject(Bennu.getInstance());
-        SantanderEntryNew currentEntry = user.getCurrentSantanderEntry();
+        SantanderEntry currentEntry = user.getCurrentSantanderEntry();
         if (currentEntry != null) {
             setPrevious(currentEntry);
             currentEntry.setNext(this);
@@ -109,10 +109,10 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
 
     }
 
-    public static List<SantanderEntryNew> getSantanderEntryHistory(User user) {
-        LinkedList<SantanderEntryNew> history = new LinkedList<>();
+    public static List<SantanderEntry> getSantanderEntryHistory(User user) {
+        LinkedList<SantanderEntry> history = new LinkedList<>();
 
-        for(SantanderEntryNew entry = user.getCurrentSantanderEntry(); entry != null; entry = entry.getPrevious()) {
+        for(SantanderEntry entry = user.getCurrentSantanderEntry(); entry != null; entry = entry.getPrevious()) {
             history.addFirst(entry);
         }
 
@@ -123,7 +123,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
         return getSantanderEntryHistory(user).stream()
                 .filter(e -> e.getSantanderCardInfo() != null && e.getState() != SantanderCardState.IGNORED && e.getState() != SantanderCardState.PENDING)
                 .sorted(REVERSE_COMPARATOR_BY_CREATED_DATE)
-                .map(SantanderEntryNew::getSantanderCardInfo)
+                .map(SantanderEntry::getSantanderCardInfo)
                 .collect(Collectors.toList());
     }
 
@@ -148,7 +148,7 @@ public class SantanderEntryNew extends SantanderEntryNew_Base {
     
     public boolean canReemitCard() {
         SantanderCardState state = getState();
-        SantanderEntryNew previous = getPrevious();
+        SantanderEntry previous = getPrevious();
         return state == SantanderCardState.ISSUED
                 || (previous != null && previous.getState() == SantanderCardState.ISSUED && state == SantanderCardState.IGNORED);
     }

@@ -1,8 +1,6 @@
 package org.fenixedu.idcards.controller;
 
 import org.fenixedu.dto.SantanderCardInfoDto;
-import org.fenixedu.idcards.domain.SantanderCardInfo;
-import org.fenixedu.idcards.domain.SantanderEntryNew;
 import org.fenixedu.idcards.service.SantanderRequestCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
