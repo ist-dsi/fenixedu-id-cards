@@ -162,7 +162,7 @@ public class SantanderEntry extends SantanderEntry_Base {
 
         DateTime expiryDate = getSantanderCardInfo().getExpiryDate();
         return canReemitCard() && expiryDate != null
-                && Days.daysBetween(DateTime.now().withTimeAtStartOfDay(), expiryDate.withTimeAtStartOfDay()).getDays() < 60;
+                && Days.daysBetween(DateTime.now().withTimeAtStartOfDay(), expiryDate.withTimeAtStartOfDay()).getDays() <= 60;
     }
 
     public static boolean hasMifare(User user, String mifare) {

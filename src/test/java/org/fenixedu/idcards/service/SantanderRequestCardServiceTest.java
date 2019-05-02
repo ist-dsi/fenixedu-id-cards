@@ -158,9 +158,95 @@ public class SantanderRequestCardServiceTest {
     //Make tests where the createRegister fails and then try different possibilities with getRegister and getAvailableActions
     //Make test where createRegister receives wrong action
 
+    @Test
+    public void createRegister_noCards_canRegister_NEW() throws SantanderValidationException {
+        when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview());
+        when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(successResponse());
+        when(mockedService.getRegister(any(String.class))).thenReturn(getRegisterIssued(MIFARE1));
+
+        User user = IdCardsTestUtils.createPerson("createRegister_noCards_canRegister_NEW");
+        SantanderRequestCardService service = new SantanderRequestCardService(mockedService, userInfoService);
+        service.createRegister(user, RegisterAction.NOVO);
+    }
+
+    @Test
+    public void createRegister_previousCard_canRegister_REMI() throws SantanderValidationException {
+        when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview());
+        when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(successResponse());
+        when(mockedService.getRegister(any(String.class))).thenReturn(getRegisterIssued(MIFARE1));
+
+        User user = IdCardsTestUtils.createPerson("createRegister_previousCard_canRegister_REMI");
+        SantanderRequestCardService service = new SantanderRequestCardService(mockedService, userInfoService);
+        service.createRegister(user, RegisterAction.NOVO);
+
+        List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
+
+        assertEquals(2, availableActions.size());
+        assertEquals(RegisterAction.REMI, availableActions.get(0));
+        assertEquals(RegisterAction.RENU, availableActions.get(1));
+
+        service.createRegister(user, RegisterAction.REMI);
+    }
+
+    @Test
+    public void createRegister_previousCard_canRegister_RENU_60Days() throws SantanderValidationException {
+        when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview(REQUEST_LINE1, DateTime.now().plusDays(60)));
+        when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(successResponse());
+        when(mockedService.getRegister(any(String.class))).thenReturn(getRegisterIssued(MIFARE1));
+
+        User user = IdCardsTestUtils.createPerson("createRegister_previousCard_canRegister_RENU_60Days");
+        SantanderRequestCardService service = new SantanderRequestCardService(mockedService, userInfoService);
+        service.createRegister(user, RegisterAction.NOVO);
+
+        List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
+
+        assertEquals(2, availableActions.size());
+        assertEquals(RegisterAction.REMI, availableActions.get(0));
+        assertEquals(RegisterAction.RENU, availableActions.get(1));
+
+        service.createRegister(user, RegisterAction.RENU);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void createRegister_previousCard_cantRegister_RENU_61Days() throws SantanderValidationException {
+        when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview(REQUEST_LINE1, DateTime.now().plusDays(61)));
+        when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(successResponse());
+        when(mockedService.getRegister(any(String.class))).thenReturn(getRegisterIssued(MIFARE1));
+
+        User user = IdCardsTestUtils.createPerson("createRegister_previousCard_cantRegister_RENU_61Days");
+        SantanderRequestCardService service = new SantanderRequestCardService(mockedService, userInfoService);
+        service.createRegister(user, RegisterAction.NOVO);
+
+        List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
+
+        assertEquals(1, availableActions.size());
+        assertEquals(RegisterAction.REMI, availableActions.get(0));
+
+        service.createRegister(user, RegisterAction.RENU);
+    }
+
+    @Test
+    public void createRegister_previousCard_canRegister_RENU_59Days() throws SantanderValidationException {
+        when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview(REQUEST_LINE1, DateTime.now().plusDays(59)));
+        when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(successResponse());
+        when(mockedService.getRegister(any(String.class))).thenReturn(getRegisterIssued(MIFARE1));
+
+        User user = IdCardsTestUtils.createPerson("createRegister_previousCard_canRegister_RENU_59Days");
+        SantanderRequestCardService service = new SantanderRequestCardService(mockedService, userInfoService);
+        service.createRegister(user, RegisterAction.NOVO);
+
+        List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
+
+        assertEquals(2, availableActions.size());
+        assertEquals(RegisterAction.REMI, availableActions.get(0));
+        assertEquals(RegisterAction.RENU, availableActions.get(1));
+
+        service.createRegister(user, RegisterAction.RENU);
+    }
+
     @Test(expected = RuntimeException.class)
     public void createRegister_withWrongAction_hasntExpired_RENU() throws SantanderValidationException {
-        when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview(REQUEST_LINE1, DateTime.now().plusDays(60)));
+        when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview(REQUEST_LINE1, DateTime.now().plusDays(61)));
         when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(successResponse());
         when(mockedService.getRegister(any(String.class))).thenReturn(getRegisterIssued(MIFARE1));
 
@@ -313,7 +399,7 @@ public class SantanderRequestCardServiceTest {
     }
 
 
-    // TODO: check transition to PRODUCTION... we are always transitioning to new
+    // TODO: check transition to PRODUCTION... we are always transitioning to NEW
     /*@Test
     public void createRegister_fails_getRegister_production() throws SantanderValidationException {
         when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview());
