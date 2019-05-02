@@ -159,6 +159,24 @@ public class SantanderRequestCardServiceTest {
     //Make test where createRegister receives wrong action
 
     @Test(expected = RuntimeException.class)
+    public void createRegister_withWrongAction_hasntExpired_RENU() throws SantanderValidationException {
+        when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview(REQUEST_LINE1, DateTime.now().plusDays(60)));
+        when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(successResponse());
+        when(mockedService.getRegister(any(String.class))).thenReturn(getRegisterIssued(MIFARE1));
+
+        User user = IdCardsTestUtils.createPerson("createRegister_withWrongAction_hasntExpired_RENU");
+        SantanderRequestCardService service = new SantanderRequestCardService(mockedService, userInfoService);
+        service.createRegister(user, RegisterAction.NOVO);
+
+        List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
+
+        assertEquals(1, availableActions.size());
+        assertEquals(RegisterAction.REMI, availableActions.get(0));
+
+        service.createRegister(user, RegisterAction.RENU);
+    }
+
+    @Test(expected = RuntimeException.class)
     public void createRegister_withWrongAction_hasPreviousCard_andIgnored_NEW() throws SantanderValidationException {
         when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview());
         when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(successResponse()).thenReturn(errorResponse());
