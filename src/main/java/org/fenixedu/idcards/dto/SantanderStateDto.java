@@ -1,4 +1,4 @@
-package org.fenixedu.dto;
+package org.fenixedu.idcards.dto;
 
 import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.idcards.domain.SantanderCardStateTransition;

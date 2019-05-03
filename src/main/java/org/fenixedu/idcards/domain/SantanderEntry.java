@@ -50,7 +50,7 @@ public class SantanderEntry extends SantanderEntry_Base {
     }
     
     @Atomic(mode = TxMode.WRITE)
-    public void update(CreateRegisterResponse response) {
+    public void saveResponse(CreateRegisterResponse response) {
 
         if (response.wasRegisterSuccessful()) {
             update(SantanderCardState.NEW, response);

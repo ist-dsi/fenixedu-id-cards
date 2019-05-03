@@ -1,7 +1,7 @@
 package org.fenixedu.idcards.controller;
 
-import org.fenixedu.dto.SantanderCardInfoDto;
-import org.fenixedu.idcards.service.SantanderRequestCardService;
+import org.fenixedu.idcards.dto.SantanderCardInfoDto;
+import org.fenixedu.idcards.service.SantanderIdCardsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,10 +14,10 @@ import java.util.List;
 @RequestMapping("/idcards")
 public class IdCardsController {
 
-    private SantanderRequestCardService cardService;
+    private SantanderIdCardsService cardService;
 
     @Autowired
-    public IdCardsController(SantanderRequestCardService cardService) {
+    public IdCardsController(SantanderIdCardsService cardService) {
         this.cardService = cardService;
     }
 

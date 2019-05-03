@@ -1,4 +1,4 @@
-package org.fenixedu.idcards.service;
+package org.fenixedu.idcards.exception;
 
 public class SantanderCardMissingDataException extends Exception {
 

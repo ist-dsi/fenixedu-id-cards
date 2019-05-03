@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.User;
-import org.fenixedu.dto.SantanderCardInfoDto;
+import org.fenixedu.idcards.dto.SantanderCardInfoDto;
 import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.idcards.domain.SantanderEntry;
 import org.fenixedu.idcards.domain.SantanderUser;
@@ -16,7 +16,7 @@ import org.fenixedu.santandersdk.dto.GetRegisterResponse;
 import org.fenixedu.santandersdk.dto.GetRegisterStatus;
 import org.fenixedu.santandersdk.dto.RegisterAction;
 import org.fenixedu.santandersdk.exception.SantanderValidationException;
-import org.fenixedu.santandersdk.service.SantanderCardService;
+import org.fenixedu.santandersdk.service.SantanderSdkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,18 +28,18 @@ import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
 @Service
-public class SantanderRequestCardService {
+public class SantanderIdCardsService {
 
-    private SantanderCardService santanderCardService;
+    private SantanderSdkService santanderCardService;
     private IUserInfoService userInfoService;
 
     @Autowired
-    public SantanderRequestCardService(SantanderCardService santanderCardService, IUserInfoService userInfoService) {
+    public SantanderIdCardsService(SantanderSdkService santanderCardService, IUserInfoService userInfoService) {
         this.santanderCardService = santanderCardService;
         this.userInfoService = userInfoService;
     }
 
-    private Logger logger = LoggerFactory.getLogger(SantanderRequestCardService.class);
+    private Logger logger = LoggerFactory.getLogger(SantanderIdCardsService.class);
 
     public List<SantanderCardInfoDto> getUserSantanderCards(String username) {
         User user = User.findByUsername(username);
@@ -95,7 +95,7 @@ public class SantanderRequestCardService {
             case PRODUCTION:
                 return checkAndUpdateState(entry);
             default:
-                logger.debug("SantanderEntry " + entry.getExternalId() + " has unknown state (" + cardState.getName() + ")");
+                logger.debug("SantanderEntry " + entry.getExternalId() + " has unknown state (" + cardState.name() + ")");
                 throw new RuntimeException();
         }
     }
@@ -117,7 +117,6 @@ public class SantanderRequestCardService {
                 entry.updateState(SantanderCardState.REJECTED);
                 return entry;
 
-            // TODO: Should this transition to PRODUCTION?
             case REMI_REQUEST:
             case RENU_REQUEST:
                 entry.updateState(SantanderCardState.NEW);
@@ -193,7 +192,7 @@ public class SantanderRequestCardService {
     public void createRegister(User user, RegisterAction action) {
         if (!getPersonAvailableActions(user.getCurrentSantanderEntry()).contains(action)) {
             throw new RuntimeException(
-                    "Action (" + action.getLocalizedName() + ") not available for user " + user.getUsername());
+                    "Action (" + action.name() + ") not available for user " + user.getUsername());
         }
 
         SantanderUser santanderUser = new SantanderUser(user, userInfoService);
@@ -204,7 +203,7 @@ public class SantanderRequestCardService {
             SantanderEntry entry = createOrResetEntry(user, cardPreviewBean);
             CreateRegisterResponse response = santanderCardService.createRegister(cardPreviewBean);
 
-            entry.update(response);
+            entry.saveResponse(response);
         } catch (SantanderValidationException sve) {
             //TODO send proper error
             throw new RuntimeException(sve.getMessage());
