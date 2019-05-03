@@ -13,9 +13,11 @@ public enum SantanderCardState implements IPresentableEnum {
 
     IGNORED,        //Request was rejected  
 
-    REJECTED,       //If a succesful request is rejected later (can happen if photo is not appropriate)
+    REJECTED,       //If a successful request is rejected later (can happen if photo is not appropriate)
 
     NEW,            //After first card request was successful
+
+    READY_FOR_PRODUCTION,
 
     PRODUCTION,     //When card is in production
 

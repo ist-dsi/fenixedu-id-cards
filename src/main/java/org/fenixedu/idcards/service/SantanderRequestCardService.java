@@ -91,6 +91,8 @@ public class SantanderRequestCardService {
                 return synchronizeFenixAndSantanderStates(user, entry);
             case REJECTED:
             case NEW:
+            case READY_FOR_PRODUCTION:
+            case PRODUCTION:
                 return checkAndUpdateState(entry);
             default:
                 logger.debug("SantanderEntry " + entry.getExternalId() + " has unknown state (" + cardState.getName() + ")");
@@ -116,11 +118,16 @@ public class SantanderRequestCardService {
                 return entry;
 
             // TODO: Should this transition to PRODUCTION?
-            case READY_FOR_PRODUCTION:
             case REMI_REQUEST:
             case RENU_REQUEST:
-            case PRODUCTION:
                 entry.updateState(SantanderCardState.NEW);
+                return entry;
+
+            case READY_FOR_PRODUCTION:
+                entry.updateState(SantanderCardState.READY_FOR_PRODUCTION);
+                return entry;
+            case PRODUCTION:
+                entry.updateState(SantanderCardState.PRODUCTION);
                 return entry;
 
             case ISSUED:
