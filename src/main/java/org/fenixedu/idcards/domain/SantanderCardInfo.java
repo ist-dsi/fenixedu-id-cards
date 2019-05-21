@@ -21,6 +21,7 @@ public class SantanderCardInfo extends SantanderCardInfo_Base {
     public void update(CardPreviewBean cardPreviewBean) {
         setIdentificationNumber(cardPreviewBean.getIdentificationNumber());
         setCardName(cardPreviewBean.getCardName());
+        setRole(cardPreviewBean.getRole());
         setExpiryDate(cardPreviewBean.getExpiryDate());
         setPhoto(cardPreviewBean.getPhoto());
     }

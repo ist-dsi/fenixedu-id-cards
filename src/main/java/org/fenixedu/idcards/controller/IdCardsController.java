@@ -1,9 +1,9 @@
 package org.fenixedu.idcards.controller;
 
-import org.fenixedu.idcards.dto.SantanderCardInfoDto;
+import org.fenixedu.bennu.core.security.Authenticate;
+import org.fenixedu.idcards.dto.SantanderCardDto;
 import org.fenixedu.idcards.service.SantanderIdCardsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,8 +21,8 @@ public class IdCardsController {
         this.cardService = cardService;
     }
 
-    @RequestMapping(value = "/getUserCards/{username}", method = RequestMethod.GET)
-    public List<SantanderCardInfoDto> getUserCards(@PathVariable String username) {
-        return cardService.getUserSantanderCards(username);
+    @RequestMapping(value = "/getUserCards", method = RequestMethod.GET)
+    public List<SantanderCardDto> getUserCards() {
+        return cardService.getUserSantanderCards(Authenticate.getUser());
     }
 }
