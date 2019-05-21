@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.idcards.domain.SantanderCardInfo;
 import org.fenixedu.idcards.dto.SantanderCardDto;
 import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.idcards.domain.SantanderEntry;
@@ -40,6 +41,16 @@ public class SantanderIdCardsService {
     }
 
     private Logger logger = LoggerFactory.getLogger(SantanderIdCardsService.class);
+
+    public SantanderCardDto getUserCurrentCard(User user) {
+        SantanderCardInfo cardInfo = SantanderEntry.getSantanderCard(user);
+
+        if (cardInfo == null) {
+            return null;
+        }
+
+        return new SantanderCardDto(cardInfo);
+    }
 
     public List<SantanderCardDto> getUserSantanderCards(User user) {
 

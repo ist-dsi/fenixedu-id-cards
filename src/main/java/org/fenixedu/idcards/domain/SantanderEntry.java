@@ -119,6 +119,16 @@ public class SantanderEntry extends SantanderEntry_Base {
         return history;
     }
 
+    public static SantanderCardInfo getSantanderCard(User user) {
+        SantanderEntry entry = user.getCurrentSantanderEntry();
+
+        if (entry == null) {
+            return null;
+        }
+
+        return user.getCurrentSantanderEntry().getSantanderCardInfo();
+    }
+
     public static List<SantanderCardInfo> getSantanderCardHistory(User user) {
         return getSantanderEntryHistory(user).stream()
                 .filter(e -> e.getSantanderCardInfo() != null && e.getState() != SantanderCardState.IGNORED && e.getState() != SantanderCardState.PENDING)

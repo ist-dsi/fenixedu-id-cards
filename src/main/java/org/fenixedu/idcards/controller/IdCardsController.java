@@ -25,4 +25,9 @@ public class IdCardsController {
     public List<SantanderCardDto> getUserCards() {
         return cardService.getUserSantanderCards(Authenticate.getUser());
     }
+
+    @RequestMapping(value = "/getUserCards/current", method = RequestMethod.GET)
+    public SantanderCardDto getCurrentCard() {
+        return cardService.getUserCurrentCard(Authenticate.getUser());
+    }
 }
