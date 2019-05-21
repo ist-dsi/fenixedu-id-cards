@@ -15,8 +15,7 @@ public class SantanderCardDto {
     public String istId;
     public String role;
     public String expiryDate;
-    public String cardName;
-    public String identificationNumber;
+    public String name;
     public String photo;
     public SantanderCardState currentState;
     public List<SantanderStateDto> history;
@@ -29,9 +28,8 @@ public class SantanderCardDto {
         }
         this.cardId = cardInfo.getExternalId();
         this.istId = cardInfo.getIdentificationNumber();
-        this.cardName = cardInfo.getCardName();
+        this.name = cardInfo.getCardName();
         this.role = cardInfo.getRole();
-        this.identificationNumber = cardInfo.getIdentificationNumber();
         this.photo = BaseEncoding.base64().encode(cardInfo.getPhoto());
         this.currentState = cardInfo.getCurrentState();
         this.history = cardInfo.getSantanderCardStateTransitionsSet()
