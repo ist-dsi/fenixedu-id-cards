@@ -42,14 +42,19 @@ public class SantanderIdCardsService {
 
     private Logger logger = LoggerFactory.getLogger(SantanderIdCardsService.class);
 
-    public SantanderCardDto getUserCurrentCard(User user) {
-        SantanderCardInfo cardInfo = SantanderEntry.getSantanderCard(user);
+    public SantanderCardDto generateCardPreview(User user) {
+        SantanderUser santanderUser = new SantanderUser(user, userInfoService);
+        // Action doesnt matter
+        CreateRegisterRequest createRegisterRequest = santanderUser.toCreateRegisterRequest(RegisterAction.NOVO);
 
-        if (cardInfo == null) {
+        try {
+            CardPreviewBean cardPreviewBean = santanderCardService.generateCardRequest(createRegisterRequest);
+
+            return new SantanderCardDto(cardPreviewBean);
+        } catch (SantanderValidationException e) {
+            // TODO: return errors to show in interface
             return null;
         }
-
-        return new SantanderCardDto(cardInfo);
     }
 
     public List<SantanderCardDto> getUserSantanderCards(User user) {

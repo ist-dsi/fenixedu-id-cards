@@ -2,7 +2,7 @@ package org.fenixedu.idcards.controller;
 
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.idcards.dto.SantanderCardDto;
-import org.fenixedu.idcards.service.SantanderIdCardsService;
+import org.fenixedu.idcards.service.SantanderIdCardsService; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,8 +26,8 @@ public class IdCardsController {
         return cardService.getUserSantanderCards(Authenticate.getUser());
     }
 
-    @RequestMapping(value = "/getUserCards/current", method = RequestMethod.GET)
-    public SantanderCardDto getCurrentCard() {
-        return cardService.getUserCurrentCard(Authenticate.getUser());
+    @RequestMapping(value = "/previewCard", method = RequestMethod.GET)
+    public SantanderCardDto previewCard() {
+        return cardService.generateCardPreview(Authenticate.getUser());
     }
 }
