@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.core.signals.DomainObjectEvent;
+import org.fenixedu.bennu.core.signals.Signal;
 import org.fenixedu.santandersdk.dto.CardPreviewBean;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse.ErrorType;
@@ -21,13 +23,15 @@ import pt.ist.fenixframework.Atomic.TxMode;
 
 public class SantanderEntry extends SantanderEntry_Base {
 
-    static public Comparator<SantanderEntry> COMPARATOR_BY_CREATED_DATE = (p1, p2) -> {
+    public static final String STATE_CHANGED = "fenixedu.idcards.domain.santanderEntry.stateChanged";
+
+    public static Comparator<SantanderEntry> COMPARATOR_BY_CREATED_DATE = (p1, p2) -> {
         DateTime date1 = p1.getLastUpdate();
         DateTime date2 = p2.getLastUpdate();
         return date1.compareTo(date2);
     };
 
-    static public Comparator<SantanderEntry> REVERSE_COMPARATOR_BY_CREATED_DATE = COMPARATOR_BY_CREATED_DATE.reversed();
+    public static Comparator<SantanderEntry> REVERSE_COMPARATOR_BY_CREATED_DATE = COMPARATOR_BY_CREATED_DATE.reversed();
 
     public SantanderEntry(User user, CardPreviewBean cardPreviewBean) {
         setRootDomainObject(Bennu.getInstance());
@@ -92,6 +96,7 @@ public class SantanderEntry extends SantanderEntry_Base {
         if (getState() != state) {
             createSantanderCardStateTransition(state, now);
             setState(state);
+            Signal.emit(STATE_CHANGED, new DomainObjectEvent<>(this));
         }
         setLastUpdate(now);
     }

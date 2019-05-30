@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.core.signals.DomainObjectEvent;
+import org.fenixedu.bennu.core.signals.Signal;
 import org.fenixedu.idcards.domain.SantanderCardInfo;
 import org.fenixedu.idcards.dto.SantanderCardDto;
 import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.idcards.domain.SantanderEntry;
 import org.fenixedu.idcards.domain.SantanderUser;
+import org.fenixedu.idcards.notifications.CardStateTransitionNotifications;
 import org.fenixedu.santandersdk.dto.CardPreviewBean;
 import org.fenixedu.santandersdk.dto.CreateRegisterRequest;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
@@ -38,6 +41,9 @@ public class SantanderIdCardsService {
     public SantanderIdCardsService(SantanderSdkService santanderCardService, IUserInfoService userInfoService) {
         this.santanderCardService = santanderCardService;
         this.userInfoService = userInfoService;
+
+        Signal.register(SantanderEntry.STATE_CHANGED, (DomainObjectEvent<SantanderEntry> wrapper) ->
+                CardStateTransitionNotifications.notifyUser(wrapper.getInstance()));
     }
 
     private Logger logger = LoggerFactory.getLogger(SantanderIdCardsService.class);
