@@ -204,7 +204,7 @@ public class SantanderIdCardsService {
         }
     }
 
-    public void createRegister(User user, RegisterAction action) {
+    public void createRegister(User user, RegisterAction action) throws SantanderValidationException, RuntimeException {
         if (!getPersonAvailableActions(user.getCurrentSantanderEntry()).contains(action)) {
             throw new RuntimeException(
                     "Action (" + action.name() + ") not available for user " + user.getUsername());
@@ -213,18 +213,11 @@ public class SantanderIdCardsService {
         SantanderUser santanderUser = new SantanderUser(user, userInfoService);
         CreateRegisterRequest createRegisterRequest = santanderUser.toCreateRegisterRequest(action);
 
-        try {
-            CardPreviewBean cardPreviewBean = santanderCardService.generateCardRequest(createRegisterRequest);
-            SantanderEntry entry = createOrResetEntry(user, cardPreviewBean);
-            CreateRegisterResponse response = santanderCardService.createRegister(cardPreviewBean);
+        CardPreviewBean cardPreviewBean = santanderCardService.generateCardRequest(createRegisterRequest);
+        SantanderEntry entry = createOrResetEntry(user, cardPreviewBean);
+        CreateRegisterResponse response = santanderCardService.createRegister(cardPreviewBean);
 
-            entry.saveResponse(response);
-        } catch (SantanderValidationException sve) {
-            //TODO send proper error
-            throw new RuntimeException(sve.getMessage());
-        } catch (RuntimeException rte) {
-            return;
-        }
+        entry.saveResponse(response);
     }
 
     @Atomic(mode = TxMode.WRITE)
