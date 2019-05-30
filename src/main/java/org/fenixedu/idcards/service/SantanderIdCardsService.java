@@ -42,8 +42,8 @@ public class SantanderIdCardsService {
         this.santanderCardService = santanderCardService;
         this.userInfoService = userInfoService;
 
-        Signal.register(SantanderEntry.STATE_CHANGED, (DomainObjectEvent<SantanderEntry> wrapper) ->
-                CardStateTransitionNotifications.notifyUser(wrapper.getInstance()));
+
+        Signal.register(SantanderEntry.STATE_CHANGED, CardStateTransitionNotifications::notifyUser);
     }
 
     private Logger logger = LoggerFactory.getLogger(SantanderIdCardsService.class);
@@ -224,6 +224,10 @@ public class SantanderIdCardsService {
         CreateRegisterResponse response = santanderCardService.createRegister(cardPreviewBean);
 
         entry.saveResponse(response);
+
+        if (response.getErrorType() != null) {
+            throw new SantanderValidationException(response.getErrorType().toString());
+        }
     }
 
     @Atomic(mode = TxMode.WRITE)

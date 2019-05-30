@@ -96,7 +96,7 @@ public class SantanderEntry extends SantanderEntry_Base {
         if (getState() != state) {
             createSantanderCardStateTransition(state, now);
             setState(state);
-            Signal.emit(STATE_CHANGED, new DomainObjectEvent<>(this));
+            Signal.emit(STATE_CHANGED, this);
         }
         setLastUpdate(now);
     }
