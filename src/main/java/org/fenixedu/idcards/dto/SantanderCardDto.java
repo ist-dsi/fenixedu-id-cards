@@ -18,6 +18,7 @@ public class SantanderCardDto {
     public String expiryDate;
     public String name;
     public String photo;
+    public String serialNumber;
     public SantanderCardState currentState;
     public List<SantanderStateDto> history;
 
@@ -32,6 +33,7 @@ public class SantanderCardDto {
         this.name = cardInfo.getCardName();
         this.role = cardInfo.getRole();
         this.photo = BaseEncoding.base64().encode(cardInfo.getPhoto());
+        this.serialNumber = cardInfo.getSerialNumber();
         this.currentState = cardInfo.getCurrentState();
         this.history = cardInfo.getSantanderCardStateTransitionsSet()
                 .stream()

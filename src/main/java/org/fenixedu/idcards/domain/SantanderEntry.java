@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
-import org.fenixedu.bennu.core.signals.DomainObjectEvent;
 import org.fenixedu.bennu.core.signals.Signal;
 import org.fenixedu.santandersdk.dto.CardPreviewBean;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
@@ -85,6 +84,7 @@ public class SantanderEntry extends SantanderEntry_Base {
     public void updateIssued(GetRegisterResponse registerData) {
         SantanderCardInfo cardInfo = getSantanderCardInfo();
         cardInfo.setMifareNumber(registerData.getMifare());
+        cardInfo.setSerialNumber(registerData.getSerialNumber());
 
         updateState(SantanderCardState.ISSUED);
     }

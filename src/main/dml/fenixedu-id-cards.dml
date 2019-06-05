@@ -33,6 +33,7 @@ class SantanderEntry {
 
 class SantanderCardInfo {	
 	String mifareNumber;
+	String serialNumber;
 	DateTime expiryDate;
 	String cardName;
 	String role;
