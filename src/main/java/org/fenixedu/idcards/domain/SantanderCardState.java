@@ -14,6 +14,10 @@ public enum SantanderCardState {
 
     PRODUCTION,     //When card is in production
 
-    ISSUED         //After card was sent
+    ISSUED,         //After card was sent
+
+    DELIVERED,
+
+    EXPIRED
 }
 

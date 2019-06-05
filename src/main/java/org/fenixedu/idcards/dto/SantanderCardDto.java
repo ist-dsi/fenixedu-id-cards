@@ -24,9 +24,13 @@ public class SantanderCardDto {
 
     public SantanderCardDto(SantanderCardInfo cardInfo) {
         DateTime expiryDate = cardInfo.getExpiryDate();
+        this.currentState = cardInfo.getCurrentState();
         if (expiryDate != null) {
             DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("yyyy/MM");
             this.expiryDate = dateFormatter.print(expiryDate);
+            if (DateTime.now().isAfter(expiryDate.toInstant())) {
+                this.currentState = SantanderCardState.EXPIRED;
+            }
         }
         this.cardId = cardInfo.getExternalId();
         this.istId = cardInfo.getIdentificationNumber();
@@ -34,7 +38,6 @@ public class SantanderCardDto {
         this.role = cardInfo.getRole();
         this.photo = BaseEncoding.base64().encode(cardInfo.getPhoto());
         this.serialNumber = cardInfo.getSerialNumber();
-        this.currentState = cardInfo.getCurrentState();
         this.history = cardInfo.getSantanderCardStateTransitionsSet()
                 .stream()
                 .map(SantanderStateDto::new)
