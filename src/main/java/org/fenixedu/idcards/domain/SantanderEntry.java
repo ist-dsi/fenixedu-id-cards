@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.signals.Signal;
+import org.fenixedu.idcards.dto.RequestedCardBean;
 import org.fenixedu.santandersdk.dto.CardPreviewBean;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse.ErrorType;
@@ -16,6 +17,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 
 import com.google.common.base.Strings;
+import com.google.common.io.BaseEncoding;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
@@ -31,6 +33,52 @@ public class SantanderEntry extends SantanderEntry_Base {
     };
 
     public static Comparator<SantanderEntry> REVERSE_COMPARATOR_BY_CREATED_DATE = COMPARATOR_BY_CREATED_DATE.reversed();
+
+    @Atomic(mode = TxMode.WRITE)
+    public static SantanderEntry importEntry(User user, RequestedCardBean requestedCardBean) {
+        if (hasMifare(user, requestedCardBean.getMifare()))
+            return null;
+
+        return new SantanderEntry(user, requestedCardBean);
+    }
+
+    private SantanderEntry(User user, RequestedCardBean requestedCardBean) {
+        setRootDomainObject(Bennu.getInstance());
+        SantanderEntry currentEntry = user.getCurrentSantanderEntry();
+        if (currentEntry != null) {
+            setPrevious(currentEntry);
+            currentEntry.setNext(this);
+        }
+        setUser(user);
+
+        setRequestLine(requestedCardBean.getRequestLine());
+        setResponseLine("");
+        setErrorDescription("");
+        SantanderCardInfo cardInfo = new SantanderCardInfo();
+        cardInfo.setIdentificationNumber(requestedCardBean.getIdentificationNumber());
+        cardInfo.setCardName(requestedCardBean.getCardName());
+        cardInfo.setMifareNumber(requestedCardBean.getMifare());
+        cardInfo.setRole(requestedCardBean.getRole());
+        cardInfo.setSerialNumber(requestedCardBean.getCardSerialNumber());
+
+        DateTime cardExpiryTime = requestedCardBean.getExpiryDate();
+        cardInfo.setExpiryDate(cardExpiryTime);
+
+        String photo = requestedCardBean.getPhoto();
+        if (photo != null && photo.length() > 0)
+            cardInfo.setPhoto(BaseEncoding.base64().decode(photo));
+
+        setSantanderCardInfo(cardInfo);
+
+        DateTime requestDate = requestedCardBean.getRequestDate();
+
+        updateState(SantanderCardState.PENDING, requestDate);
+        updateState(SantanderCardState.NEW, requestDate.plusSeconds(1));
+        updateState(SantanderCardState.ISSUED, requestedCardBean.getProductionDate());
+
+        if (DateTime.now().isAfter(cardExpiryTime))
+            updateState(SantanderCardState.EXPIRED, cardExpiryTime);
+    }
 
     public SantanderEntry(User user, CardPreviewBean cardPreviewBean) {
         setRootDomainObject(Bennu.getInstance());
@@ -75,7 +123,7 @@ public class SantanderEntry extends SantanderEntry_Base {
     }
 
     private void update(SantanderCardState state, CreateRegisterResponse response) {
-        updateState(state);
+        updateState(state, DateTime.now());
         setResponseLine(Strings.isNullOrEmpty(response.getResponseLine()) ? "" : response.getResponseLine());
         setErrorDescription(Strings.isNullOrEmpty(response.getErrorDescription()) ? "" : response.getErrorDescription());
     }
@@ -86,19 +134,21 @@ public class SantanderEntry extends SantanderEntry_Base {
         cardInfo.setMifareNumber(registerData.getMifare());
         cardInfo.setSerialNumber(registerData.getSerialNumber());
 
-        updateState(SantanderCardState.ISSUED);
+        updateState(SantanderCardState.ISSUED, DateTime.now());
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
     public void updateState(SantanderCardState state) {
-        DateTime now = DateTime.now();
+        updateState(state, DateTime.now());
+    }
 
+    public void updateState(SantanderCardState state, DateTime time) {
         if (getState() != state) {
-            createSantanderCardStateTransition(state, now);
+            createSantanderCardStateTransition(state, time);
             setState(state);
             Signal.emit(STATE_CHANGED, this);
         }
-        setLastUpdate(now);
+        setLastUpdate(time);
     }
 
     public void createSantanderCardStateTransition(SantanderCardState state, DateTime date) {
@@ -107,7 +157,7 @@ public class SantanderEntry extends SantanderEntry_Base {
         DateTime lastTransactionTime = transation != null ? transation.getTransitionDate() : null;
 
         if (lastTransactionTime != null && lastTransactionTime.compareTo(date) >= 0) {
-            new SantanderCardStateTransition(getSantanderCardInfo(), state, lastTransactionTime.plusMillis(1));
+            new SantanderCardStateTransition(getSantanderCardInfo(), state, lastTransactionTime.plusSeconds(1));
         } else {
             new SantanderCardStateTransition(getSantanderCardInfo(), state, date);
         }

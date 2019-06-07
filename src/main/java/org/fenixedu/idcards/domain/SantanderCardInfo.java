@@ -14,11 +14,6 @@ public class SantanderCardInfo extends SantanderCardInfo_Base {
     }
     
     public SantanderCardInfo(CardPreviewBean cardPreviewBean) {
-        update(cardPreviewBean);
-    }
-
-    @Atomic(mode = Atomic.TxMode.WRITE)
-    public void update(CardPreviewBean cardPreviewBean) {
         setIdentificationNumber(cardPreviewBean.getIdentificationNumber());
         setCardName(cardPreviewBean.getCardName());
         setRole(cardPreviewBean.getRole());
