@@ -3,6 +3,7 @@ package org.fenixedu.idcards.controller;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.security.Authenticate;
+import org.fenixedu.idcards.domain.SantanderEntry;
 import org.fenixedu.idcards.service.SantanderIdCardsService;
 import org.fenixedu.santandersdk.dto.RegisterAction;
 import org.fenixedu.santandersdk.exception.SantanderValidationException;
@@ -55,10 +56,14 @@ public class IdCardsController {
         User user = Authenticate.getUser();
         // TODO: interface only serves for remission?
         try {
-            if (user.getCurrentSantanderEntry() != null)
+            SantanderEntry entry = user.getCurrentSantanderEntry();
+
+            if (entry == null || entry.canRegisterNew())
                 cardService.createRegister(user, RegisterAction.NOVO);
-            else
+            else if (entry != null && entry.canReemitCard())
                 cardService.createRegister(user, RegisterAction.REMI);
+            else
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User cannot request a card at the moment!");
         } catch (SantanderValidationException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
