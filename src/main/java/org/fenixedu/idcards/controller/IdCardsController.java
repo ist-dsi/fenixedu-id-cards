@@ -1,7 +1,6 @@
 package org.fenixedu.idcards.controller;
 
 import org.fenixedu.bennu.core.domain.User;
-import org.fenixedu.bennu.core.groups.DynamicGroup;
 import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.idcards.service.SantanderIdCardsService;
@@ -54,14 +53,15 @@ public class IdCardsController {
     @RequestMapping(value = "/requestCard", method = RequestMethod.POST)
     public ResponseEntity<?> requestCard() {
         User user = Authenticate.getUser();
-
         // TODO: interface only serves for remission?
         try {
-            cardService.createRegister(user, RegisterAction.REMI);
+            if (user.getCurrentSantanderEntry() != null)
+                cardService.createRegister(user, RegisterAction.NOVO);
+            else
+                cardService.createRegister(user, RegisterAction.REMI);
         } catch (SantanderValidationException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
-
 
         return ResponseEntity.ok().build();
     }
