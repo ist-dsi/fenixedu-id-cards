@@ -1,6 +1,8 @@
 package org.fenixedu.idcards.dto;
 
-import com.google.common.io.BaseEncoding;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.fenixedu.idcards.domain.SantanderCardInfo;
 import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.santandersdk.dto.CardPreviewBean;
@@ -8,8 +10,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import com.google.common.io.BaseEncoding;
 
 public class SantanderCardDto {
     public String cardId;
@@ -38,7 +39,7 @@ public class SantanderCardDto {
         this.role = cardInfo.getRole();
         this.photo = BaseEncoding.base64().encode(cardInfo.getPhoto());
         this.serialNumber = cardInfo.getSerialNumber();
-        this.history = cardInfo.getSantanderCardStateTransitionsSet()
+        this.history = cardInfo.getOrderedTransitions()
                 .stream()
                 .map(SantanderStateDto::new)
                 .collect(Collectors.toList());
