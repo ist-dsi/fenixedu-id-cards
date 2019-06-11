@@ -123,26 +123,39 @@ public class SantanderEntry extends SantanderEntry_Base {
     }
 
     private void update(SantanderCardState state, CreateRegisterResponse response) {
-        updateState(state, DateTime.now());
+        updateStateAndNotify(state, DateTime.now());
         setResponseLine(Strings.isNullOrEmpty(response.getResponseLine()) ? "" : response.getResponseLine());
         setErrorDescription(Strings.isNullOrEmpty(response.getErrorDescription()) ? "" : response.getErrorDescription());
     }
 
-    @Atomic(mode = Atomic.TxMode.WRITE)
+    @Atomic(mode = TxMode.WRITE)
     public void updateIssued(GetRegisterResponse registerData) {
         SantanderCardInfo cardInfo = getSantanderCardInfo();
         cardInfo.setMifareNumber(registerData.getMifare());
         cardInfo.setSerialNumber(registerData.getSerialNumber());
 
-        updateState(SantanderCardState.ISSUED, DateTime.now());
+        updateStateAndNotify(SantanderCardState.ISSUED, DateTime.now());
     }
 
-    @Atomic(mode = Atomic.TxMode.WRITE)
+    @Atomic(mode = TxMode.WRITE)
     public void updateState(SantanderCardState state) {
         updateState(state, DateTime.now());
     }
 
     public void updateState(SantanderCardState state, DateTime time) {
+        if (getState() != state) {
+            createSantanderCardStateTransition(state, time);
+            setState(state);
+        }
+        setLastUpdate(time);
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    public void updateStateAndNotify(SantanderCardState state) {
+        updateStateAndNotify(state, DateTime.now());
+    }
+
+    public void updateStateAndNotify(SantanderCardState state, DateTime time) {
         if (getState() != state) {
             createSantanderCardStateTransition(state, time);
             setState(state);

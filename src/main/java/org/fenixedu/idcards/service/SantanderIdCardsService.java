@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.core.signals.Signal;
 import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.idcards.domain.SantanderEntry;
 import org.fenixedu.idcards.domain.SantanderUser;
 import org.fenixedu.idcards.dto.SantanderCardDto;
+import org.fenixedu.idcards.notifications.CardStateTransitionNotifications;
 import org.fenixedu.santandersdk.dto.CardPreviewBean;
 import org.fenixedu.santandersdk.dto.CreateRegisterRequest;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
@@ -47,7 +49,7 @@ public class SantanderIdCardsService {
         this.userInfoService = userInfoService;
 
 
-        //Signal.register(SantanderEntry.STATE_CHANGED, CardStateTransitionNotifications::notifyUser);
+        Signal.register(SantanderEntry.STATE_CHANGED, CardStateTransitionNotifications::notifyUser);
     }
 
     private Logger logger = LoggerFactory.getLogger(SantanderIdCardsService.class);
@@ -140,19 +142,19 @@ public class SantanderIdCardsService {
 
         switch (status) {
             case REJECTED_REQUEST:
-                entry.updateState(SantanderCardState.REJECTED);
+            entry.updateStateAndNotify(SantanderCardState.REJECTED);
                 return entry;
 
             case REMI_REQUEST:
             case RENU_REQUEST:
-                entry.updateState(SantanderCardState.NEW);
+            entry.updateStateAndNotify(SantanderCardState.NEW);
                 return entry;
 
             case READY_FOR_PRODUCTION:
-                entry.updateState(SantanderCardState.READY_FOR_PRODUCTION);
+            entry.updateStateAndNotify(SantanderCardState.READY_FOR_PRODUCTION);
                 return entry;
             case PRODUCTION:
-                entry.updateState(SantanderCardState.PRODUCTION);
+            entry.updateStateAndNotify(SantanderCardState.PRODUCTION);
                 return entry;
 
             case ISSUED:
@@ -164,7 +166,7 @@ public class SantanderIdCardsService {
             case NO_RESULT:
                 // syncing problem between both services
                 if (!entry.wasRegisterSuccessful()) {
-                    entry.updateState(SantanderCardState.IGNORED);
+                entry.updateStateAndNotify(SantanderCardState.IGNORED);
                 }
                 return entry;
 
@@ -183,7 +185,7 @@ public class SantanderIdCardsService {
 
         if (previousEntry == null) {
             if (status.equals(GetRegisterStatus.NO_RESULT) && entry.getLastUpdate().plusDays(SANTANDER_SYNC_DAYS).isBeforeNow()) {
-                entry.updateState(SantanderCardState.IGNORED);
+                entry.updateStateAndNotify(SantanderCardState.IGNORED);
                 return entry;
             } else {
                 return checkAndUpdateState(entry, registerData);
@@ -196,7 +198,7 @@ public class SantanderIdCardsService {
 
             return checkAndUpdateState(entry, registerData);
         } else if (entry.getLastUpdate().plusDays(SANTANDER_SYNC_DAYS).isBeforeNow()) {
-            entry.updateState(SantanderCardState.IGNORED);
+            entry.updateStateAndNotify(SantanderCardState.IGNORED);
         }
         return entry;
     }
