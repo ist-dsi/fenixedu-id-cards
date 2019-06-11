@@ -250,6 +250,8 @@ public class SantanderIdCardsService {
             return entry;
         case REJECTED:
         case ISSUED:
+        case DELIVERED:
+        case EXPIRED:
             return new SantanderEntry(user, cardPreviewBean);
         default:
             //should be impossible to reach;

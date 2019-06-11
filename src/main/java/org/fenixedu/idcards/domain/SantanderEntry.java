@@ -196,6 +196,11 @@ public class SantanderEntry extends SantanderEntry_Base {
 
     }
 
+    public boolean isCardIssued() {
+        SantanderCardState state = getState();
+        return state == SantanderCardState.ISSUED || state == SantanderCardState.DELIVERED || state == SantanderCardState.EXPIRED;
+    }
+
     public boolean canRegisterNew() {
         SantanderCardState state = getState();
         return state == SantanderCardState.IGNORED && getPrevious() == null;
@@ -204,8 +209,7 @@ public class SantanderEntry extends SantanderEntry_Base {
     public boolean canReemitCard() {
         SantanderCardState state = getState();
         SantanderEntry previous = getPrevious();
-        return state == SantanderCardState.ISSUED
-                || (previous != null && previous.getState() == SantanderCardState.ISSUED && state == SantanderCardState.IGNORED);
+        return isCardIssued() || (state == SantanderCardState.IGNORED && previous != null && previous.isCardIssued());
     }
 
     public boolean canRenovateCard() {
