@@ -216,6 +216,20 @@ public class SantanderIdCardsService {
         }
     }
 
+    public void createRegister(User user) throws SantanderValidationException {
+        List<RegisterAction> availableActions = getPersonAvailableActions(user);
+
+        if (availableActions.contains(RegisterAction.NOVO))
+            createRegister(user, RegisterAction.NOVO);
+        else if (availableActions.contains(RegisterAction.RENU))
+            createRegister(user, RegisterAction.RENU);
+        else if (availableActions.contains(RegisterAction.REMI))
+            createRegister(user, RegisterAction.REMI);
+        else
+            throw new SantanderValidationException("User cannot request a card at the moment!");
+
+    }
+
     public void createRegister(User user, RegisterAction action) throws SantanderValidationException, RuntimeException {
         if (!getPersonAvailableActions(user.getCurrentSantanderEntry()).contains(action)) {
             throw new RuntimeException(

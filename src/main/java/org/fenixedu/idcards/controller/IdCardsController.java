@@ -3,9 +3,7 @@ package org.fenixedu.idcards.controller;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.security.Authenticate;
-import org.fenixedu.idcards.domain.SantanderEntry;
 import org.fenixedu.idcards.service.SantanderIdCardsService;
-import org.fenixedu.santandersdk.dto.RegisterAction;
 import org.fenixedu.santandersdk.exception.SantanderValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -54,16 +52,9 @@ public class IdCardsController {
     @RequestMapping(value = "/requestCard", method = RequestMethod.POST)
     public ResponseEntity<?> requestCard() {
         User user = Authenticate.getUser();
-        // TODO: interface only serves for remission?
-        try {
-            SantanderEntry entry = user.getCurrentSantanderEntry();
 
-            if (entry == null || entry.canRegisterNew())
-                cardService.createRegister(user, RegisterAction.NOVO);
-            else if (entry != null && entry.canReemitCard())
-                cardService.createRegister(user, RegisterAction.REMI);
-            else
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User cannot request a card at the moment!");
+        try {
+            cardService.createRegister(user);
         } catch (SantanderValidationException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
