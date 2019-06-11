@@ -73,7 +73,7 @@ public class SantanderEntry extends SantanderEntry_Base {
         DateTime requestDate = requestedCardBean.getRequestDate();
 
         updateState(SantanderCardState.PENDING, requestDate);
-        updateState(SantanderCardState.NEW, requestDate.plusSeconds(1));
+        updateState(SantanderCardState.NEW, requestDate);
         updateState(SantanderCardState.ISSUED, requestedCardBean.getProductionDate());
 
         if (DateTime.now().isAfter(cardExpiryTime))
@@ -133,8 +133,9 @@ public class SantanderEntry extends SantanderEntry_Base {
         SantanderCardInfo cardInfo = getSantanderCardInfo();
         cardInfo.setMifareNumber(registerData.getMifare());
         cardInfo.setSerialNumber(registerData.getSerialNumber());
-
-        updateStateAndNotify(SantanderCardState.ISSUED, DateTime.now());
+        if (cardInfo.getExpiryDate() == null)
+            cardInfo.setExpiryDate(registerData.getExpiryDate());
+        updateStateAndNotify(SantanderCardState.ISSUED, registerData.getExpeditionDate());
     }
 
     @Atomic(mode = TxMode.WRITE)

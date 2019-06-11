@@ -56,6 +56,10 @@ public class SantanderIdCardsServiceTest {
 
     private static final DateTime EXPIRY_DATE_NOT_EXPIRED = DateTime.now();
 
+    private static final DateTime EXPEDITION_DATE1 = DateTime.now().minusYears(3);
+
+    private static final DateTime EXPEDITION_DATE2 = DateTime.now();
+
     private static final String REQUEST_LINE1 = "Request Line 1";
 
     private static final String REQUEST_LINE2 = "Request Line 2";
@@ -133,6 +137,15 @@ public class SantanderIdCardsServiceTest {
         GetRegisterResponse getRegisterResponse = new GetRegisterResponse();
         getRegisterResponse.setStatus(GetRegisterStatus.ISSUED);
         getRegisterResponse.setMifare(mifare);
+        getRegisterResponse.setExpeditionDate(DateTime.now());
+        return getRegisterResponse;
+    }
+
+    private GetRegisterResponse getRegisterIssued(String mifare, DateTime expeditionDate) {
+        GetRegisterResponse getRegisterResponse = new GetRegisterResponse();
+        getRegisterResponse.setStatus(GetRegisterStatus.ISSUED);
+        getRegisterResponse.setMifare(mifare);
+        getRegisterResponse.setExpeditionDate(expeditionDate);
         return getRegisterResponse;
     }
     
@@ -1444,7 +1457,8 @@ public class SantanderIdCardsServiceTest {
                 .thenReturn(createCardPreview(REQUEST_LINE2, EXPIRY_DATE_NOT_EXPIRED));
         when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(successResponse())
                 .thenReturn(communicationErrorResponse());
-        when(mockedService.getRegister(any(String.class))).thenReturn(getRegisterIssued(MIFARE1), getRegisterIssued(MIFARE2));
+        when(mockedService.getRegister(any(String.class))).thenReturn(getRegisterIssued(MIFARE1, EXPEDITION_DATE1),
+                getRegisterIssued(MIFARE2, EXPEDITION_DATE2));
 
         // ##### Act #####
         User user = IdCardsTestUtils.createPerson("createRegisterWithPreviousFailCommunicationAndSyncIssued");
