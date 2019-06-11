@@ -37,7 +37,11 @@ public class SantanderCardDto {
         this.istId = cardInfo.getIdentificationNumber();
         this.name = cardInfo.getCardName();
         this.role = cardInfo.getRole();
-        this.photo = BaseEncoding.base64().encode(cardInfo.getPhoto());
+        
+        if (cardInfo.getPhoto() != null) {
+            this.photo = BaseEncoding.base64().encode(cardInfo.getPhoto());
+        }
+
         this.serialNumber = cardInfo.getSerialNumber();
         this.history = cardInfo.getOrderedTransitions()
                 .stream()
