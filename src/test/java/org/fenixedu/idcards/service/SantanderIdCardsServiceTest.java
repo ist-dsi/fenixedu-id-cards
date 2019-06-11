@@ -1527,7 +1527,8 @@ public class SantanderIdCardsServiceTest {
     }
 
     @Test
-    public void createRegister_withPreviousEntry_failWithCommunication_getRegister_oldCard() throws SantanderValidationException {
+    public void createRegister_withPreviousEntry_failWithCommunication_getRegister_oldCard_after_1_day()
+            throws SantanderValidationException {
         // ##### Arrange #####
         when(mockedService.generateCardRequest(any(CreateRegisterRequest.class)))
                 .thenReturn(createCardPreview(REQUEST_LINE1, EXPIRY_DATE_EXPIRED))
@@ -1537,7 +1538,7 @@ public class SantanderIdCardsServiceTest {
         when(mockedService.getRegister(any(String.class))).thenReturn(getRegisterIssued(MIFARE1));
 
         // ##### Act #####
-        User user = IdCardsTestUtils.createPerson("createRegisterWithPreviousFailCommunicationAndSyncOldCard");
+        User user = IdCardsTestUtils.createPerson("createRegisterWithPreviousFailCommunicationAndSyncOldCardAfter1Day");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
         service.createRegister(user, RegisterAction.NOVO); //success
         service.getOrUpdateState(user); //first card is issued
@@ -1547,6 +1548,7 @@ public class SantanderIdCardsServiceTest {
         } catch (SantanderValidationException sve) {
 
         }
+        user.getCurrentSantanderEntry().setLastUpdate(DateTime.now().minusDays(1).minusMinutes(1));
         service.getOrUpdateState(user); //sync card state with santander
 
         // ##### Assert #####
@@ -1580,6 +1582,93 @@ public class SantanderIdCardsServiceTest {
         assertEquals(2, newCardInfo.getSantanderCardStateTransitionsSet().size());
         assertEquals(SantanderCardState.PENDING, newTransitions.get(0).getState());
         assertEquals(SantanderCardState.IGNORED, newTransitions.get(1).getState());
+
+        SantanderEntry oldEntry = newEntry.getPrevious();
+        assertNotNull(oldEntry);
+        assertTrue(oldEntry.wasRegisterSuccessful());
+        assertEquals(REQUEST_LINE1, oldEntry.getRequestLine());
+        assertEquals(SUCCESS_RESPONSE, oldEntry.getResponseLine());
+        assertTrue(oldEntry.getErrorDescription().isEmpty());
+        assertEquals(SantanderCardState.ISSUED, oldEntry.getState());
+        assertEquals(newEntry, oldEntry.getNext());
+        assertNull(oldEntry.getPrevious());
+
+        SantanderCardInfo oldCardInfo = oldEntry.getSantanderCardInfo();
+        assertNotNull(oldCardInfo);
+        assertEquals(IDENTIFICATION_NUMBER, oldCardInfo.getIdentificationNumber());
+        assertEquals(CARD_NAME, oldCardInfo.getCardName());
+        assertEquals(EXPIRY_DATE_EXPIRED, oldCardInfo.getExpiryDate());
+        assertEquals(PHOTO_DECODED, oldCardInfo.getPhoto());
+        assertEquals(MIFARE1, oldCardInfo.getMifareNumber());
+        assertEquals(SantanderCardState.ISSUED, oldCardInfo.getCurrentState());
+        assertEquals(oldEntry, oldCardInfo.getSantanderEntry());
+
+        List<SantanderCardStateTransition> oldTransitions = oldCardInfo.getOrderedTransitions();
+        assertEquals(3, oldCardInfo.getSantanderCardStateTransitionsSet().size());
+        assertEquals(SantanderCardState.PENDING, oldTransitions.get(0).getState());
+        assertEquals(SantanderCardState.NEW, oldTransitions.get(1).getState());
+        assertEquals(SantanderCardState.ISSUED, oldTransitions.get(2).getState());
+
+        assertEquals(2, SantanderEntry.getSantanderEntryHistory(user).size());
+        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
+        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
+
+        assertEquals(1, SantanderEntry.getSantanderCardHistory(user).size());
+        assertEquals(oldCardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
+    }
+
+    @Test
+    public void createRegister_withPreviousEntry_failWithCommunication_getRegister_oldCard_same_day()
+            throws SantanderValidationException {
+        // ##### Arrange #####
+        when(mockedService.generateCardRequest(any(CreateRegisterRequest.class)))
+                .thenReturn(createCardPreview(REQUEST_LINE1, EXPIRY_DATE_EXPIRED))
+                .thenReturn(createCardPreview(REQUEST_LINE2, EXPIRY_DATE_NOT_EXPIRED));
+        when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(successResponse())
+                .thenReturn(communicationErrorResponse());
+        when(mockedService.getRegister(any(String.class))).thenReturn(getRegisterIssued(MIFARE1));
+
+        // ##### Act #####
+        User user = IdCardsTestUtils.createPerson("createRegisterWithPreviousFailCommunicationAndSyncOldCardSameDay");
+        SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
+        service.createRegister(user, RegisterAction.NOVO); //success
+        service.getOrUpdateState(user); //first card is issued
+        try {
+            service.createRegister(user, RegisterAction.REMI); //new card with communication error
+            fail();
+        } catch (SantanderValidationException sve) {
+
+        }
+        service.getOrUpdateState(user); //sync card state with santander
+
+        // ##### Assert #####
+        List<RegisterAction> availableActions = service.getPersonAvailableActions(user); //getRegister is called
+        verify(mockedService, times(2)).createRegister(any(CardPreviewBean.class));
+        verify(mockedService, times(3)).getRegister(any(String.class));
+        assertTrue(availableActions.isEmpty());
+
+        SantanderEntry newEntry = user.getCurrentSantanderEntry();
+        assertNotNull(newEntry);
+        assertTrue(!newEntry.wasRegisterSuccessful());
+        assertEquals(REQUEST_LINE2, newEntry.getRequestLine());
+        assertEquals(COMMUNICATION_ERROR_RESPONSE_LINE, newEntry.getResponseLine());
+        assertEquals(COMMUNICATION_ERROR_DESCRIPTION, newEntry.getErrorDescription());
+        assertEquals(SantanderCardState.PENDING, newEntry.getState());
+        assertNull(newEntry.getNext());
+
+        SantanderCardInfo newCardInfo = newEntry.getSantanderCardInfo();
+        assertNotNull(newCardInfo);
+        assertEquals(IDENTIFICATION_NUMBER, newCardInfo.getIdentificationNumber());
+        assertEquals(CARD_NAME, newCardInfo.getCardName());
+        assertEquals(EXPIRY_DATE_NOT_EXPIRED, newCardInfo.getExpiryDate());
+        assertEquals(PHOTO_DECODED, newCardInfo.getPhoto());
+        assertNull(newCardInfo.getMifareNumber());
+        assertEquals(SantanderCardState.PENDING, newCardInfo.getCurrentState());
+        assertEquals(newEntry, newCardInfo.getSantanderEntry());
+
+        List<SantanderCardStateTransition> newTransitions = newCardInfo.getOrderedTransitions();
+        assertEquals(1, newCardInfo.getSantanderCardStateTransitionsSet().size());
+        assertEquals(SantanderCardState.PENDING, newTransitions.get(0).getState());
 
         SantanderEntry oldEntry = newEntry.getPrevious();
         assertNotNull(oldEntry);

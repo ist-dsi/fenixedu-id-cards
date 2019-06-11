@@ -30,6 +30,14 @@ import pt.ist.fenixframework.Atomic.TxMode;
 @Service
 public class SantanderIdCardsService {
 
+    /*
+     * Sometimes santander webservice is not synchronized
+     * e.g. request new card with success -> getCardState can return the old card information
+     * this variable represents the number of days that the cardservice waits until it is sure that the services are in sync
+     * it is used only when there were problems communicating with santander
+     */
+    private static final int SANTANDER_SYNC_DAYS = 1;
+
     private SantanderSdkService santanderCardService;
     private IUserInfoService userInfoService;
 
@@ -174,8 +182,7 @@ public class SantanderIdCardsService {
         SantanderEntry previousEntry = entry.getPrevious();
 
         if (previousEntry == null) {
-            // TODO: check synchronization between the 2 webservices
-            if (status.equals(GetRegisterStatus.NO_RESULT)) {
+            if (status.equals(GetRegisterStatus.NO_RESULT) && entry.getLastUpdate().plusDays(SANTANDER_SYNC_DAYS).isBeforeNow()) {
                 entry.updateState(SantanderCardState.IGNORED);
                 return entry;
             } else {
@@ -188,10 +195,10 @@ public class SantanderIdCardsService {
         if (Strings.isNullOrEmpty(newMifare) || !SantanderEntry.hasMifare(user, newMifare)) {
 
             return checkAndUpdateState(entry, registerData);
-        } else {
+        } else if (entry.getLastUpdate().plusDays(SANTANDER_SYNC_DAYS).isBeforeNow()) {
             entry.updateState(SantanderCardState.IGNORED);
-            return entry;
         }
+        return entry;
     }
 
     private GetRegisterResponse getRegister(User user) {
