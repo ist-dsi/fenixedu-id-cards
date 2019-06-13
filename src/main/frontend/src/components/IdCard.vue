@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="cardInfo"
-    :class="[{'id-card--light-theme': lighttheme}, `id-card--state-${cardState.toLowerCase()}`]"
+    :class="[{'id-card--light-theme': lighttheme}, `id-card--state-${visualCardStates[cardState].toLowerCase()}`]"
     class="id-card">
     <img
       src="~@/assets/images/CardBg.svg"
@@ -9,7 +9,7 @@
       alt="">
     <span
       v-if="cardState === cardStates.REQUESTED || cardState === cardStates.EXPIRED"
-      class="label label--sm id-card__label label--primary">{{ cardState }}</span>
+      class="label label--sm id-card__label label--primary">{{ visualCardStates[cardState] }}</span>
     <img
       src="~@/assets/images/TecnicoLisboa.svg"
       class="id-card__logo"
@@ -94,7 +94,12 @@ export default {
   },
   data () {
     return {
-      cardStates
+      cardStates,
+      visualCardStates: {
+        [cardStates.REQUESTED]: 'REQUESTED',
+        [cardStates.ACTIVE]: 'ACTIVE',
+        [cardStates.EXPIRED]: 'EXPIRED'
+      }
     }
   },
   computed: {
@@ -103,19 +108,19 @@ export default {
     },
     cardState () {
       if (this.isPreview) {
-        return 'active'
+        return this.cardStates.ACTIVE
       }
 
       switch (this.cardInfo.currentState) {
         case this.cardStates.REQUESTED:
         case this.cardStates.BANK_REQUEST:
         case this.cardStates.IN_PRODUCTION:
-          return 'NEW'
+          return this.cardStates.REQUESTED
         case this.cardStates.READY_FOR_PICKUP:
         case this.cardStates.DELIVERED:
-          return 'ACTIVE'
+          return this.cardStates.ACTIVE
         case this.cardStates.EXPIRED:
-          return 'EXPIRED'
+          return this.cardInfo.currentState
         default:
           return undefined
       }
@@ -217,9 +222,9 @@ export default {
     .id-card--light-theme {
         color: $dark;
     }
-    .id-card--state-new .id-card__background,
-    .id-card--state-new .id-card__logo,
-    .id-card--state-new .id-card__photo {
+    .id-card--state-requested .id-card__background,
+    .id-card--state-requested .id-card__logo,
+    .id-card--state-requested .id-card__photo {
         filter: opacity(0.5);
     }
     .id-card--state-expired .id-card__background,

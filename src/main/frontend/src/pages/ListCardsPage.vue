@@ -546,6 +546,11 @@ export default {
     },
     availableCards () {
       return this.cardsPage.cards.slice().reverse()
+    },
+    filteredHistory () {
+      const { history } = this.selectedCard
+
+      return history.filter(t => t.state !== this.cardStates.PENDING && t.state !== this.cardStates.EXPIRED)
     }
   },
   watch: {
@@ -596,14 +601,13 @@ export default {
       this.showTimeline = !this.showTimeline
     },
     isTransitionComplete (transitionIndex) {
-      const { history } = this.selectedCard
-      const filteredHistory = history.filter(t => t.state !== this.cardStates.EXPIRED)
-      const lastState = filteredHistory[filteredHistory.length - 1].state
+      const history = this.filteredHistory
+      const lastState = history[history.length - 1].state
 
       return transitionIndex <= this.stateTransitions.indexOf(lastState)
     },
     getStateTransitionDate (transitionState) {
-      const { history } = this.selectedCard
+      const history = this.filteredHistory
       const transition = history.find(t => t.state === transitionState)
       return transition ? transition.when : undefined
     },
