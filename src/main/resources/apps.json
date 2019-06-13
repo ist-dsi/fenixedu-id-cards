@@ -1,0 +1,31 @@
+{
+    "apps":[
+        {  
+            "title":{
+                "en-GB":"Tecnico Card Frontend",
+                "pt-PT":"Tecnico Card Frontend"
+            },
+            "description":{
+                "en-GB":"Tecnico Card Frontend",
+                "pt-PT":"Tecnico Card Frontend"
+            },
+            "fullLayout": true,
+            "accessExpression":"logged",
+            "path":"tecnico-card",
+            "functionalities":[
+                {
+                    "title":{
+                        "en-GB":"Tecnico Card Frontend",
+                        "pt-PT":"Tecnico Card Frontend"
+                    },
+                    "description":{
+                        "en-GB":"Tecnico Card Frontend",
+                        "pt-PT":"Tecnico Card Frontend"
+                    },
+                    "path":"tecnico-card",
+                    "accessExpression":"logged"
+                }
+            ]
+        }
+    ]
+}
