@@ -7,7 +7,9 @@
 
 **Requirements**:
 
+- **You must install node v10.5.0 and npm v6.1.0**. install **[nvm](https://github.com/nvm-sh/nvm)** if necessary.
 - You must install the [mockoon](https://mockoon.com/) application
+ 
 
 **Setup**:
 
