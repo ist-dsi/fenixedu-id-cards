@@ -1,0 +1,21 @@
+{
+  "title.404.page": "Error 404",
+  "title.unauthorized": "Unauthorized User",
+  "al.tecnicoCard.homepage": "Tecnico Card: Home Page",
+  "al.account": "Your account",
+  "id-card.label.number": "Number",
+  "id-card.label.name": "Name",
+  "id-card.label.role": "Role",
+  "id-card.label.valid.thru": "Valid thru",
+  "label.language": "Language",
+  "btn.admin": "Administration",
+  "btn.login": "Login",
+  "btn.logout": "Logout",
+  "btn.back": "Back",
+  "btn.search": "Search",
+  "placeholder.search.user": "Search user...",
+  "message.error.404": "The page you're looking for could not be found.",
+  "message.error.noNetwork": "You are not connected to the internet.",
+  "message.error.internalError": "An error has occurred in the service.",
+  "message.error.unauthorized": "You do not have access to this service"
+}

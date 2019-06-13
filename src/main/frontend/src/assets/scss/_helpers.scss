@@ -1,0 +1,52 @@
+// Helper Classes
+
+.visually-hidden,
+.sr-only {
+	// /* https://snook.ca/archives/html_and_css/hiding-content-for-accessibility */
+    position: absolute !important;
+    height: 1px; width: 1px;
+    overflow: hidden;
+    clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+    clip: rect(1px, 1px, 1px, 1px);
+}
+
+.text-center {
+	text-align: center;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex--row {
+    flex-direction: row;
+}
+
+.flex--col {
+    flex-direction: column;
+}
+
+
+.skip-main {
+    @extend .sr-only;
+
+    &:focus {
+        width: auto;
+        height: auto;
+        clip: auto;
+        z-index: 9999;
+        background: #FFF;
+    }
+}
+
+
+
+// Shame ?
+.m-top--2 {
+    margin-top: 2px;
+}
+
+.m-top--3 {
+    margin-top: 3px;
+}
+

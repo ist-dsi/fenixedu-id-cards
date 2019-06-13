@@ -1,0 +1,125 @@
+//  Variables
+
+
+
+// ==================== Primary Palette
+
+$dark:		 				#2E3242;
+
+$slate: 					#45555F;
+
+$blue: 						#009DE0;
+
+$light-blue:		 	#EEF2F5;
+
+
+
+// ==================== Secondary Palette
+
+$violet: 			    	#5856D6;
+
+$teal:				    	#01BFC2;
+
+$lime: 				    	#62D321;
+
+$green: 			    	#199D5B;
+
+$purple: 			    	#574A68;
+
+$magenta: 		    	#E9374F;
+
+$red: 				    	#FF412D;
+
+$orange: 			    	#F9690E;
+
+$pink:				    	#FF4981;
+
+$yellow:			    	#F6C501;
+
+$pale-gold: 	    	#D4CCBE;
+
+
+
+// ==================== Extended Palette
+
+// Darks
+
+$dark-600:				  	#242B3D;
+// $dark: 				  	#2E3242;	// main dark
+$dark-400:				  	#383D4C;
+
+
+
+// Slate
+
+$slate-700: 			  	#2E3A42;
+$slate-600: 			  	#3A4952;
+// $slate: 				  	#45555F;	// main slate gray (Tecnico gray)
+
+
+
+// Blues
+
+$blue-700: 				  	#005EC6;
+$blue-600:				  	#0076DC;
+// $blue: 				  	#009DE0;	// main blue (Tecnico blue)
+
+
+
+// Light Blues
+
+$light-blue-700:		 	#D3DAE0;
+$light-blue-600:		 	#DDE4E9;
+// $light-blue:		 		#EEF2F5;		// main light-blue
+
+
+
+// Grays
+
+$gray:					    	#717782;		// main silver
+$gray-400: 				  	#8F95A1;
+$gray-300: 				  	#BFC4CC;
+
+
+
+// Light Grays
+
+$light-gray: 			  	#DDD;			// main light-gray
+$light-gray-400: 			#F1F1F1;
+$light-gray-300: 			#F8F8F8;
+
+
+
+
+// $magenta: 				  #E9374F;		// main magenta
+$magenta-600: 				#D6364D;
+$magenta-700: 				#C3364C;
+
+
+//$green: 			    	#199D5B;        // main green
+$green: 			    	#199D5B;
+$green-600: 			    darken(#199D5B, .25);
+$green-700: 			    darken(#199D5B, .4);
+
+
+// ==================== Social Network Colors
+
+$facebook:				  	#3B5998;
+$twitter:				    	#55ACEE;
+$linkedin:				  	#0077B5;
+$youtube:				    	#CD201F;
+$instagram:				  	#3F729B;
+
+
+
+// ==================== Fonts
+
+$primary-font: 'Source Sans Pro', "Helvetica Neue", Helvetica, Arial, sans-serif;
+$title-font: "Klavika", 'Source Sans Pro', "Helvetica Neue", Helvetica, Arial, sans-serif;;
+
+
+// fixed sizes
+$header-height: 3.5rem;
+$footer-height: 6.25rem;
+$main-height: calc(100vh - #{$footer-height});
+$menu-mobile--width: 16.5rem;

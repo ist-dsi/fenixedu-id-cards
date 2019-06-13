@@ -1,0 +1,21 @@
+{
+  "title.404.page": "Erro 404",
+  "title.unauthorized": "Utilizador não autorizado",
+  "al.tecnicoCard.homepage": "Tecnico Card: Página Inicial",
+  "al.account": "A sua conta",
+  "id-card.label.number": "Número",
+  "id-card.label.name": "Nome",
+  "id-card.label.role": "Função",
+  "id-card.label.valid.thru": "Válido até",
+  "label.language": "Idioma",
+  "btn.admin": "Administração",
+  "btn.login": "Entrar",
+  "btn.logout": "Sair",
+  "btn.back": "Voltar",
+  "btn.search": "Procurar",
+  "placeholder.search.user": "Procurar utilizador...",
+  "message.error.404": "A página que procura não foi encontrada.",
+  "message.error.noNetwork": "Não está ligado à internet.",
+  "message.error.internalError": "Ocorreu um erro no serviço.",
+  "message.error.unauthorized": "Você não tem acesso a este serviço"
+}

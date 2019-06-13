@@ -1,0 +1,22 @@
+.empty-state{
+    border: 1px solid #C9CDD4;
+    border-radius: 0.25rem;
+    background: transparent;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    @media screen and (min-width: 60rem){
+        padding: 4rem 2rem 7rem;
+    }
+}
+.empty-state__illustration{
+
+}
+.empty-state__title{
+
+}
+.empty-state__description{
+    text-align: center;
+}

@@ -1,0 +1,15 @@
+// Grid
+
+.container {
+  width: 100%;
+  padding-right: 16px;
+  padding-left: 16px;
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 1140px;
+
+  @media screen and (min-width: 1200px) {
+    max-width: 1170px;
+    padding: 0;
+  }
+}

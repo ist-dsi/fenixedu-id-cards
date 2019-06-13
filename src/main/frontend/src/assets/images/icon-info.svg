@@ -1,0 +1,15 @@
+<svg width="17px" height="17px" viewBox="0 0 17 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(-187.000000, -633.000000)">
+            <g transform="translate(187.355019, 633.355560)">
+                <g transform="translate(0.117188, 0.078516)">
+                    <circle stroke="#666666" stroke-width="0.6" cx="8.1" cy="8.1" r="7.8"></circle>
+                    <g transform="translate(7.700000, 8.100000) rotate(-180.000000) translate(-7.700000, -8.100000) translate(6.700000, 5.100000)">
+                        <path d="M0.6,0 L0.6,0 C0.520537186,1.45970821e-17 0.456119848,0.0644173382 0.456119848,0.143880152 C0.456119848,0.145877404 0.456161435,0.14787444 0.456244582,0.149869961 L0.6,3.6 L0.743755418,0.149869961 C0.747063499,0.0704760357 0.685383734,0.00343281379 0.605989809,0.000124733575 C0.603994288,4.15868716e-05 0.601997252,-3.66889306e-19 0.6,0 Z" stroke="#666666" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M0.6,5.7 C0.93137085,5.7 1.2,5.43137085 1.2,5.1 C1.2,4.76862915 0.93137085,4.5 0.6,4.5 C0.26862915,4.5 -1.2246468e-16,4.76862915 -1.2246468e-16,5.1 C-1.2246468e-16,5.43137085 0.26862915,5.7 0.6,5.7 Z" fill="#666666" fill-rule="nonzero"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,41 @@
+.f-field__input--select{
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: transparent;
+    // border-color: rgba($slate, 1);
+    border: 0.0625rem solid rgba(69, 85, 95, 0.4);
+}
+
+.f-field__label--select{
+    &:before{
+        content: 'month…';
+        position: absolute;
+        font-size: 1.125rem;
+        left: 0;
+        top: 1rem;
+        bottom: 0;
+        padding: .5rem 1rem;
+        line-height: 1;
+        transform-origin: top left;
+        display: flex;
+        align-items: center;
+        color: $gray-300;
+    }
+    &:after{
+        content: '';
+        position: absolute;
+        font-size: 1.125rem;
+        left: 0;
+        top: 1rem;
+        bottom: 0;
+        padding: .5rem 1rem;
+        line-height: 1;
+        transform-origin: top left;
+        display: flex;
+        align-items: center;
+    }
+}
+.f-field__label--select.f-field--is-filled:before{
+    opacity: 0;
+}
