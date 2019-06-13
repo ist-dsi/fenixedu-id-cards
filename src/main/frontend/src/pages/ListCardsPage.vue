@@ -63,7 +63,9 @@
         </button>
       </div>
     </div>
-    <div v-else>
+    <div
+      v-else
+      class="layout-list-cards__slideshow">
       <template>
         <id-card>
           <template slot="empty-state-message">
