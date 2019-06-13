@@ -15,7 +15,7 @@
     "lint": "eslint --ext .js,.vue src --fix",
     "analysis": "webpack --mode=production --display-reasons --json --config build/webpack.conf.prod.js > build/analysis.json",
     "prodServer": "http-server dist/",
-    "clean" : "rm -rf node_modules"
+    "clean": "rm -rf node_modules"
   },
   "dependencies": {
     "axios": "0.17.0",
