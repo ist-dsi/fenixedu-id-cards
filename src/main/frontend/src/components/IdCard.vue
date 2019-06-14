@@ -259,7 +259,8 @@ export default {
         margin-left: .25rem;
     }
     .modal__panel .id-card {
-      margin: 1.8rem auto;
+      margin: 1.8rem 50%;
+      transform: translate(-50%);
     }
     @media (min-width: 768px){
       .id-card {
