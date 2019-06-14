@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.santandersdk.dto.CardPreviewBean;
+import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -19,6 +20,12 @@ public class SantanderCardInfo extends SantanderCardInfo_Base {
         setRole(cardPreviewBean.getRole());
         setExpiryDate(cardPreviewBean.getExpiryDate());
         setPhoto(cardPreviewBean.getPhoto());
+    }
+
+    public DateTime getFirstTransictionDate() {
+        SantanderCardStateTransition stateTransition = getSantanderCardStateTransitionsSet().stream()
+                .min(SantanderCardStateTransition.COMPARATOR_BY_TRANSITION_DATE).orElse(null);
+        return stateTransition == null ? null : stateTransition.getTransitionDate();
     }
 
     public List<SantanderCardStateTransition> getOrderedTransitions() {

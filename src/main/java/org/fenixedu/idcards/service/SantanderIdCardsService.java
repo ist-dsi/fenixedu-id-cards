@@ -22,6 +22,7 @@ import org.fenixedu.santandersdk.service.SantanderSdkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
@@ -64,8 +65,8 @@ public class SantanderIdCardsService {
 
     public List<SantanderCardDto> getUserSantanderCards(User user) {
 
-        return SantanderEntry.getSantanderCardHistory(user)
-                .stream().map(SantanderCardDto::new)
+        return SantanderEntry.getSantanderEntryHistory(user).stream()
+                .map(entry -> new SantanderCardDto(entry.getSantanderCardInfo()))
                 .collect(Collectors.toList());
     }
 
@@ -209,21 +210,21 @@ public class SantanderIdCardsService {
         }
     }
 
-    public void createRegister(User user) throws SantanderValidationException {
+    public SantanderEntry createRegister(User user) throws SantanderValidationException {
         List<RegisterAction> availableActions = getPersonAvailableActions(user);
 
         if (availableActions.contains(RegisterAction.NOVO))
-            createRegister(user, RegisterAction.NOVO);
+            return createRegister(user, RegisterAction.NOVO);
         else if (availableActions.contains(RegisterAction.RENU))
-            createRegister(user, RegisterAction.RENU);
+            return createRegister(user, RegisterAction.RENU);
         else if (availableActions.contains(RegisterAction.REMI))
-            createRegister(user, RegisterAction.REMI);
+            return createRegister(user, RegisterAction.REMI);
         else
             throw new SantanderValidationException("User cannot request a card at the moment!");
 
     }
 
-    public void createRegister(User user, RegisterAction action) throws SantanderValidationException, RuntimeException {
+    public SantanderEntry createRegister(User user, RegisterAction action) throws SantanderValidationException {
         if (!getPersonAvailableActions(user.getCurrentSantanderEntry()).contains(action)) {
             throw new RuntimeException(
                     "Action (" + action.name() + ") not available for user " + user.getUsername());
@@ -233,10 +234,19 @@ public class SantanderIdCardsService {
         CreateRegisterRequest createRegisterRequest = santanderUser.toCreateRegisterRequest(action);
 
         CardPreviewBean cardPreviewBean = santanderCardService.generateCardRequest(createRegisterRequest);
-        SantanderEntry entry = createOrResetEntry(user, cardPreviewBean);
-        CreateRegisterResponse response = santanderCardService.createRegister(cardPreviewBean);
+        return createOrResetEntry(user, cardPreviewBean);
+    }
 
-        entry.saveResponse(response);
+    @Async
+    @Atomic(mode =TxMode.READ)
+    public void sendRegister(User user, SantanderEntry santanderEntry)
+            throws SantanderValidationException {
+
+        CardPreviewBean cardPreviewBean = santanderEntry.getCardPreviewBean();
+        CreateRegisterResponse response = santanderCardService.createRegister(cardPreviewBean);
+        
+        
+        santanderEntry.saveResponse(response);
 
         if (response.getErrorType() != null) {
             throw new SantanderValidationException(response.getErrorType().toString());

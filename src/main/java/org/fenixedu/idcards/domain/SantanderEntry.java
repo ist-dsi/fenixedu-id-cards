@@ -27,14 +27,13 @@ public class SantanderEntry extends SantanderEntry_Base {
     public static final String STATE_CHANGED = "fenixedu.idcards.domain.santanderEntry.stateChanged";
 
     public static Comparator<SantanderEntry> COMPARATOR_BY_CREATED_DATE = (p1, p2) -> {
-        DateTime date1 = p1.getLastUpdate();
-        DateTime date2 = p2.getLastUpdate();
+        DateTime date1 = p1.getCreationDate();
+        DateTime date2 = p2.getCreationDate();
         return date1.compareTo(date2);
     };
 
     public static Comparator<SantanderEntry> REVERSE_COMPARATOR_BY_CREATED_DATE = COMPARATOR_BY_CREATED_DATE.reversed();
 
-    @Atomic(mode = TxMode.WRITE)
     public static SantanderEntry importEntry(User user, RequestedCardBean requestedCardBean) {
         if (hasMifare(user, requestedCardBean.getMifare()))
             return null;
@@ -90,6 +89,22 @@ public class SantanderEntry extends SantanderEntry_Base {
         setUser(user);
 
         reset(cardPreviewBean);
+    }
+
+    public CardPreviewBean getCardPreviewBean() {
+        CardPreviewBean cardPreviewBean = new CardPreviewBean();
+        SantanderCardInfo card = getSantanderCardInfo();
+        cardPreviewBean.setCardName(card.getCardName());
+        cardPreviewBean.setExpiryDate(card.getExpiryDate());
+        cardPreviewBean.setRole(card.getRole());
+        cardPreviewBean.setIdentificationNumber(card.getIdentificationNumber());
+        cardPreviewBean.setPhoto(card.getPhoto());
+        cardPreviewBean.setRequestLine(getRequestLine());
+        return cardPreviewBean;
+    }
+
+    public DateTime getCreationDate() {
+        return getSantanderCardInfo().getFirstTransictionDate();
     }
 
     public void reset(CardPreviewBean cardPreviewBean) {
@@ -189,6 +204,7 @@ public class SantanderEntry extends SantanderEntry_Base {
         return history;
     }
 
+    @Deprecated
     public static List<SantanderCardInfo> getSantanderCardHistory(User user) {
         return getSantanderEntryHistory(user).stream()
                 .filter(e -> e.getSantanderCardInfo() != null && e.getState() != SantanderCardState.IGNORED && e.getState() != SantanderCardState.PENDING)

@@ -179,7 +179,7 @@ public class SantanderIdCardsServiceTest {
 
         User user = IdCardsTestUtils.createPerson("createRegister_noCards_canRegister_NEW");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
     }
 
     @Test
@@ -190,7 +190,7 @@ public class SantanderIdCardsServiceTest {
 
         User user = IdCardsTestUtils.createPerson("createRegister_previousCard_canRegister_REMI");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
 
         List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
 
@@ -198,7 +198,7 @@ public class SantanderIdCardsServiceTest {
         assertEquals(RegisterAction.REMI, availableActions.get(0));
         assertEquals(RegisterAction.RENU, availableActions.get(1));
 
-        service.createRegister(user, RegisterAction.REMI);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.REMI));
     }
 
     @Test
@@ -209,7 +209,7 @@ public class SantanderIdCardsServiceTest {
 
         User user = IdCardsTestUtils.createPerson("createRegister_previousCard_canRegister_RENU_60Days");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
 
         List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
 
@@ -217,7 +217,7 @@ public class SantanderIdCardsServiceTest {
         assertEquals(RegisterAction.REMI, availableActions.get(0));
         assertEquals(RegisterAction.RENU, availableActions.get(1));
 
-        service.createRegister(user, RegisterAction.RENU);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.RENU));
     }
 
     @Test(expected = RuntimeException.class)
@@ -228,14 +228,14 @@ public class SantanderIdCardsServiceTest {
 
         User user = IdCardsTestUtils.createPerson("createRegister_previousCard_cantRegister_RENU_61Days");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
 
         List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
 
         assertEquals(1, availableActions.size());
         assertEquals(RegisterAction.REMI, availableActions.get(0));
 
-        service.createRegister(user, RegisterAction.RENU);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.RENU));
     }
 
     @Test
@@ -246,7 +246,7 @@ public class SantanderIdCardsServiceTest {
 
         User user = IdCardsTestUtils.createPerson("createRegister_previousCard_canRegister_RENU_59Days");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
 
         List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
 
@@ -254,7 +254,7 @@ public class SantanderIdCardsServiceTest {
         assertEquals(RegisterAction.REMI, availableActions.get(0));
         assertEquals(RegisterAction.RENU, availableActions.get(1));
 
-        service.createRegister(user, RegisterAction.RENU);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.RENU));
     }
 
     @Test(expected = RuntimeException.class)
@@ -265,14 +265,14 @@ public class SantanderIdCardsServiceTest {
 
         User user = IdCardsTestUtils.createPerson("createRegister_withWrongAction_hasntExpired_RENU");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
 
         List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
 
         assertEquals(1, availableActions.size());
         assertEquals(RegisterAction.REMI, availableActions.get(0));
 
-        service.createRegister(user, RegisterAction.RENU);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.RENU));
     }
 
     @Test(expected = SantanderValidationException.class)
@@ -283,7 +283,7 @@ public class SantanderIdCardsServiceTest {
 
         User user = IdCardsTestUtils.createPerson("createRegister_withWrongAction_hasPreviousCard_andIgnored_NEW");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
 
         List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
 
@@ -291,12 +291,12 @@ public class SantanderIdCardsServiceTest {
         assertEquals(RegisterAction.REMI, availableActions.get(0));
         assertEquals(RegisterAction.RENU, availableActions.get(1));
 
-        service.createRegister(user, RegisterAction.REMI);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.REMI));
 
         SantanderEntry entry = user.getCurrentSantanderEntry();
         assertEquals(SantanderCardState.IGNORED, entry.getState());
 
-        service.createRegister(user, RegisterAction.NOVO);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
     }
 
     @Test(expected = RuntimeException.class)
@@ -307,7 +307,7 @@ public class SantanderIdCardsServiceTest {
 
         User user = IdCardsTestUtils.createPerson("createRegister_WrongAction_noCard_RENU");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.RENU);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.RENU));
     }
 
     @Test(expected = RuntimeException.class)
@@ -318,13 +318,13 @@ public class SantanderIdCardsServiceTest {
 
         User user = IdCardsTestUtils.createPerson("createRegister_WrongAction_notIssued_NOVO");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
 
         List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
 
         assertEquals(0, availableActions.size());
 
-        service.createRegister(user, RegisterAction.NOVO);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
     }
 
     @Test(expected = RuntimeException.class)
@@ -335,7 +335,7 @@ public class SantanderIdCardsServiceTest {
 
         User user = IdCardsTestUtils.createPerson("createRegister_WrongAction_issued_NOVO");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
 
         List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
 
@@ -343,7 +343,7 @@ public class SantanderIdCardsServiceTest {
         assertEquals(RegisterAction.REMI, availableActions.get(0));
         assertEquals(RegisterAction.RENU, availableActions.get(1));
 
-        service.createRegister(user, RegisterAction.NOVO);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
     }
 
     @Test(expected = RuntimeException.class)
@@ -354,7 +354,7 @@ public class SantanderIdCardsServiceTest {
 
         User user = IdCardsTestUtils.createPerson("createRegister_WrongAction_issued_REMI");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.REMI);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.REMI));
     }
 
     @Test
@@ -366,7 +366,7 @@ public class SantanderIdCardsServiceTest {
         User user = IdCardsTestUtils.createPerson("createRegisterRejected");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
         try {
-            service.createRegister(user, RegisterAction.NOVO);
+            service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
             fail();
         } catch (SantanderValidationException sve) {
         }
@@ -397,7 +397,7 @@ public class SantanderIdCardsServiceTest {
         User user = IdCardsTestUtils.createPerson("createRegisterUnknown");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
         try {
-            service.createRegister(user, RegisterAction.NOVO);
+            service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
             fail();
         } catch (SantanderValidationException sve) {
         }
@@ -426,27 +426,27 @@ public class SantanderIdCardsServiceTest {
         when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview());
         when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(communicationErrorResponse());
         when(mockedService.getRegister(any(String.class))).thenReturn(getRegister(GetRegisterStatus.PRODUCTION));
-
+    
         User user = IdCardsTestUtils.createPerson("createRegisterProduction");
         SantanderRequestCardService service = new SantanderRequestCardService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO);
-
+        service.sendRegister(user, service.createRegister(user,  RegisterAction.NOVO));
+    
         verify(mockedService, times(1)).createRegister(any(CardPreviewBean.class));
-
+    
         SantanderEntry entry = user.getCurrentSantanderEntry();
         assertNotNull(entry);
         assertFalse(entry.wasRegisterSuccessful());
         assertEquals(SantanderCardState.PENDING, entry.getState());
-
+    
         List<RegisterAction> availableActions = service.getPersonAvailableActions(user);
-
+    
         verify(mockedService, times(1)).getRegister(any(String.class));
-
+    
         assertEquals(0, availableActions.size());
         assertEquals(SantanderCardState., user.getCurrentSantanderEntry().getState());
         assertFalse(entry.wasRegisterSuccessful());
     }
-*/
+    */
 
     @Test
     public void createRegister_noPreviousEntry_success() throws SantanderValidationException {
@@ -457,7 +457,7 @@ public class SantanderIdCardsServiceTest {
         // ##### Act #####
         User user = IdCardsTestUtils.createPerson("createRegisterSuccess");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
 
         // ##### Assert #####
         verify(mockedService, times(1)).createRegister(any(CardPreviewBean.class));
@@ -502,7 +502,7 @@ public class SantanderIdCardsServiceTest {
         // ##### Act #####
         User user = IdCardsTestUtils.createPerson("createRegisterSuccessgetRegisterReadyForProduction");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
         service.getOrUpdateState(user);
         List<RegisterAction> availableActions = service.getPersonAvailableActions(user); //getRegister should be called
 
@@ -552,7 +552,7 @@ public class SantanderIdCardsServiceTest {
         // ##### Act #####
         User user = IdCardsTestUtils.createPerson("createRegisterSuccessgetRegisterIssued");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
         service.getOrUpdateState(user);
         List<RegisterAction> availableActions = service.getPersonAvailableActions(user); //getRegister should not be called
 
@@ -605,7 +605,7 @@ public class SantanderIdCardsServiceTest {
         // ##### Act #####
         User user = IdCardsTestUtils.createPerson("createRegisterSuccessgetNormalWorkflow");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO);
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
         service.getOrUpdateState(user);
         service.getOrUpdateState(user);
         List<RegisterAction> availableActions = service.getPersonAvailableActions(user); //getRegister should not be called
@@ -659,7 +659,7 @@ public class SantanderIdCardsServiceTest {
         User user = IdCardsTestUtils.createPerson("createRegisterFailWithError");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
         try {
-            service.createRegister(user, RegisterAction.NOVO);
+            service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
             fail();
         } catch (SantanderValidationException sve) {
         }
@@ -707,7 +707,7 @@ public class SantanderIdCardsServiceTest {
         User user = IdCardsTestUtils.createPerson("createRegisterFailWithErrorGetRegisterNoResult");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
         try {
-            service.createRegister(user, RegisterAction.NOVO);
+            service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
             fail();
         } catch (SantanderValidationException sve) {
         }
@@ -759,11 +759,11 @@ public class SantanderIdCardsServiceTest {
         User user = IdCardsTestUtils.createPerson("createRegisterFailErrorAndRetrySuccess");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
         try {
-            service.createRegister(user, RegisterAction.NOVO); //fail response
+            service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO)); //fail response
             fail();
         } catch (SantanderValidationException sve) {
         }
-        service.createRegister(user, RegisterAction.NOVO); //success response
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO)); //success response
 
         // ##### Assert #####
         SantanderEntry entry = user.getCurrentSantanderEntry();
@@ -807,14 +807,14 @@ public class SantanderIdCardsServiceTest {
         User user = IdCardsTestUtils.createPerson("createRegisterFailErrorTwice");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
         try {
-            service.createRegister(user, RegisterAction.NOVO); //Fail response
+            service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO)); //Fail response
             fail();
         } catch (SantanderValidationException sve) {
 
         }
 
         try {
-            service.createRegister(user, RegisterAction.NOVO); //Fail response
+            service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO)); //Fail response
             fail();
         } catch (SantanderValidationException sve) {
 
@@ -862,7 +862,7 @@ public class SantanderIdCardsServiceTest {
         User user = IdCardsTestUtils.createPerson("createRegisterFailCommunication");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
         try {
-            service.createRegister(user, RegisterAction.NOVO);
+            service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
             fail();
         } catch (SantanderValidationException sve) {
         }
@@ -909,7 +909,7 @@ public class SantanderIdCardsServiceTest {
         User user = IdCardsTestUtils.createPerson("createRegisterFailCommunicationAndGetRegisterNoResult");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
         try {
-            service.createRegister(user, RegisterAction.NOVO);
+            service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
             fail();
         } catch (SantanderValidationException sve) {
         }
@@ -962,7 +962,7 @@ public class SantanderIdCardsServiceTest {
         User user = IdCardsTestUtils.createPerson("createRegisterFailCommunicationAndSyncNew");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
         try {
-            service.createRegister(user, RegisterAction.NOVO);
+            service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
             fail();
         } catch (SantanderValidationException sve) {
         }
@@ -1016,7 +1016,7 @@ public class SantanderIdCardsServiceTest {
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
         
         try {
-            service.createRegister(user, RegisterAction.NOVO); //createRegister fails with communication error
+            service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO)); //createRegister fails with communication error
             fail();
         } catch (SantanderValidationException sve) {
         }
@@ -1070,13 +1070,13 @@ public class SantanderIdCardsServiceTest {
         User user = IdCardsTestUtils.createPerson("failCommunication_and_retryWithoutSynchronize");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
         try {
-            service.createRegister(user, RegisterAction.NOVO);  //Receives fail communication error
+            service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));  //Receives fail communication error
             fail();
         } catch (SantanderValidationException sve) {
             // TODO: handle exception
         }
         try {
-            service.createRegister(user, RegisterAction.NOVO);  //Exception must be thrown because action is not valid
+            service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));  //Exception must be thrown because action is not valid
             fail("Action is not valid");
         } catch (RuntimeException rte) {}
 
@@ -1123,9 +1123,9 @@ public class SantanderIdCardsServiceTest {
         // ##### Act #####
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
         User user = IdCardsTestUtils.createPerson("createRegister_withPreviousEntry_reemission_success");
-        service.createRegister(user, RegisterAction.NOVO); //create first card
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO)); //create first card
         service.getOrUpdateState(user); //get issued response
-        service.createRegister(user, RegisterAction.REMI); //create a re emission
+        service.sendRegister(user, service.createRegister(user, RegisterAction.REMI)); //create a re emission
 
         // ##### Assert #####
         verify(mockedService, times(2)).createRegister(any(CardPreviewBean.class));
@@ -1202,10 +1202,10 @@ public class SantanderIdCardsServiceTest {
         // ##### Act #####
         User user = IdCardsTestUtils.createPerson("createRegisterRemiWithPreviousFailError");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO); //create a new card
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO)); //create a new card
         service.getOrUpdateState(user); //get issued status
         try {
-            service.createRegister(user, RegisterAction.REMI); //re emission is refused by santander
+            service.sendRegister(user, service.createRegister(user, RegisterAction.REMI)); //re emission is refused by santander
             fail("SantanderValidationException must be thrown!");
         } catch (SantanderValidationException sce) {
 
@@ -1289,10 +1289,10 @@ public class SantanderIdCardsServiceTest {
         // ##### Act #####
         User user = IdCardsTestUtils.createPerson("createRegisterWithPreviousFailCommunication");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO); //create a new card
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO)); //create a new card
         service.getOrUpdateState(user); //get issued status
         try {
-            service.createRegister(user, RegisterAction.REMI); //re emission fails because of problems with the communication
+            service.sendRegister(user, service.createRegister(user, RegisterAction.REMI)); //re emission fails because of problems with the communication
         } catch (SantanderValidationException sve) {
         }
 
@@ -1374,10 +1374,10 @@ public class SantanderIdCardsServiceTest {
         // ##### Act #####
         User user = IdCardsTestUtils.createPerson("createRegisterWithPreviousFailCommunicationAndSyncNew");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO); //success
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO)); //success
         service.getOrUpdateState(user); //first card is issued
         try {
-            service.createRegister(user, RegisterAction.REMI); //new card with communication error
+            service.sendRegister(user, service.createRegister(user, RegisterAction.REMI)); //new card with communication error
             fail("SantanderValidationException must be thrown!");
         } catch (SantanderValidationException sve) {
 
@@ -1463,10 +1463,10 @@ public class SantanderIdCardsServiceTest {
         // ##### Act #####
         User user = IdCardsTestUtils.createPerson("createRegisterWithPreviousFailCommunicationAndSyncIssued");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO); //success
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO)); //success
         service.getOrUpdateState(user); //first card is issued
         try {
-            service.createRegister(user, RegisterAction.REMI); //new card with communication error
+            service.sendRegister(user, service.createRegister(user, RegisterAction.REMI)); //new card with communication error
             fail();
         } catch (SantanderValidationException sve) {
         }
@@ -1554,10 +1554,10 @@ public class SantanderIdCardsServiceTest {
         // ##### Act #####
         User user = IdCardsTestUtils.createPerson("createRegisterWithPreviousFailCommunicationAndSyncOldCardAfter1Day");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO); //success
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO)); //success
         service.getOrUpdateState(user); //first card is issued
         try {
-            service.createRegister(user, RegisterAction.REMI); //new card with communication error
+            service.sendRegister(user, service.createRegister(user, RegisterAction.REMI)); //new card with communication error
             fail();
         } catch (SantanderValidationException sve) {
 
@@ -1645,10 +1645,10 @@ public class SantanderIdCardsServiceTest {
         // ##### Act #####
         User user = IdCardsTestUtils.createPerson("createRegisterWithPreviousFailCommunicationAndSyncOldCardSameDay");
         SantanderIdCardsService service = new SantanderIdCardsService(mockedService, userInfoService);
-        service.createRegister(user, RegisterAction.NOVO); //success
+        service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO)); //success
         service.getOrUpdateState(user); //first card is issued
         try {
-            service.createRegister(user, RegisterAction.REMI); //new card with communication error
+            service.sendRegister(user, service.createRegister(user, RegisterAction.REMI)); //new card with communication error
             fail();
         } catch (SantanderValidationException sve) {
 

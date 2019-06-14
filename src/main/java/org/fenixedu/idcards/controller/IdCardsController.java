@@ -1,11 +1,10 @@
 package org.fenixedu.idcards.controller;
 
-import javax.ws.rs.core.Response;
-
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.core.security.SkipCSRF;
+import org.fenixedu.idcards.domain.SantanderEntry;
 import org.fenixedu.idcards.service.SantanderIdCardsService;
 import org.fenixedu.santandersdk.exception.SantanderValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +30,12 @@ public class IdCardsController {
 
     @RequestMapping(value = "/getUserCards", method = RequestMethod.GET)
     public ResponseEntity<?> getUserCards() {
+        User user = Authenticate.getUser();
+
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        cardService.getOrUpdateState(user);
         return ResponseEntity.ok(cardService.getUserSantanderCards(Authenticate.getUser()));
     }
 
@@ -45,7 +50,7 @@ public class IdCardsController {
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
-
+        cardService.getOrUpdateState(user);
         return ResponseEntity.ok(cardService.getUserSantanderCards(user));
     }
 
@@ -60,7 +65,8 @@ public class IdCardsController {
         User user = Authenticate.getUser();
 
         try {
-            cardService.createRegister(user);
+            SantanderEntry entry = cardService.createRegister(user);
+            cardService.sendRegister(user, entry);
         } catch (SantanderValidationException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
