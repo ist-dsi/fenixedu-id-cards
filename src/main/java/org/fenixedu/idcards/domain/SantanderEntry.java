@@ -34,6 +34,7 @@ public class SantanderEntry extends SantanderEntry_Base {
 
     public static Comparator<SantanderEntry> REVERSE_COMPARATOR_BY_CREATED_DATE = COMPARATOR_BY_CREATED_DATE.reversed();
 
+    @Atomic(mode = TxMode.WRITE)
     public static SantanderEntry importEntry(User user, RequestedCardBean requestedCardBean) {
         if (hasMifare(user, requestedCardBean.getMifare()))
             return null;
