@@ -73,9 +73,9 @@ public class IdCardsController {
         try {
             return ResponseEntity.ok(cardService.generateCardPreview(Authenticate.getUser()));
         } catch (SantanderValidationException e) {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(e.toString());
+            JsonObject error = new JsonObject();
+            error.addProperty("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(error.toString());
         }
     }
 
