@@ -3,6 +3,7 @@ package org.fenixedu.idcards.controller;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.security.Authenticate;
+import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.idcards.service.SantanderIdCardsService;
 import org.fenixedu.santandersdk.exception.SantanderValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,7 @@ public class IdCardsController {
         return isCardsAdmin(Authenticate.getUser());
     }
 
+    @SkipCSRF
     @RequestMapping(value = "/requestCard", method = RequestMethod.POST)
     public ResponseEntity<?> requestCard() {
         User user = Authenticate.getUser();
