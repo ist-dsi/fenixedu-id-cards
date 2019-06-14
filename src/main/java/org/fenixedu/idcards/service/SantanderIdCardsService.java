@@ -54,19 +54,12 @@ public class SantanderIdCardsService {
 
     private Logger logger = LoggerFactory.getLogger(SantanderIdCardsService.class);
 
-    public SantanderCardDto generateCardPreview(User user) {
+    public SantanderCardDto generateCardPreview(User user) throws SantanderValidationException{
         SantanderUser santanderUser = new SantanderUser(user, userInfoService);
         // Action doesnt matter
         CreateRegisterRequest createRegisterRequest = santanderUser.toCreateRegisterRequest(RegisterAction.NOVO);
-
-        try {
-            CardPreviewBean cardPreviewBean = santanderCardService.generateCardRequest(createRegisterRequest);
-
-            return new SantanderCardDto(cardPreviewBean);
-        } catch (SantanderValidationException e) {
-            // TODO: return errors to show in interface
-            return null;
-        }
+        CardPreviewBean cardPreviewBean = santanderCardService.generateCardRequest(createRegisterRequest);
+        return new SantanderCardDto(cardPreviewBean);
     }
 
     public List<SantanderCardDto> getUserSantanderCards(User user) {

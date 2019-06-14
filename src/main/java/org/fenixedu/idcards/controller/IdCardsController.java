@@ -1,5 +1,7 @@
 package org.fenixedu.idcards.controller;
 
+import javax.ws.rs.core.Response;
+
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.security.Authenticate;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.google.gson.JsonObject;
 
 @RestController
 @RequestMapping("/idcards")
@@ -66,7 +70,13 @@ public class IdCardsController {
 
     @RequestMapping(value = "/previewCard", method = RequestMethod.GET)
     public ResponseEntity<?> previewCard() {
-        return ResponseEntity.ok(cardService.generateCardPreview(Authenticate.getUser()));
+        try {
+            return ResponseEntity.ok(cardService.generateCardPreview(Authenticate.getUser()));
+        } catch (SantanderValidationException e) {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(e.toString());
+        }
     }
 
     private boolean isCardsAdmin(User user) {
