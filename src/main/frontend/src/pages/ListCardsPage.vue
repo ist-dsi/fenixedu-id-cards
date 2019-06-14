@@ -58,7 +58,7 @@
         <button @click.prevent="selectNextCard">
           <img
             src="~@/assets/images/arrow-right.svg"
-            alt="">
+            alt="Arrow right icon">
         </button>
       </div>
     </div>
@@ -143,7 +143,7 @@
                 <figure class="figure figure--icon list-features__icons">
                   <img
                     src="~@/assets/images/icon-identity.svg"
-                    alt="">
+                    alt="Identity icon">
                 </figure>
               </div>
               <div class="card-row__text">
@@ -156,7 +156,7 @@
                 <figure class="figure figure--icon list-features__meta-icons">
                   <img
                     src="~@/assets/images/arrow-right.svg"
-                    alt="">
+                    alt="Arrow right icon">
                 </figure>
               </div>
             </div>
@@ -171,7 +171,7 @@
                 <figure class="figure figure--icon list-features__icons">
                   <img
                     src="~@/assets/images/icon-ticket.svg"
-                    alt="">
+                    alt="Ticket icon">
                 </figure>
               </div>
               <div class="card-row__text">
@@ -184,7 +184,7 @@
                 <figure class="figure figure--icon list-features__meta-icons">
                   <img
                     src="~@/assets/images/arrow-right.svg"
-                    alt="">
+                    alt="Arrow right icon">
                 </figure>
               </div>
             </div>
@@ -231,7 +231,7 @@
         <figure class="figure figure--icon modal-panel__icons">
           <img
             src="~@/assets/images/icon-check.svg"
-            alt="">
+            alt="Check icon">
         </figure>
         <h1 class="h2">Card requested</h1>
         <p>Your card request was successfull, you'll be notified for its pickup.</p>
@@ -245,7 +245,7 @@
         <figure class="figure figure--icon modal-panel__icons">
           <img
             src="~@/assets/images/icon-warning.svg"
-            alt="">
+            alt="Warning icon">
         </figure>
         <h1 class="h2">Edit your info</h1>
         <p>
@@ -408,7 +408,7 @@
         <figure class="figure figure--icon modal-panel__icons">
           <img
             src="~@/assets/images/icon-warning.svg"
-            alt="">
+            alt="Warning icon">
         </figure>
         <h1 class="h2">With a great card,<br>great responsabilities</h1>
         <p>If you have access to secure doors, please report the accident to the campus security.</p>
@@ -437,7 +437,7 @@
         <figure class="figure figure--icon modal-panel__icons">
           <img
             src="~@/assets/images/icon-check.svg"
-            alt="">
+            alt="Check icon">
         </figure>
         <h1 class="h2">Ready for pickup</h1>
         <p>Your card is ready to be delivered to you at Técnico Santander agency (Central Pavillion).</p>
@@ -449,6 +449,20 @@
           class="btn btn--primary btn--outline layout-list-cards__modal-footer">
           Get directions
         </a>
+      </template>
+    </modal>
+    <modal
+      v-scroll-lock="displayErrorModal"
+      v-model="displayErrorModal"
+      class="error-modal">
+      <template slot="modal-panel">
+        <figure class="figure figure--icon modal-panel__icons">
+          <img
+            src="~@/assets/images/icon-error.svg"
+            alt="Error icon">
+        </figure>
+        <h1 class="h2">{{ currentError.title }}</h1>
+        <p>{{ currentError.message }}</p>
       </template>
     </modal>
   </div>
@@ -489,6 +503,7 @@ export default {
       requestNewCardWithReasonModal: false,
       cardResponsabilitiesModal: false,
       readyForPickupModal: false,
+      displayErrorModal: false,
       changeDataUrl: 'https://fenix.tecnico.ulisboa.pt/personal',
       tecnicoSantanderMapsUrl: 'https://goo.gl/maps/dC4k68TZ9xuy6zAVA',
       securityPhoneNumber: '+351218419162',
@@ -502,7 +517,11 @@ export default {
       cardPadding: 2,
       isMobile: false,
       mobileMenuBreakpoint: 768,
-      windowWidth: 0
+      windowWidth: 0,
+      currentError: {
+        title: '',
+        message: ''
+      }
     }
   },
   computed: {
@@ -615,8 +634,24 @@ export default {
       return date ? date.split('/').reverse().join('-') : undefined
     },
     async openRequestNewCardModal () {
-      await this.fetchPreview()
-      this.requestNewCardModal = true
+      try {
+        await this.fetchPreview()
+        this.requestNewCardModal = true
+
+        if (this.displayErrorModal) {
+          this.displayErrorModal = false
+          this.resetCurrentError()
+        }
+      } catch (err) {
+        this.currentError = {
+          title: 'Error while previewing card',
+          message: err.response.data.error
+        }
+        this.displayErrorModal = true
+      }
+    },
+    resetCurrentError () {
+      this.currentError = { title: '', message: '' }
     },
     async confirmRequestNewCard () {
       await this.requestNewCard()

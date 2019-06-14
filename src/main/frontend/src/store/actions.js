@@ -25,9 +25,9 @@ export const fetchUserCards = async ({ commit }, { username }) => {
 }
 
 export const fetchPreview = async ({ commit }) => {
-  return CardsAPI.getPreview()
-    .then(cardPreview => commit(types.RECEIVE_PREVIEW, { cardPreview }))
-    .catch(err => console.error(err))
+  const cardPreview = await CardsAPI.getPreview()
+
+  commit(types.RECEIVE_PREVIEW, { cardPreview })
 }
 
 export const requestNewCard = async ({ commit }) => {
