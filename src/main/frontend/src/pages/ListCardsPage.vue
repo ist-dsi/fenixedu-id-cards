@@ -6,10 +6,12 @@
       v-if="cardsPage.cards.length > 0"
       class="layout-list-cards__slideshow">
       <div class="slideshow__btns">
-        <button @click.prevent="selectPreviousCard">
+        <button
+          v-if="hasPrevious"
+          @click.prevent="selectPreviousCard">
           <img
             src="~@/assets/images/arrow-left.svg"
-            alt="">
+            alt="Arrow left icon">
         </button>
       </div>
       <div class="slideshow__cards">
@@ -55,7 +57,9 @@
         </ol>
       </div>
       <div class="slideshow__btns">
-        <button @click.prevent="selectNextCard">
+        <button
+          v-if="hasNext"
+          @click.prevent="selectNextCard">
           <img
             src="~@/assets/images/arrow-right.svg"
             alt="Arrow right icon">
@@ -569,6 +573,13 @@ export default {
       const { history } = this.selectedCard
 
       return history.filter(t => t.state !== this.cardStates.PENDING && t.state !== this.cardStates.EXPIRED)
+    },
+    hasPrevious () {
+      const { cards } = this.cardsPage
+      return cards && this.selectedCardIndex < cards.length - 1
+    },
+    hasNext () {
+      return this.cardsPage.cards.length > 1 && this.selectedCardIndex > 0
     }
   },
   watch: {
@@ -806,6 +817,7 @@ export default {
 .slideshow__btns{
   display: none;
   z-index: 99;
+  width: 40px;
 }
 .slideshow__carousel-status{
   display: inline;
