@@ -13,3 +13,5 @@ export const DELIVERED = 'DELIVERED'
 export const EXPIRED = 'EXPIRED'
 
 export const ACTIVE = 'ACTIVE'
+
+export const IGNORED = 'IGNORED'
