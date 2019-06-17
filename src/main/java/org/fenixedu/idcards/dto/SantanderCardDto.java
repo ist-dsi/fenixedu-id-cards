@@ -3,9 +3,11 @@ package org.fenixedu.idcards.dto;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.fenixedu.idcards.domain.PickupLocation;
 import org.fenixedu.idcards.domain.SantanderCardInfo;
 import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.santandersdk.dto.CardPreviewBean;
+import org.fenixedu.santandersdk.dto.PickupAddress;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -21,6 +23,7 @@ public class SantanderCardDto {
     public String photo;
     public String serialNumber;
     public SantanderCardState currentState;
+    public PickupAddress pickupAddress;
     public List<SantanderStateDto> history;
 
     public SantanderCardDto(SantanderCardInfo cardInfo) {
@@ -47,6 +50,7 @@ public class SantanderCardDto {
                 .stream()
                 .map(SantanderStateDto::new)
                 .collect(Collectors.toList());
+        this.pickupAddress = cardInfo.getPickupLocation().toPickupAddress();
     }
 
     public SantanderCardDto(CardPreviewBean cardPreviewBean) {

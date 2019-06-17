@@ -16,6 +16,7 @@ package org.fenixedu.idcards.domain;
  */
  
 enum org.fenixedu.idcards.domain.SantanderCardState as SantanderCardState;
+enum org.fenixedu.idcards.domain.PickupLocation as PickupLocation;
 
 /*
  *
@@ -39,6 +40,7 @@ class SantanderCardInfo {
 	String role;
 	String identificationNumber;
 	bytearray photo;
+	PickupLocation pickupLocation;
 }
 
 class SantanderCardStateTransition {

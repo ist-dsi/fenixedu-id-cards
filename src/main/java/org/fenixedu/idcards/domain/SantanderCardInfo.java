@@ -14,12 +14,13 @@ public class SantanderCardInfo extends SantanderCardInfo_Base {
         super();
     }
     
-    public SantanderCardInfo(CardPreviewBean cardPreviewBean) {
+    public SantanderCardInfo(CardPreviewBean cardPreviewBean, PickupLocation pickupLocation) {
         setIdentificationNumber(cardPreviewBean.getIdentificationNumber());
         setCardName(cardPreviewBean.getCardName());
         setRole(cardPreviewBean.getRole());
         setExpiryDate(cardPreviewBean.getExpiryDate());
         setPhoto(cardPreviewBean.getPhoto());
+        setPickupLocation(pickupLocation);
     }
 
     public DateTime getFirstTransictionDate() {

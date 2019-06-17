@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.signals.Signal;
+import org.fenixedu.idcards.domain.PickupLocation;
 import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.idcards.domain.SantanderEntry;
 import org.fenixedu.idcards.domain.SantanderUser;
@@ -56,7 +57,7 @@ public class SantanderIdCardsService {
 
     private Logger logger = LoggerFactory.getLogger(SantanderIdCardsService.class);
 
-    public SantanderCardDto generateCardPreview(User user) throws SantanderValidationException{
+    public SantanderCardDto generateCardPreview(User user) throws SantanderValidationException {
         SantanderUser santanderUser = new SantanderUser(user, userInfoService);
         // Action doesnt matter
         CreateRegisterRequest createRegisterRequest = santanderUser.toCreateRegisterRequest(RegisterAction.NOVO);
@@ -240,7 +241,7 @@ public class SantanderIdCardsService {
         CreateRegisterRequest createRegisterRequest = santanderUser.toCreateRegisterRequest(action);
 
         CardPreviewBean cardPreviewBean = santanderCardService.generateCardRequest(createRegisterRequest);
-        return createOrResetEntry(user, cardPreviewBean);
+        return createOrResetEntry(user, cardPreviewBean, santanderUser.getUserPickupLocation());
     }
 
     @Async
@@ -260,24 +261,24 @@ public class SantanderIdCardsService {
     }
 
     @Atomic(mode = TxMode.WRITE)
-    private SantanderEntry createOrResetEntry(User user, CardPreviewBean cardPreviewBean) {
+    private SantanderEntry createOrResetEntry(User user, CardPreviewBean cardPreviewBean, PickupLocation pickupLocation) {
         SantanderEntry entry = user.getCurrentSantanderEntry();
 
         if (entry == null) {
-            return new SantanderEntry(user, cardPreviewBean);
+            return new SantanderEntry(user, cardPreviewBean, pickupLocation);
         }
 
         SantanderCardState cardState = entry.getState();
 
         switch (cardState) {
         case IGNORED:
-            entry.reset(cardPreviewBean);
+            entry.reset(cardPreviewBean, pickupLocation);
             return entry;
         case REJECTED:
         case ISSUED:
         case DELIVERED:
         case EXPIRED:
-            return new SantanderEntry(user, cardPreviewBean);
+            return new SantanderEntry(user, cardPreviewBean, pickupLocation);
         default:
             //should be impossible to reach;
             throw new RuntimeException();

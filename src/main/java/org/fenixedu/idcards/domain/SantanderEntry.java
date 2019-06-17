@@ -80,7 +80,7 @@ public class SantanderEntry extends SantanderEntry_Base {
             updateState(SantanderCardState.EXPIRED, cardExpiryTime);
     }
 
-    public SantanderEntry(User user, CardPreviewBean cardPreviewBean) {
+    public SantanderEntry(User user, CardPreviewBean cardPreviewBean, PickupLocation pickupLocation) {
         setRootDomainObject(Bennu.getInstance());
         SantanderEntry currentEntry = user.getCurrentSantanderEntry();
         if (currentEntry != null) {
@@ -89,7 +89,7 @@ public class SantanderEntry extends SantanderEntry_Base {
         }
         setUser(user);
 
-        reset(cardPreviewBean);
+        reset(cardPreviewBean, pickupLocation);
     }
 
     public CardPreviewBean getCardPreviewBean() {
@@ -108,11 +108,11 @@ public class SantanderEntry extends SantanderEntry_Base {
         return getSantanderCardInfo().getFirstTransictionDate();
     }
 
-    public void reset(CardPreviewBean cardPreviewBean) {
+    public void reset(CardPreviewBean cardPreviewBean, PickupLocation pickupLocation) {
         setRequestLine(cardPreviewBean.getRequestLine());
         setResponseLine("");
         setErrorDescription("");
-        setSantanderCardInfo(new SantanderCardInfo(cardPreviewBean));
+        setSantanderCardInfo(new SantanderCardInfo(cardPreviewBean, pickupLocation));
         updateState(SantanderCardState.PENDING);
     }
     
