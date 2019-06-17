@@ -585,7 +585,7 @@ export default {
       return cards && this.selectedCardIndex < cards.length - 1
     },
     hasNext () {
-      return this.cardsPage.cards.length > 1 && this.selectedCardIndex > 0
+      return this.availableCards.length > 1 && this.selectedCardIndex > 0
     }
   },
   watch: {
@@ -671,9 +671,14 @@ export default {
       this.currentError = { title: '', message: '' }
     },
     async confirmRequestNewCard () {
-      await this.requestNewCard()
+      try {
+        await this.requestNewCard()
+        this.openSuccessModal()
+      } catch (err) {
+        console.error(err)
+      }
+
       await this.fetchCards()
-      this.openSuccessModal()
     },
     openSuccessModal () {
       this.closeCardDataModals()
@@ -704,7 +709,7 @@ export default {
     closeRequestNewCardWithReasonModal () {
       this.requestNewCardWithReasonModal = false
     },
-    confirmRequestNewCardWithReason () {
+    async confirmRequestNewCardWithReason () {
       const cardRequestReason = document.querySelector('input[name="cardRequestReason"]:checked').value
 
       if (!cardRequestReason) {
@@ -720,7 +725,7 @@ export default {
           this.openEditInfoModal()
           break
         default:
-          this.openRequestNewCardModal()
+          await this.openRequestNewCardModal()
       }
 
       this.closeRequestNewCardWithReasonModal()
@@ -761,7 +766,7 @@ export default {
       this.$refs.cardsContainer.style.transition = 'all 300ms ease-out'
       this.selectedCardIndex += direction
 
-      this.$refs.cardsContainer.style.transform = `translate(${this.convertRemToPixels(this.cardPadding + this.cardMargin - (this.cardWidth + this.cardMargin * 2) * (this.cardsPage.cards.length - this.selectedCardIndex - 1))}px)`
+      this.$refs.cardsContainer.style.transform = `translate(${this.convertRemToPixels(this.cardPadding + this.cardMargin - (this.cardWidth + this.cardMargin * 2) * (this.availableCards.length - this.selectedCardIndex - 1))}px)`
 
       setTimeout(() => {
         this.finishTransition()
