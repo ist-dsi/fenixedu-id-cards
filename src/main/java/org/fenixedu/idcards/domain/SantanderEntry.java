@@ -43,7 +43,7 @@ public class SantanderEntry extends SantanderEntry_Base {
     }
 
     private SantanderEntry(User user, RequestedCardBean requestedCardBean) {
-        setRootDomainObject(Bennu.getInstance());
+        setBennu(Bennu.getInstance());
         SantanderEntry currentEntry = user.getCurrentSantanderEntry();
         if (currentEntry != null) {
             setPrevious(currentEntry);
@@ -81,7 +81,7 @@ public class SantanderEntry extends SantanderEntry_Base {
     }
 
     public SantanderEntry(User user, CardPreviewBean cardPreviewBean, PickupLocation pickupLocation) {
-        setRootDomainObject(Bennu.getInstance());
+        setBennu(Bennu.getInstance());
         SantanderEntry currentEntry = user.getCurrentSantanderEntry();
         if (currentEntry != null) {
             setPrevious(currentEntry);

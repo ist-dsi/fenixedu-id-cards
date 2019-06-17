@@ -110,6 +110,7 @@ public class SantanderIdCardsService {
             case IGNORED:
             case ISSUED:
             case EXPIRED:
+            case DELIVERED:
                 return entry;
             case PENDING:
                 return synchronizeFenixAndSantanderStates(user, entry);

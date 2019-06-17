@@ -3,6 +3,7 @@ package org.fenixedu.idcards.domain;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.santandersdk.dto.CardPreviewBean;
 import org.joda.time.DateTime;
 
@@ -15,6 +16,7 @@ public class SantanderCardInfo extends SantanderCardInfo_Base {
     }
     
     public SantanderCardInfo(CardPreviewBean cardPreviewBean, PickupLocation pickupLocation) {
+        setBennu(Bennu.getInstance());
         setIdentificationNumber(cardPreviewBean.getIdentificationNumber());
         setCardName(cardPreviewBean.getCardName());
         setRole(cardPreviewBean.getRole());

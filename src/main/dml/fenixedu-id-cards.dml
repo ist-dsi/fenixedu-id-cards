@@ -53,9 +53,16 @@ class SantanderCardStateTransition {
  * 
  */
 
-relation RootDomainObjectSantanderEntry {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole rootDomainObject;
+relation BennuSantanderEntry {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu;
 	SantanderEntry playsRole santanderEntries {
+		multiplicity *;
+	}
+}
+
+relation BennuSantanderCardInfo {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu;
+	SantanderCardInfo playsRole santanderCardInfo {
 		multiplicity *;
 	}
 }
