@@ -33,6 +33,7 @@ import pt.ist.fenixframework.Atomic.TxMode;
 @Service
 public class SantanderIdCardsService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SantanderIdCardsService.class);
     /*
      * Sometimes santander webservice is not synchronized
      * e.g. request new card with success -> getCardState can return the old card information
@@ -173,6 +174,11 @@ public class SantanderIdCardsService {
 
     private SantanderEntry synchronizeFenixAndSantanderStates(User user, SantanderEntry entry) {
         GetRegisterResponse registerData = getRegister(user);
+
+        if (registerData == null) {
+            return entry;
+        }
+        
         GetRegisterStatus status = registerData.getStatus();
 
         SantanderEntry previousEntry = entry.getPrevious();
@@ -205,7 +211,7 @@ public class SantanderIdCardsService {
             return statusInformation;
 
         } catch (Throwable t) {
-            t.printStackTrace();
+            LOGGER.error(String.format("Something went wrong getting info of user %s", user.getUsername()), t);
             return null;
         }
     }
