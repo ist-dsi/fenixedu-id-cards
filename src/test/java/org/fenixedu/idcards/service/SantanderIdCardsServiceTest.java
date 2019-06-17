@@ -1188,8 +1188,8 @@ public class SantanderIdCardsServiceTest {
         assertEquals(SantanderCardState.ISSUED, oldTransitions.get(2).getState());
 
         assertEquals(2, SantanderEntry.getSantanderEntryHistory(user).size());
-        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
-        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
+        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
+        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         assertEquals(2, SantanderEntry.getSantanderCardHistory(user).size());
         assertEquals(newCardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
@@ -1272,8 +1272,8 @@ public class SantanderIdCardsServiceTest {
         assertEquals(SantanderCardState.ISSUED, oldTransitions.get(2).getState());
 
         assertEquals(2, SantanderEntry.getSantanderEntryHistory(user).size());
-        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
-        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
+        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
+        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         assertEquals(1, SantanderEntry.getSantanderCardHistory(user).size());
         assertEquals(oldCardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
@@ -1356,8 +1356,8 @@ public class SantanderIdCardsServiceTest {
         assertEquals(SantanderCardState.ISSUED, oldTransitions.get(2).getState());
 
         assertEquals(2, SantanderEntry.getSantanderEntryHistory(user).size());
-        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
-        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
+        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
+        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         assertEquals(1, SantanderEntry.getSantanderCardHistory(user).size());
         assertEquals(oldCardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
@@ -1447,8 +1447,8 @@ public class SantanderIdCardsServiceTest {
         assertEquals(SantanderCardState.ISSUED, oldTransitions.get(2).getState());
 
         assertEquals(2, SantanderEntry.getSantanderEntryHistory(user).size());
-        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
-        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
+        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
+        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         assertEquals(2, SantanderEntry.getSantanderCardHistory(user).size());
         assertEquals(newCardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
@@ -1538,8 +1538,8 @@ public class SantanderIdCardsServiceTest {
         assertEquals(SantanderCardState.ISSUED, oldTransitions.get(2).getState());
 
         assertEquals(2, SantanderEntry.getSantanderEntryHistory(user).size());
-        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
-        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
+        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
+        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         assertEquals(2, SantanderEntry.getSantanderCardHistory(user).size());
         assertEquals(newCardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
@@ -1630,8 +1630,8 @@ public class SantanderIdCardsServiceTest {
         assertEquals(SantanderCardState.ISSUED, oldTransitions.get(2).getState());
 
         assertEquals(2, SantanderEntry.getSantanderEntryHistory(user).size());
-        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
-        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
+        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
+        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         assertEquals(1, SantanderEntry.getSantanderCardHistory(user).size());
         assertEquals(oldCardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
@@ -1717,8 +1717,8 @@ public class SantanderIdCardsServiceTest {
         assertEquals(SantanderCardState.ISSUED, oldTransitions.get(2).getState());
 
         assertEquals(2, SantanderEntry.getSantanderEntryHistory(user).size());
-        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
-        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
+        assertEquals(oldEntry, SantanderEntry.getSantanderEntryHistory(user).get(1));
+        assertEquals(newEntry, SantanderEntry.getSantanderEntryHistory(user).get(0));
 
         assertEquals(1, SantanderEntry.getSantanderCardHistory(user).size());
         assertEquals(oldCardInfo, SantanderEntry.getSantanderCardHistory(user).get(0));
