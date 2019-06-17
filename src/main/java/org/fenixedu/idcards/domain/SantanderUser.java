@@ -54,20 +54,20 @@ public class SantanderUser {
 
     public PickupLocation getUserPickupLocation() throws SantanderNoRoleAvailableException {
         String userRole = getRole();
-        String userCampus = getCampus().toLowerCase();
+        String userCampus = getCampus();
 
         if (userRole.equals("STUDENT")) {
-            if (userCampus.equals("alameda")) {
+            if (userCampus.equals("Alameda")) {
                 return PickupLocation.ALAMEDA_SANTANDER;
-            } else if (userCampus.equals("tagus")) {
+            } else if (userCampus.equals("Taguspark")) {
                 return PickupLocation.TAGUS_NAGT;
             }
         } else {
-            if (userCampus.equals("alameda")) {
+            if (userCampus.equals("Alameda")) {
                 return PickupLocation.ALAMEDA_DRH;
-            } else if (userCampus.equals("tagus")) {
+            } else if (userCampus.equals("Taguspark")) {
                 return PickupLocation.TAGUS_DRH;
-            } else if (userCampus.equals("itn")) {
+            } else if (userCampus.equals("Tecnológico e Nuclear")) {
                 return PickupLocation.CTN_RH;
             }
         }

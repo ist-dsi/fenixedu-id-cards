@@ -13,6 +13,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.fenixedu.bennu.core.domain.User;
@@ -93,6 +96,8 @@ public class SantanderIdCardsServiceTest {
         when(image.getHeight()).thenReturn(100);
 
         when(userInfoService.getUserPhoto(any(User.class))).thenReturn(new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB));
+        when(userInfoService.getUserRoles(any(User.class))).thenReturn(Collections.singletonList("STUDENT"));
+        when(userInfoService.getCampus(any(User.class))).thenReturn("Alameda");
     }
 
     private CardPreviewBean createCardPreview() {
@@ -106,6 +111,7 @@ public class SantanderIdCardsServiceTest {
         cardPreview.setIdentificationNumber(IDENTIFICATION_NUMBER);
         cardPreview.setRequestLine(requestLine);
         cardPreview.setPhoto(PHOTO_DECODED);
+        cardPreview.setRole("STUDENT");
 
         return cardPreview;
     }

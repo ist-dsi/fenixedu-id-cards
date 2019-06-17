@@ -86,8 +86,7 @@ public class IdCardsController {
     }
 
     private boolean isCardsAdmin(User user) {
-        // TODO: use proper group
-        Group group = Group.managers();
+        Group group = Group.dynamic("idCardManager");
         return group.isMember(user);
     }
 }
