@@ -199,7 +199,7 @@ public class SantanderEntry extends SantanderEntry_Base {
         LinkedList<SantanderEntry> history = new LinkedList<>();
 
         for(SantanderEntry entry = user.getCurrentSantanderEntry(); entry != null; entry = entry.getPrevious()) {
-            history.addFirst(entry);
+            history.add(entry);
         }
 
         return history;
