@@ -112,6 +112,8 @@ export default {
       }
 
       switch (this.cardInfo.currentState) {
+        case this.cardStates.IGNORED:
+        case this.cardStates.PENDING:
         case this.cardStates.REQUESTED:
         case this.cardStates.BANK_REQUEST:
         case this.cardStates.IN_PRODUCTION:
@@ -119,10 +121,8 @@ export default {
         case this.cardStates.READY_FOR_PICKUP:
         case this.cardStates.DELIVERED:
           return this.cardStates.ACTIVE
-        case this.cardStates.EXPIRED:
-          return this.cardInfo.currentState
         default:
-          return undefined
+          return this.cardInfo.currentState
       }
     },
     cardNumber () {

@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import * as types from './mutation-types'
-import * as cardStates from '@/utils/cards/CardStates'
 
 export default {
   [types.SET_TOP_MESSAGE] (state, { active, msg, dismiss, type }) {
@@ -10,7 +9,7 @@ export default {
     Vue.set(state, 'profile', profile)
   },
   [types.RECEIVE_CARDS] (state, cards) {
-    Vue.set(state.cardsPage, 'cards', cards.filter(card => card.currentState !== cardStates.IGNORED))
+    Vue.set(state.cardsPage, 'cards', cards)
   },
   [types.RECEIVE_PREVIEW] (state, { cardPreview }) {
     Vue.set(state, 'cardPreview', cardPreview)

@@ -572,7 +572,13 @@ export default {
     filteredHistory () {
       const { history } = this.selectedCard
 
-      return history.filter(t => t.state !== this.cardStates.PENDING && t.state !== this.cardStates.EXPIRED)
+      history.forEach(transition => {
+        if (transition.state === this.cardStates.PENDING || transition.state === this.cardStates.IGNORED) {
+          transition.state = this.cardStates.REQUESTED
+        }
+      })
+
+      return history.filter(t => t.state !== this.cardStates.EXPIRED)
     },
     hasPrevious () {
       const { cards } = this.cardsPage
