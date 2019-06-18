@@ -1,5 +1,5 @@
 <template>
-  <div v-if="profile && profile.isAdmin">
+  <div v-if="profile && profile.admin">
     {{ $route.params.username }}
     <list-cards-page />
   </div>

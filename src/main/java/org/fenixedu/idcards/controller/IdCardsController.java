@@ -3,8 +3,8 @@ package org.fenixedu.idcards.controller;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.Group;
-import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.core.security.SkipCSRF;
+import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.idcards.domain.SantanderEntry;
 import org.fenixedu.idcards.service.SantanderIdCardsService;
@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,25 +37,21 @@ public class IdCardsController {
         this.cardService = cardService;
     }
 
-    @RequestMapping(value = "/getUserCards", method = RequestMethod.GET)
-    public ResponseEntity<?> getUserCards() {
-        User user = Authenticate.getUser();
-
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-        cardService.getOrUpdateState(user);
-        return ResponseEntity.ok(cardService.getUserSantanderCards(Authenticate.getUser()));
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public ResponseEntity<?> getUserCards(User user) {
+        return getUserCardsResponse(user);
     }
 
-    @RequestMapping(value = "/getUserCards/{username}", method = RequestMethod.GET)
-    public ResponseEntity<?> getUserCards(@PathVariable String username) {
-        if (!isCardsAdmin(Authenticate.getUser())) {
+    @RequestMapping(value = "/{username}", method = RequestMethod.GET)
+    public ResponseEntity<?> getUserCards(@PathVariable String username, User user) {
+        if (!isIdCardManager(user)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        User user = User.findByUsername(username);
+        return getUserCardsResponse(User.findByUsername(username));
+    }
 
+    private ResponseEntity<?> getUserCardsResponse(final User user) {
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
@@ -62,15 +59,22 @@ public class IdCardsController {
         return ResponseEntity.ok(cardService.getUserSantanderCards(user));
     }
 
-    @RequestMapping(value = "/isCardsAdmin", method = RequestMethod.GET)
-    public boolean isCardsAdmin() {
-        return isCardsAdmin(Authenticate.getUser());
+    @RequestMapping(value = "/user-info", method = RequestMethod.GET)
+    public ResponseEntity<?> userInfo(User user) {
+        JsonObject response = new JsonObject();
+        response.addProperty("admin", isIdCardManager(user));
+        response.addProperty("canRequestCard", cardService.canRequestCard(user));
+        response.addProperty("language", I18N.getLocale().getLanguage());
+        return ResponseEntity.ok(response.toString());
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/requestCard", method = RequestMethod.POST)
-    public ResponseEntity<?> requestCard() {
-        User user = Authenticate.getUser();
+    @RequestMapping(value = "/", method = RequestMethod.POST)
+    public ResponseEntity<?> requestCard(@RequestHeader("X-Requested-With") String requestedWith, User user) {
+        
+        if (!cardService.canRequestCard(user)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         try {
             SantanderEntry entry = cardService.createRegister(user);
@@ -82,10 +86,10 @@ public class IdCardsController {
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value = "/previewCard", method = RequestMethod.GET)
-    public ResponseEntity<?> previewCard() {
+    @RequestMapping(value = "/preview", method = RequestMethod.GET)
+    public ResponseEntity<?> previewCard(User user) {
         try {
-            return ResponseEntity.ok(cardService.generateCardPreview(Authenticate.getUser()));
+            return ResponseEntity.ok(cardService.generateCardPreview(user));
         } catch (SantanderValidationException e) {
             JsonObject error = new JsonObject();
             error.addProperty("error", e.getMessage());
@@ -95,7 +99,7 @@ public class IdCardsController {
 
     @SkipCSRF
     @RequestMapping(value = "/deliver/{mifare}", method = RequestMethod.PUT)
-    public ResponseEntity<?> deliver(@PathVariable String mifare) {
+    public ResponseEntity<?> deliver(@PathVariable String mifare, @RequestHeader("X-Requested-With") String requestedWith) {
         try {
             final Long mifareNumber = Long.parseLong(mifare);
             return Bennu.getInstance().getSantanderCardInfoSet().stream()
@@ -121,8 +125,7 @@ public class IdCardsController {
         }
     }
 
-    private boolean isCardsAdmin(User user) {
-        Group group = Group.dynamic("idCardManager");
-        return group.isMember(user);
+    private boolean isIdCardManager(User user) {
+        return Group.dynamic("idCardManager").isMember(user);
     }
 }

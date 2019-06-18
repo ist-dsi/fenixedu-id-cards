@@ -107,7 +107,7 @@
             </ul>
           </li>
           <li
-            v-if="profile && profile.isAdmin"
+            v-if="profile && profile.admin"
             hidden
             class="has-children mobile-only">
             <button @click.prevent="openAdminPage">
@@ -227,7 +227,7 @@
                 </div>
                 <ul class="dropdown-menu">
                   <li
-                    v-if="profile && profile.isAdmin"
+                    v-if="profile && profile.admin"
                     class="dropdown-menu__item">
                     <button
                       class="dropdown-menu__link"

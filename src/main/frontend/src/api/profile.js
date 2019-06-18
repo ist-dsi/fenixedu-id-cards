@@ -5,7 +5,7 @@ import moment from 'moment'
 async function get () {
   try {
     const response = await client.get('/api/fenix/v1/person')
-    const adminResponse = await client.get('/idcards/isCardsAdmin')
+    const adminResponse = await client.get('/idcards/user-info')
 
     Vue.i18n.set(response.data.locale || 'pt')
     moment.locale(response.data.locale || 'pt')
@@ -13,7 +13,7 @@ async function get () {
     return {
       profile: {
         ...response.data,
-        isAdmin: adminResponse.data
+        ...adminResponse.data
       }
     }
   } catch (err) {

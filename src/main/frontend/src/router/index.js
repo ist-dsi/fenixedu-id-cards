@@ -41,7 +41,7 @@ const router = new Router({
           name: 'AdminUserSearchPage',
           component: AdminUserSearchPage,
           async beforeEnter (to, from, next) {
-            if (!store.state.profile.isAdmin) {
+            if (!store.state.profile.admin) {
               next('/unauthorized')
             }
             next()
@@ -52,7 +52,7 @@ const router = new Router({
           name: 'AdminViewUserCardsPage',
           component: AdminViewUserCardsPage,
           async beforeEnter (to, from, next) {
-            if (!store.state.profile.isAdmin) {
+            if (!store.state.profile.admin) {
               next('/unauthorized')
             }
             await store.dispatch('fetchUserCards', { username: to.params.username })

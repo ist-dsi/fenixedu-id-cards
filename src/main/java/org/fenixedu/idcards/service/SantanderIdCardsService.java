@@ -3,6 +3,7 @@ package org.fenixedu.idcards.service;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.signals.Signal;
@@ -27,7 +28,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
-
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
@@ -51,7 +51,6 @@ public class SantanderIdCardsService {
         this.santanderCardService = santanderCardService;
         this.userInfoService = userInfoService;
 
-
         Signal.register(SantanderEntry.STATE_CHANGED, CardStateTransitionNotifications::notifyUser);
     }
 
@@ -68,8 +67,7 @@ public class SantanderIdCardsService {
     public List<SantanderCardDto> getUserSantanderCards(User user) {
 
         return SantanderEntry.getSantanderEntryHistory(user).stream()
-                .map(entry -> new SantanderCardDto(entry.getSantanderCardInfo()))
-                .collect(Collectors.toList());
+                .map(entry -> new SantanderCardDto(entry.getSantanderCardInfo())).collect(Collectors.toList());
     }
 
     public List<RegisterAction> getPersonAvailableActions(User user) {
@@ -98,7 +96,7 @@ public class SantanderIdCardsService {
     }
 
     public SantanderEntry getOrUpdateState(User user) {
-         SantanderEntry entry = user.getCurrentSantanderEntry();
+        SantanderEntry entry = user.getCurrentSantanderEntry();
 
         if (entry == null) {
             return null;
@@ -107,21 +105,21 @@ public class SantanderIdCardsService {
         SantanderCardState cardState = entry.getState();
 
         switch (cardState) {
-            case IGNORED:
-            case ISSUED:
-            case EXPIRED:
-            case DELIVERED:
-                return entry;
-            case PENDING:
-                return synchronizeFenixAndSantanderStates(user, entry);
-            case REJECTED:
-            case NEW:
-            case READY_FOR_PRODUCTION:
-            case PRODUCTION:
-                return checkAndUpdateState(entry);
-            default:
-                logger.debug("SantanderEntry " + entry.getExternalId() + " has unknown state (" + cardState.name() + ")");
-                throw new RuntimeException();
+        case IGNORED:
+        case ISSUED:
+        case EXPIRED:
+        case DELIVERED:
+            return entry;
+        case PENDING:
+            return synchronizeFenixAndSantanderStates(user, entry);
+        case REJECTED:
+        case NEW:
+        case READY_FOR_PRODUCTION:
+        case PRODUCTION:
+            return checkAndUpdateState(entry);
+        default:
+            logger.debug("SantanderEntry " + entry.getExternalId() + " has unknown state (" + cardState.name() + ")");
+            throw new RuntimeException();
         }
     }
 
@@ -138,37 +136,37 @@ public class SantanderIdCardsService {
         GetRegisterStatus status = registerData.getStatus();
 
         switch (status) {
-            case REJECTED_REQUEST:
+        case REJECTED_REQUEST:
             entry.updateStateAndNotify(SantanderCardState.REJECTED);
-                return entry;
+            return entry;
 
-            case REMI_REQUEST:
-            case RENU_REQUEST:
+        case REMI_REQUEST:
+        case RENU_REQUEST:
             entry.updateStateAndNotify(SantanderCardState.NEW);
-                return entry;
+            return entry;
 
-            case READY_FOR_PRODUCTION:
+        case READY_FOR_PRODUCTION:
             entry.updateStateAndNotify(SantanderCardState.READY_FOR_PRODUCTION);
-                return entry;
-            case PRODUCTION:
+            return entry;
+        case PRODUCTION:
             entry.updateStateAndNotify(SantanderCardState.PRODUCTION);
-                return entry;
+            return entry;
 
-            case ISSUED:
-                if (!SantanderEntry.hasMifare(entry.getUser(), registerData.getMifare())) {
-                    entry.updateIssued(registerData);
-                }
-                return entry;
+        case ISSUED:
+            if (!SantanderEntry.hasMifare(entry.getUser(), registerData.getMifare())) {
+                entry.updateIssued(registerData);
+            }
+            return entry;
 
-            case NO_RESULT:
-                // syncing problem between both services
-                if (!entry.wasRegisterSuccessful()) {
+        case NO_RESULT:
+            // syncing problem between both services
+            if (!entry.wasRegisterSuccessful()) {
                 entry.updateStateAndNotify(SantanderCardState.IGNORED);
-                }
-                return entry;
+            }
+            return entry;
 
-            default:
-                logger.debug("Not supported status:  " + status);
+        default:
+            logger.debug("Not supported status:  " + status);
         }
 
         return entry;
@@ -180,7 +178,7 @@ public class SantanderIdCardsService {
         if (registerData == null) {
             return entry;
         }
-        
+
         GetRegisterStatus status = registerData.getStatus();
 
         SantanderEntry previousEntry = entry.getPrevious();
@@ -221,21 +219,21 @@ public class SantanderIdCardsService {
     public SantanderEntry createRegister(User user) throws SantanderValidationException {
         List<RegisterAction> availableActions = getPersonAvailableActions(user);
 
-        if (availableActions.contains(RegisterAction.NOVO))
+        if (availableActions.contains(RegisterAction.NOVO)) {
             return createRegister(user, RegisterAction.NOVO);
-        else if (availableActions.contains(RegisterAction.RENU))
+        } else if (availableActions.contains(RegisterAction.RENU)) {
             return createRegister(user, RegisterAction.RENU);
-        else if (availableActions.contains(RegisterAction.REMI))
+        } else if (availableActions.contains(RegisterAction.REMI)) {
             return createRegister(user, RegisterAction.REMI);
-        else
+        } else {
             throw new SantanderValidationException("User cannot request a card at the moment!");
+        }
 
     }
 
     public SantanderEntry createRegister(User user, RegisterAction action) throws SantanderValidationException {
         if (!getPersonAvailableActions(user.getCurrentSantanderEntry()).contains(action)) {
-            throw new RuntimeException(
-                    "Action (" + action.name() + ") not available for user " + user.getUsername());
+            throw new RuntimeException("Action (" + action.name() + ") not available for user " + user.getUsername());
         }
 
         SantanderUser santanderUser = new SantanderUser(user, userInfoService);
@@ -246,14 +244,12 @@ public class SantanderIdCardsService {
     }
 
     @Async
-    @Atomic(mode =TxMode.READ)
-    public void sendRegister(User user, SantanderEntry santanderEntry)
-            throws SantanderValidationException {
+    @Atomic(mode = TxMode.READ)
+    public void sendRegister(User user, SantanderEntry santanderEntry) throws SantanderValidationException {
 
         CardPreviewBean cardPreviewBean = santanderEntry.getCardPreviewBean();
         CreateRegisterResponse response = santanderCardService.createRegister(cardPreviewBean);
-        
-        
+
         santanderEntry.saveResponse(response);
 
         if (response.getErrorType() != null) {
@@ -284,5 +280,20 @@ public class SantanderIdCardsService {
             //should be impossible to reach;
             throw new RuntimeException();
         }
+    }
+
+    public boolean canRequestCard(final User user) {
+        if (user == null) {
+            return false;
+        }
+
+        SantanderEntry santanderEntry = user.getCurrentSantanderEntry();
+
+        if (santanderEntry == null) {
+            return true;
+        }
+
+        return Stream.of(SantanderCardState.PENDING, SantanderCardState.NEW, SantanderCardState.READY_FOR_PRODUCTION)
+                .noneMatch(santanderCardState -> santanderCardState.equals(santanderEntry.getState()));
     }
 }

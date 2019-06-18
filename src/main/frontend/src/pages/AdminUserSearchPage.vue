@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="profile && profile.isAdmin"
+    v-if="profile && profile.admin"
     class="user-search">
     <input
       v-model="username"
