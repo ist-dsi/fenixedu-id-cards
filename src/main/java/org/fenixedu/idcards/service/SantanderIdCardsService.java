@@ -24,7 +24,6 @@ import org.fenixedu.santandersdk.service.SantanderSdkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
@@ -243,7 +242,6 @@ public class SantanderIdCardsService {
         return createOrResetEntry(user, cardPreviewBean, santanderUser.getUserPickupLocation());
     }
 
-    @Async
     @Atomic(mode = TxMode.READ)
     public void sendRegister(User user, SantanderEntry santanderEntry) throws SantanderValidationException {
 
