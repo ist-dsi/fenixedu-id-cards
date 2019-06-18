@@ -1,6 +1,6 @@
-# Técnico Card Frontend
+# Fenixedu Id Cards Frontend
 
-> The FenixEdu Tecnico Card frontend application
+> The FenixEdu ID Cards frontend application
 
 
 ### Running with mock
@@ -13,7 +13,7 @@
 
 **Setup**:
 
-- Copy the [mockoon.json](https://repo.dsi.tecnico.ulisboa.pt/academic-apps/tecnico-card-frontend/blob/master/mockoon/mockoon.json) file to your clipboard;
+- Copy the [mockoon.json](https://github.com/ist-dsi/fenixedu-id-cards/blob/new_tui/src/main/frontend/mockoon/mockoon.json) file to your clipboard;
 - Open mockoon app and import the environment by going to Tools -> Import environment/route from clipboard.
 
 **Run**:
@@ -33,16 +33,13 @@ npm run mock
 npm start
 
 # build for production with minification
-npm run build
+npm run dist
 
-# build for production and view the bundle analyzer report
-npm run build --report
+# build for production with analysis
+npm run analysis
 
-# run unit tests
-npm run unit
-
-# run all tests
-npm test
+# clean to remove node_modules and package-lock.json
+npm run clean
 ```
 
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).

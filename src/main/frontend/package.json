@@ -1,7 +1,7 @@
 {
-  "name": "tecnico-card-frontend",
+  "name": "fenixedu-id-cards-frontend",
   "version": "1.0.0",
-  "description": "The FenixEdu Tecnico Card Frontend",
+  "description": "The FenixEdu Id Cards frontend application",
   "author": "DSI <dsi@tecnico.ulisboa.pt>",
   "private": true,
   "scripts": {
@@ -9,9 +9,6 @@
     "dev": "webpack-dev-server --hot --inline --config build/webpack.conf.dev.js",
     "start": "npm run dev",
     "dist": "mkdir -p ../webapp/tecnico-card; rm -rf ../webapp/tecnico-card/*; rm -rf dist; webpack --config build/webpack.conf.prod.js; cp dist/* ../webapp/tecnico-card/",
-    "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run",
-    "e2e": "node test/e2e/runner.js",
-    "test": "npm run unit && npm run e2e",
     "lint": "eslint --ext .js,.vue src --fix",
     "analysis": "webpack --mode=production --display-reasons --json --config build/webpack.conf.prod.js > build/analysis.json",
     "prodServer": "http-server dist/",
