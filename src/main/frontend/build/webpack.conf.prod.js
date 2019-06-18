@@ -88,7 +88,6 @@ module.exports = {
     ]
   },
   plugins: [
-    new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en-gb|pt/),
     new VueLoaderPlugin(),
     new MiniCssExtractPlugin({
       filename: 'style.[contenthash:8].css'

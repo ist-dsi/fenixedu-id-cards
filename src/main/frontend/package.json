@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "axios": "0.17.0",
-    "moment": "^2.24.0",
     "v-scroll-lock": "^1.0.1",
     "vue": "2.5.17",
     "vue-click-outside": "^1.0.7",

@@ -3,7 +3,6 @@ import App from './App'
 import store from './store'
 import router from './router'
 import client from '@/api/client'
-import moment from 'moment'
 import Vue2TouchEvents from 'vue2-touch-events'
 import VScrollLock from 'v-scroll-lock'
 
@@ -35,7 +34,6 @@ Vue.mixin({
   methods: {
     setLocale (locale) {
       this.$i18n.set(locale)
-      moment.locale(locale)
     }
   }
 })
