@@ -39,3 +39,7 @@ selenium-debug.log
 .classpath
 .factorypath
 .project
+
+# Analysis #
+
+src/main/frontend/build/analysis.json
