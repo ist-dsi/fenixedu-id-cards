@@ -1,7 +1,7 @@
 import client from '@/api/client'
 
 async function getCards () {
-  const response = await client.get('/idcards/')
+  const response = await client.get('/idcards')
   return response.data
 }
 
@@ -16,7 +16,7 @@ async function getPreview () {
 }
 
 async function requestNew () {
-  await client.post('/idcards')
+  await client.post('/idcards', null, { headers: { 'X-Requested-With': 'fenixedu-id-cards-frontend' } })
 }
 
 export default {
