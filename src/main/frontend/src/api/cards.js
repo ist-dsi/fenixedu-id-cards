@@ -1,7 +1,7 @@
 import client from '@/api/client'
 
 async function getCards () {
-  const response = await client.get('/idcards')
+  const response = await client.get('/idcards/')
   return response.data
 }
 

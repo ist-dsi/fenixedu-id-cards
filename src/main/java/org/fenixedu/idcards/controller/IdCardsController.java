@@ -37,12 +37,12 @@ public class IdCardsController {
         this.cardService = cardService;
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<?> getUserCards(User user) {
         return getUserCardsResponse(user);
     }
 
-    @RequestMapping(value = "/{username}", method = RequestMethod.GET)
+    @RequestMapping(value = "{username}", method = RequestMethod.GET)
     public ResponseEntity<?> getUserCards(@PathVariable String username, User user) {
         if (!isIdCardManager(user)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -59,7 +59,7 @@ public class IdCardsController {
         return ResponseEntity.ok(cardService.getUserSantanderCards(user));
     }
 
-    @RequestMapping(value = "/user-info", method = RequestMethod.GET)
+    @RequestMapping(value = "user-info", method = RequestMethod.GET)
     public ResponseEntity<?> userInfo(User user) {
         JsonObject response = new JsonObject();
         response.addProperty("admin", isIdCardManager(user));
@@ -69,7 +69,7 @@ public class IdCardsController {
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> requestCard(@RequestHeader("X-Requested-With") String requestedWith, User user) {
         
         if (!cardService.canRequestCard(user)) {
@@ -86,7 +86,7 @@ public class IdCardsController {
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value = "/preview", method = RequestMethod.GET)
+    @RequestMapping(value = "preview", method = RequestMethod.GET)
     public ResponseEntity<?> previewCard(User user) {
         try {
             return ResponseEntity.ok(cardService.generateCardPreview(user));
@@ -98,7 +98,7 @@ public class IdCardsController {
     }
 
     @SkipCSRF
-    @RequestMapping(value = "/deliver/{mifare}", method = RequestMethod.PUT)
+    @RequestMapping(value = "deliver/{mifare}", method = RequestMethod.PUT)
     public ResponseEntity<?> deliver(@PathVariable String mifare, @RequestHeader("X-Requested-With") String requestedWith) {
         try {
             final Long mifareNumber = Long.parseLong(mifare);
