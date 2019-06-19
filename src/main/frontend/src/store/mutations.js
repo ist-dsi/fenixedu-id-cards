@@ -13,5 +13,8 @@ export default {
   },
   [types.RECEIVE_PREVIEW] (state, { cardPreview }) {
     Vue.set(state, 'cardPreview', cardPreview)
+  },
+  [types.CHANGE_CURRENT_USER] (state, { username }) {
+    Vue.set(state, 'currentUser', username)
   }
 }

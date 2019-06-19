@@ -1,7 +1,7 @@
 <template>
   <div v-if="profile && profile.admin">
-    {{ $route.params.username }}
-    <list-cards-page />
+    {{ currentUser }}
+    <list-cards-page :is-admin-view="true" />
   </div>
   <UnauthorizedPage v-else />
 </template>
@@ -19,7 +19,8 @@ export default {
   },
   computed: {
     ...mapState([
-      'profile'
+      'profile',
+      'currentUser'
     ])
   }
 }

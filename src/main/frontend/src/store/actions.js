@@ -1,6 +1,7 @@
 import * as types from './mutation-types'
 import ProfileAPI from '@/api/profile'
 import CardsAPI from '@/api/cards'
+import store from '@/store'
 
 export const setTopMessage = ({ commit }, { active, msg, dismiss, type }) => {
   commit(types.SET_TOP_MESSAGE, { active, msg, dismiss, type })
@@ -13,13 +14,9 @@ export const fetchProfile = async ({ commit }) => {
 }
 
 export const fetchCards = async ({ commit }) => {
-  return CardsAPI.getCards()
-    .then(cards => commit(types.RECEIVE_CARDS, cards))
-    .catch(err => console.error(err))
-}
+  const username = store.state.currentUser || store.state.profile.username
 
-export const fetchUserCards = async ({ commit }, { username }) => {
-  return CardsAPI.getUserCards(username)
+  return CardsAPI.getCards(username)
     .then(cards => commit(types.RECEIVE_CARDS, cards))
     .catch(err => console.error(err))
 }
@@ -32,4 +29,8 @@ export const fetchPreview = async ({ commit }) => {
 
 export const requestNewCard = async ({ commit }) => {
   await CardsAPI.requestNew()
+}
+
+export const changeCurrentUser = async ({ commit }, { username }) => {
+  commit(types.CHANGE_CURRENT_USER, { username })
 }

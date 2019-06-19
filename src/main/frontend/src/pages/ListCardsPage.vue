@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="profile"
+    v-if="profile && currentUser"
     class="layout-list-cards">
     <div
       v-if="cardsPage.cards.length > 0"
@@ -81,7 +81,7 @@
       v-if="selectedCard"
       class="layout-list-cards__actions">
       <button
-        v-if="!hasRequestedCard"
+        v-if="!profile.canRequestCard && !isAdminView"
         class="btn btn--primary btn--outline"
         @click.prevent="openRequestNewCardWithReasonModal">
         Request new
@@ -93,7 +93,7 @@
       </button>
     </div>
     <div
-      v-else
+      v-else-if="!selectedCard && !isAdminView"
       class="layout-list-cards__actions">
       <button
         class="btn btn--primary"
@@ -484,6 +484,13 @@ export default {
     IdCard,
     Modal
   },
+  props: {
+    isAdminView: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
+  },
   data () {
     return {
       showTimeline: true,
@@ -531,7 +538,8 @@ export default {
     ...mapState([
       'cardsPage',
       'cardPreview',
-      'profile'
+      'profile',
+      'currentUser'
     ]),
     selectedCard () {
       const { cards } = this.cardsPage
@@ -554,16 +562,6 @@ export default {
     },
     isSelectedCardRequested () {
       return !this.isTransitionComplete(this.stateTransitions.indexOf(this.cardStates.READY_FOR_PICKUP))
-    },
-    hasRequestedCard () {
-      const { cards } = this.cardsPage
-
-      return cards
-        .filter(card => {
-          const { history } = card
-          return history.findIndex(t => t.state === this.cardStates.READY_FOR_PICKUP) === -1
-        })
-        .length > 0
     },
     availableCards () {
       return this.cardsPage.cards.slice().reverse()

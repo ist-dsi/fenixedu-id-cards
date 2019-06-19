@@ -12,7 +12,8 @@ const state = {
   topMessage: { active: false, msg: { pt: ' ', en: '' }, dismiss: false, type: '' },
   profile: {},
   cardsPage: {},
-  cardPreview: {}
+  cardPreview: {},
+  currentUser: {}
 }
 
 const store = new Vuex.Store({

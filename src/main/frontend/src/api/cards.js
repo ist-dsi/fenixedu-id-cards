@@ -1,11 +1,6 @@
 import client from '@/api/client'
 
-async function getCards () {
-  const response = await client.get('/idcards')
-  return response.data
-}
-
-async function getUserCards (username) {
+async function getCards (username) {
   const response = await client.get(`/idcards/${username}`)
   return response.data
 }
@@ -21,7 +16,6 @@ async function requestNew () {
 
 export default {
   getCards,
-  getUserCards,
   getPreview,
   requestNew
 }

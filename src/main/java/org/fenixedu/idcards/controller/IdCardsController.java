@@ -37,18 +37,15 @@ public class IdCardsController {
         this.cardService = cardService;
     }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<?> getUserCards(User user) {
-        return getUserCardsResponse(user);
-    }
-
     @RequestMapping(value = "{username}", method = RequestMethod.GET)
     public ResponseEntity<?> getUserCards(@PathVariable String username, User user) {
-        if (!isIdCardManager(user)) {
+        User usernameUser = User.findByUsername(username);
+
+        if (usernameUser == null || (!isIdCardManager(user) && user != usernameUser)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return getUserCardsResponse(User.findByUsername(username));
+        return getUserCardsResponse(usernameUser);
     }
 
     private ResponseEntity<?> getUserCardsResponse(final User user) {
@@ -71,7 +68,7 @@ public class IdCardsController {
     @SkipCSRF
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> requestCard(@RequestHeader("X-Requested-With") String requestedWith, User user) {
-        
+
         if (!cardService.canRequestCard(user)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }

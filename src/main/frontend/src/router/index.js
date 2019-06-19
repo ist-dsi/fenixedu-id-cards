@@ -32,6 +32,7 @@ const router = new Router({
           name: 'ListCardsPage',
           component: ListCardsPage,
           async beforeEnter (to, from, next) {
+            await store.dispatch('changeCurrentUser', { username: store.state.profile.username })
             await store.dispatch('fetchCards')
             next()
           }
@@ -48,14 +49,15 @@ const router = new Router({
           }
         },
         {
-          path: '/viewUserCards/:username',
+          path: '/admin/:username',
           name: 'AdminViewUserCardsPage',
           component: AdminViewUserCardsPage,
           async beforeEnter (to, from, next) {
             if (!store.state.profile.admin) {
               next('/unauthorized')
             }
-            await store.dispatch('fetchUserCards', { username: to.params.username })
+            await store.dispatch('changeCurrentUser', { username: to.params.username })
+            await store.dispatch('fetchCards')
             next()
           }
         },
