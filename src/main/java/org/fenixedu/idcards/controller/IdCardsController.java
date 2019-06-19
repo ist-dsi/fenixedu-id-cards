@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.fenixedu.idcards.domain.SantanderCardInfo;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
@@ -119,6 +120,20 @@ public class IdCardsController {
             JsonObject error = new JsonObject();
             error.addProperty("error", nfe.getMessage());
             return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(error.toString());
+        }
+    }
+
+    @SkipCSRF
+    @RequestMapping(value = "/{card}/deliver", method = RequestMethod.PUT)
+    public ResponseEntity<?> deliverCard(@PathVariable SantanderCardInfo card, User user,
+            @RequestHeader("X-Requested-With") String requestedWith) {
+        if (isIdCardManager(user)) {
+            FenixFramework.atomic(() -> {
+                card.getSantanderEntry().updateState(SantanderCardState.DELIVERED);
+            });
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
