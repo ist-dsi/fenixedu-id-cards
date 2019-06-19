@@ -32,8 +32,9 @@ Vue.use({
 
 Vue.mixin({
   methods: {
-    setLocale (locale) {
+    async setLocale (locale) {
       this.$i18n.set(locale)
+      await store.dispatch('changeLocale', { language: locale })
     }
   }
 })

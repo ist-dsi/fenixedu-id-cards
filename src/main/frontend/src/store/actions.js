@@ -31,6 +31,12 @@ export const requestNewCard = async ({ commit }) => {
   await CardsAPI.requestNew()
 }
 
+export const changeLocale = async ({ commit }, { language }) => {
+  await ProfileAPI.changeLocale(language)
+
+  commit(types.CHANGE_LOCALE, { language })
+}
+
 export const changeCurrentUser = async ({ commit }, { username }) => {
   commit(types.CHANGE_CURRENT_USER, { username })
 }

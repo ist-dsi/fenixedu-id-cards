@@ -14,6 +14,9 @@ export default {
   [types.RECEIVE_PREVIEW] (state, { cardPreview }) {
     Vue.set(state, 'cardPreview', cardPreview)
   },
+  [types.CHANGE_LOCALE] (state, { language }) {
+    Vue.set(state.profile, 'language', language)
+  },
   [types.CHANGE_CURRENT_USER] (state, { username }) {
     Vue.set(state, 'currentUser', username)
   }
