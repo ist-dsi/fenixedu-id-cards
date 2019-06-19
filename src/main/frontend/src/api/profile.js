@@ -15,8 +15,8 @@ async function get () {
       }
     }
   } catch (err) {
-    if (err.personResponse.status === 401) {
-      window.location.href = 'https://id.tecnico.ulisboa.pt'
+    if (err.response.status === 401) {
+      window.location.href = `/login?callback=${window.location}`
     } else {
       throw err
     }
