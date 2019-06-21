@@ -212,18 +212,23 @@
       :withfooter="true"
       v-model="requestNewCardModal">
       <template slot="modal-panel">
-        <h1 class="h2">Is everything right?</h1>
-        <p>This data is obtained from Fenix.</p>
-        <id-card
-          v-if="cardPreview"
-          :key="cardPreview.cardId"
-          :card-info="cardPreview"
-          :cardtype="'idtecnico'"
-          :is-preview="true"
-        />
-        <p>Please confirm if it is updated so your card has the accurate info about you.</p>
+        <template v-if="!hasPendingRequest">
+          <h1 class="h2">Is everything right?</h1>
+          <p>This data is obtained from Fenix.</p>
+          <id-card
+            v-if="cardPreview"
+            :key="cardPreview.cardId"
+            :card-info="cardPreview"
+            :cardtype="'idtecnico'"
+            :is-preview="true"
+          />
+          <p>Please confirm if it is updated so your card has the accurate info about you.</p>
+        </template>
+        <loading v-if="hasPendingRequest" />
       </template>
-      <template slot="modal-footer">
+      <template
+        v-if="!hasPendingRequest"
+        slot="modal-footer">
         <div class="btn--group layout-list-cards__modal-footer">
           <button
             class="btn btn--slate btn--outline"
@@ -310,17 +315,22 @@
       :withfooter="true"
       v-model="confirmDataModal">
       <template slot="modal-panel">
-        <h1 class="h2">Your next card</h1>
-        <p>This data is obtained from Fenix.<br>Please confirm if it is updated so your card has the accurate info about you.</p>
-        <id-card
-          v-if="cardPreview"
-          :key="cardPreview.cardId"
-          :card-info="cardPreview"
-          :cardtype="'idtecnico'"
-          :is-preview="true"
-        />
+        <template v-if="!hasPendingRequest">
+          <h1 class="h2">Your next card</h1>
+          <p>This data is obtained from Fenix.<br>Please confirm if it is updated so your card has the accurate info about you.</p>
+          <id-card
+            v-if="cardPreview"
+            :key="cardPreview.cardId"
+            :card-info="cardPreview"
+            :cardtype="'idtecnico'"
+            :is-preview="true"
+          />
+        </template>
+        <loading v-if="hasPendingRequest" />
       </template>
-      <template slot="modal-footer">
+      <template
+        v-if="!hasPendingRequest"
+        slot="modal-footer">
         <div class="btn--group layout-list-cards__modal-footer">
           <button
             class="btn btn--slate btn--outline"
@@ -485,6 +495,7 @@
 import { mapState, mapActions } from 'vuex'
 import Modal from '@/components/utils/Modal'
 import IdCard from '@/components/IdCard'
+import Loading from '@/components/Loading'
 import * as cardStates from '@/utils/cards/CardStates'
 import stateMessages from '@/utils/cards/CardStateMessages'
 import * as requestReasons from '@/utils/reasons/RequestReasons'
@@ -493,7 +504,8 @@ export default {
   name: 'ListCardsPage',
   components: {
     IdCard,
-    Modal
+    Modal,
+    Loading
   },
   props: {
     isAdminView: {
@@ -529,6 +541,7 @@ export default {
       confirmDeliverCardModal: false,
       openOtherReasonInput: false,
       isConfirmRequestWithReasonDisabled: true,
+      hasPendingRequest: false,
       currentRequestReason: undefined,
       otherRequestReasonText: '',
       changeDataUrl: 'https://fenix.tecnico.ulisboa.pt/personal',
@@ -633,7 +646,8 @@ export default {
       'fetchPreview',
       'requestNewCard',
       'fetchCards',
-      'deliverCard'
+      'deliverCard',
+      'fetchProfile'
     ]),
     getWindowWidth () {
       this.windowWidth = window.innerWidth
@@ -672,7 +686,9 @@ export default {
     },
     async openRequestNewCardModal () {
       try {
+        this.hasPendingRequest = true
         await this.fetchPreview()
+        this.hasPendingRequest = false
         this.requestNewCardModal = true
 
         if (this.displayErrorModal) {
@@ -680,6 +696,7 @@ export default {
           this.resetCurrentError()
         }
       } catch (err) {
+        this.hasPendingRequest = false
         this.currentError = {
           title: 'Error while previewing card',
           message: err.response.data.error
@@ -692,13 +709,17 @@ export default {
     },
     async confirmRequestNewCard () {
       try {
+        this.hasPendingRequest = true
         await this.requestNewCard()
-        this.openSuccessModal()
+        this.hasPendingRequest = false
       } catch (err) {
+        this.hasPendingRequest = false
         console.error(err)
       }
 
       await this.fetchCards()
+      await this.fetchProfile()
+      this.openSuccessModal()
     },
     openSuccessModal () {
       this.closeCardDataModals()
@@ -714,7 +735,9 @@ export default {
       this.editClicked = true
     },
     async openConfirmDataModal () {
+      this.hasPendingRequest = true
       await this.fetchPreview()
+      this.hasPendingRequest = false
       this.editInfoModal = false
       this.confirmDataModal = true
       this.editClicked = false
