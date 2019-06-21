@@ -2,6 +2,7 @@ package org.fenixedu.idcards.service;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,6 +42,10 @@ public class SantanderIdCardsService {
      * it is used only when there were problems communicating with santander
      */
     private static final int SANTANDER_SYNC_DAYS = 1;
+
+    private static final Set<SantanderCardState> CAN_REQUEST_CARD_STATES =
+            Stream.of(SantanderCardState.PENDING, SantanderCardState.IGNORED, SantanderCardState.NEW,
+                    SantanderCardState.READY_FOR_PRODUCTION).collect(Collectors.toSet());
 
     private SantanderSdkService santanderCardService;
     private IUserInfoService userInfoService;
@@ -285,13 +290,13 @@ public class SantanderIdCardsService {
             return false;
         }
 
-        SantanderEntry santanderEntry = user.getCurrentSantanderEntry();
+        SantanderEntry currentSantanderEntry = user.getCurrentSantanderEntry();
 
-        if (santanderEntry == null) {
+        if (currentSantanderEntry == null) {
             return true;
         }
 
-        return Stream.of(SantanderCardState.PENDING, SantanderCardState.NEW, SantanderCardState.READY_FOR_PRODUCTION)
-                .noneMatch(santanderCardState -> santanderCardState.equals(santanderEntry.getState()));
+        return CAN_REQUEST_CARD_STATES.stream()
+                .noneMatch(state -> state.equals(currentSantanderEntry.getSantanderCardInfo().getCurrentState()));
     }
 }
