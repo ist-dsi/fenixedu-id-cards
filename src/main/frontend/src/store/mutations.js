@@ -18,6 +18,6 @@ export default {
     Vue.set(state.profile, 'language', language)
   },
   [types.CHANGE_CURRENT_USER] (state, { username }) {
-    Vue.set(state, 'currentUser', username)
+    Vue.set(state, 'currentUser', username.toLowerCase())
   }
 }

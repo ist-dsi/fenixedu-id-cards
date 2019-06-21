@@ -56,7 +56,7 @@ const router = new Router({
             if (!store.state.profile.admin) {
               next('/unauthorized')
             }
-            await store.dispatch('changeCurrentUser', { username: to.params.username })
+            await store.dispatch('changeCurrentUser', { username: to.params.username.toLowerCase() })
             await store.dispatch('fetchCards')
             next()
           }
