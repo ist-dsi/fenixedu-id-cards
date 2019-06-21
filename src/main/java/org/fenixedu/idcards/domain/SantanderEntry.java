@@ -60,6 +60,7 @@ public class SantanderEntry extends SantanderEntry_Base {
         cardInfo.setMifareNumber(requestedCardBean.getMifare());
         cardInfo.setRole(requestedCardBean.getRole());
         cardInfo.setSerialNumber(requestedCardBean.getCardSerialNumber());
+        cardInfo.setPickupLocation(PickupLocation.ALAMEDA_SANTANDER);
 
         DateTime cardExpiryTime = requestedCardBean.getExpiryDate();
         cardInfo.setExpiryDate(cardExpiryTime);
