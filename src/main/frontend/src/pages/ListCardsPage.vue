@@ -342,60 +342,29 @@
       <template slot="modal-panel">
         <h1 class="h2">Why do you need a new card?</h1>
         <form action="">
-          <div class="f-field f-field--radio">
+          <div
+            v-for="reason in requestReasons"
+            :key="reason"
+            class="f-field f-field--radio">
             <input
-              id="lost"
+              :id="reason.toLowerCase().split(' ')[0]"
+              :value="reason.toLowerCase()"
               type="radio"
               name="cardRequestReason"
-              value="lost"
-              class="f-field__radio">
+              class="f-field__radio"
+              @click="changeCurrentRequestReason(reason)">
             <label
-              for="lost"
-              class="f-field__label f-field__label--radio">Lost</label>
+              :for="reason.toLowerCase().split(' ')[0]"
+              class="f-field__label f-field__label--radio">{{ `${reason.charAt(0)}${reason.slice(1).toLowerCase()}` }}</label>
           </div>
-          <div class="f-field f-field--radio">
+          <div
+            v-if="openOtherReasonInput"
+            class="f-field">
             <input
-              id="stolen"
-              type="radio"
-              name="cardRequestReason"
-              value="stolen"
-              class="f-field__radio">
-            <label
-              for="stolen"
-              class="f-field__label f-field__label--radio">Stolen</label>
-          </div>
-          <div class="f-field f-field--radio">
-            <input
-              id="outdated-info"
-              type="radio"
-              name="cardRequestReason"
-              value="outdated-info"
-              class="f-field__radio">
-            <label
-              for="outdated-info"
-              class="f-field__label f-field__label--radio">Outdated info</label>
-          </div>
-          <div class="f-field f-field--radio">
-            <input
-              id="misworking"
-              type="radio"
-              name="cardRequestReason"
-              value="misworking"
-              class="f-field__radio">
-            <label
-              for="misworking"
-              class="f-field__label f-field__label--radio">Misworking</label>
-          </div>
-          <div class="f-field f-field--radio">
-            <input
-              id="other"
-              type="radio"
-              name="cardRequestReason"
-              value="other"
-              class="f-field__radio">
-            <label
-              for="other"
-              class="f-field__label f-field__label--radio">Other</label>
+              id="cardRequestReason-other-text"
+              v-model="otherRequestReasonText"
+              type="text"
+              class="f-field__input">
           </div>
         </form>
       </template>
@@ -407,6 +376,8 @@
             Cancel
           </button>
           <button
+            :disabled="isConfirmRequestWithReasonDisabled"
+            :class="{ 'btn--disabled': isConfirmRequestWithReasonDisabled }"
             class="btn btn--primary"
             @click.prevent="confirmRequestNewCardWithReason">
             Confirm
@@ -516,6 +487,7 @@ import Modal from '@/components/utils/Modal'
 import IdCard from '@/components/IdCard'
 import * as cardStates from '@/utils/cards/CardStates'
 import stateMessages from '@/utils/cards/CardStateMessages'
+import * as requestReasons from '@/utils/reasons/RequestReasons'
 
 export default {
   name: 'ListCardsPage',
@@ -536,6 +508,7 @@ export default {
       validateDataModal: false,
       selectedCardIndex: 0,
       cardStates,
+      requestReasons,
       stateTransitions: [
         cardStates.REQUESTED,
         cardStates.BANK_REQUEST,
@@ -554,6 +527,10 @@ export default {
       readyForPickupModal: false,
       displayErrorModal: false,
       confirmDeliverCardModal: false,
+      openOtherReasonInput: false,
+      isConfirmRequestWithReasonDisabled: true,
+      currentRequestReason: undefined,
+      otherRequestReasonText: '',
       changeDataUrl: 'https://fenix.tecnico.ulisboa.pt/personal',
       tecnicoSantanderMapsUrl: 'https://goo.gl/maps/dC4k68TZ9xuy6zAVA',
       securityPhoneNumber: '+351218419162',
@@ -747,31 +724,37 @@ export default {
       this.confirmDataModal = false
     },
     openRequestNewCardWithReasonModal () {
+      this.openOtherReasonInput = false
+      this.currentRequestReason = undefined
+      this.isConfirmRequestWithReasonDisabled = true
+      this.otherRequestReasonText = ''
       this.requestNewCardWithReasonModal = true
     },
     closeRequestNewCardWithReasonModal () {
       this.requestNewCardWithReasonModal = false
     },
     async confirmRequestNewCardWithReason () {
-      const cardRequestReason = document.querySelector('input[name="cardRequestReason"]:checked').value
+      if (this.currentRequestReason) {
+        switch (this.currentRequestReason) {
+          case this.requestReasons.LOST:
+          case this.requestReasons.STOLEN:
+            this.cardResponsabilitiesModal = true
+            break
+          case this.requestReasons.OUTDATED:
+            this.openEditInfoModal()
+            break
+          default:
+            await this.openRequestNewCardModal()
+        }
 
-      if (!cardRequestReason) {
-        return false
+        this.closeRequestNewCardWithReasonModal()
       }
-
-      switch (cardRequestReason) {
-        case 'lost':
-        case 'stolen':
-          this.cardResponsabilitiesModal = true
-          break
-        case 'outdated-info':
-          this.openEditInfoModal()
-          break
-        default:
-          await this.openRequestNewCardModal()
-      }
-
-      this.closeRequestNewCardWithReasonModal()
+    },
+    changeCurrentRequestReason (reason) {
+      const isOther = reason === this.requestReasons.OTHER
+      this.currentRequestReason = reason
+      this.openOtherReasonInput = isOther
+      this.isConfirmRequestWithReasonDisabled = isOther
     },
     async confirmResponsabilities () {
       await this.openRequestNewCardModal()
