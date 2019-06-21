@@ -72,7 +72,12 @@
         <id-card>
           <template slot="empty-state-message">
             <h1 class="h5 h5--ssp">No card yet</h1>
-            <p class="">Looks like you don't have any active Técnico Lisboa card.</p>
+            <p
+              v-if="!isAdminView"
+              class="">Looks like you don't have any Técnico Lisboa card.</p>
+            <p
+              v-else
+              class="">Looks like this user does not have any Técnico Lisboa card.</p>
           </template>
         </id-card>
       </template>
@@ -81,10 +86,16 @@
       v-if="selectedCard"
       class="layout-list-cards__actions">
       <button
-        v-if="!profile.canRequestCard && !isAdminView"
+        v-if="profile.canRequestCard && !isAdminView"
         class="btn btn--primary btn--outline"
         @click.prevent="openRequestNewCardWithReasonModal">
         Request new
+      </button>
+      <button
+        v-else-if="!isSelectedCardDelivered && isAdminView"
+        class="btn btn--primary btn--outline"
+        @click.prevent="openConfirmDeliverCardModal">
+        Deliver card
       </button>
       <button
         class="p--default timeline__toggle"
@@ -468,6 +479,34 @@
         <p>{{ currentError.message }}</p>
       </template>
     </modal>
+    <modal
+      v-scroll-lock="confirmDeliverCardModal"
+      :withfooter="true"
+      v-model="confirmDeliverCardModal">
+      <template slot="modal-panel">
+        <figure class="figure figure--icon modal-panel__icons">
+          <img
+            src="~@/assets/images/icon-warning.svg"
+            alt="Warning icon">
+        </figure>
+        <h1 class="h2">Confirm deliver card</h1>
+        <p>This action cannot be reversed. Are you sure you want to deliver this card?</p>
+      </template>
+      <template slot="modal-footer">
+        <div class="btn--group layout-list-cards__modal-footer">
+          <button
+            class="btn btn--slate btn--outline"
+            @click.prevent="closeConfirmDeliverCardModal">
+            Cancel
+          </button>
+          <button
+            class="btn btn--primary"
+            @click.prevent="deliverSelectedCard">
+            Confirm
+          </button>
+        </div>
+      </template>
+    </modal>
   </div>
 </template>
 
@@ -514,6 +553,7 @@ export default {
       cardResponsabilitiesModal: false,
       readyForPickupModal: false,
       displayErrorModal: false,
+      confirmDeliverCardModal: false,
       changeDataUrl: 'https://fenix.tecnico.ulisboa.pt/personal',
       tecnicoSantanderMapsUrl: 'https://goo.gl/maps/dC4k68TZ9xuy6zAVA',
       securityPhoneNumber: '+351218419162',
@@ -583,6 +623,11 @@ export default {
     },
     hasNext () {
       return this.availableCards.length > 1 && this.selectedCardIndex > 0
+    },
+    isSelectedCardDelivered () {
+      const { history } = this.selectedCard
+
+      return history.findIndex(t => t.state === this.cardStates.DELIVERED) !== -1
     }
   },
   watch: {
@@ -610,7 +655,8 @@ export default {
     ...mapActions([
       'fetchPreview',
       'requestNewCard',
-      'fetchCards'
+      'fetchCards',
+      'deliverCard'
     ]),
     getWindowWidth () {
       this.windowWidth = window.innerWidth
@@ -730,6 +776,22 @@ export default {
     async confirmResponsabilities () {
       await this.openRequestNewCardModal()
       this.cardResponsabilitiesModal = false
+    },
+    async deliverSelectedCard () {
+      try {
+        const id = this.selectedCard.cardId
+        await this.deliverCard({ id })
+        await this.fetchCards()
+        this.closeConfirmDeliverCardModal()
+      } catch (err) {
+        console.error(err)
+      }
+    },
+    openConfirmDeliverCardModal () {
+      this.confirmDeliverCardModal = true
+    },
+    closeConfirmDeliverCardModal () {
+      this.confirmDeliverCardModal = false
     },
     dragStart (event) {
       const transform = this.$refs.cardsContainer.style.transform

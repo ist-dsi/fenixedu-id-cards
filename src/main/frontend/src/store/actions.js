@@ -40,3 +40,7 @@ export const changeLocale = async ({ commit }, { language }) => {
 export const changeCurrentUser = async ({ commit }, { username }) => {
   commit(types.CHANGE_CURRENT_USER, { username })
 }
+
+export const deliverCard = async ({ commit }, { id }) => {
+  await CardsAPI.deliverCard(id)
+}
