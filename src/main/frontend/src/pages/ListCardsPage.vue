@@ -442,11 +442,12 @@
             alt="Check icon">
         </figure>
         <h1 class="h2">{{ $t('modal.title.readyForPickup') }}</h1>
-        <p>{{ $t('modal.message.readyForPickup') }} Técnico Santander agency (Central Pavillion).</p>
+        <p>{{ $t('modal.message.first.readyForPickup') }} {{ $t(getSelectedCardDisplayPickupLocation()) }}.</p>
+        <p v-if="getSelectedCardPickupLocation() === pickupLocations.ALAMEDA_SANTANDER">{{ $t('modal.message.second.readyForPickup') }}</p>
       </template>
       <template slot="modal-footer">
         <a
-          :href="tecnicoSantanderMapsUrl"
+          :href="pickupLocationsUrls[getSelectedCardPickupLocation()]"
           target="_blank"
           class="btn btn--primary btn--outline layout-list-cards__modal-footer">
           {{ $t('btn.getDirections') }}
@@ -511,6 +512,8 @@ import IdCard from '@/components/IdCard'
 import Loading from '@/components/Loading'
 import * as cardStates from '@/utils/cards/CardStates'
 import * as requestReasons from '@/utils/reasons/RequestReasons'
+import * as pickupLocations from '@/utils/pickup/PickupLocations'
+import pickupLocationsUrls from '@/utils/pickup/PickupLocationsURLs'
 
 export default {
   name: 'ListCardsPage',
@@ -563,10 +566,11 @@ export default {
       currentRequestReason: undefined,
       otherRequestReasonText: '',
       changeDataUrl: 'https://fenix.tecnico.ulisboa.pt/personal',
-      tecnicoSantanderMapsUrl: 'https://goo.gl/maps/dC4k68TZ9xuy6zAVA',
       securityPhoneNumber: '+351218419162',
       cardFeaturesUrl: 'https://tecnico.ulisboa.pt/pt/viver/servicos/cartao-de-identificacao/',
       discountsAndPromotionsUrl: 'https://drh.tecnico.ulisboa.pt/protocolos-e-acordos/',
+      pickupLocationsUrls,
+      pickupLocations,
       swipePosX1: 0,
       swipePosX2: 0,
       swipePosInitial: undefined,
@@ -871,6 +875,33 @@ export default {
     },
     convertRemToPixels (rem) {
       return rem * parseFloat(getComputedStyle(document.documentElement).fontSize)
+    },
+    getSelectedCardPickupLocation () {
+      if (this.availableCards.length > 0) {
+        const { pickupAddress } = this.selectedCard
+
+        return `${pickupAddress.address2.trim()}, ${pickupAddress.zipCode.trim()}`
+      }
+
+      return false
+    },
+    getSelectedCardDisplayPickupLocation () {
+      const pickupLocation = this.getSelectedCardPickupLocation()
+
+      switch (pickupLocation) {
+        case this.pickupLocations.ALAMEDA_SANTANDER:
+          return 'text.pickupLocations.alameda.santander'
+        case this.pickupLocations.ALAMEDA_DRH:
+          return 'text.pickupLocations.alameda.drh'
+        case this.pickupLocations.TAGUS_NAGT:
+          return 'text.pickupLocations.tagus.nagt'
+        case this.pickupLocations.TAGUS_DRH:
+          return 'text.pickupLocations.tagus.drh'
+        case this.pickupLocations.CTN_RH:
+          return 'text.pickupLocations.ctn.rh'
+        default:
+          return false
+      }
     }
   }
 }
