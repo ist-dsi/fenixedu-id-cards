@@ -222,7 +222,7 @@ public class SantanderIdCardsService {
     }
 
     public SantanderEntry createRegister(User user, String requestReason) throws SantanderValidationException {
-        List<RegisterAction> availableActions = getPersonAvailableActions(user);
+        List<RegisterAction> availableActions = getPersonAvailableActions(user.getCurrentSantanderEntry());
 
         if (availableActions.contains(RegisterAction.NOVO)) {
             return createRegister(user, RegisterAction.NOVO, requestReason);
