@@ -32,9 +32,6 @@ public class SantanderCardDto {
         if (expiryDate != null) {
             DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("yyyy/MM");
             this.expiryDate = dateFormatter.print(expiryDate);
-            if (DateTime.now().isAfter(expiryDate.toInstant())) {
-                this.currentState = SantanderCardState.EXPIRED;
-            }
         }
         this.cardId = cardInfo.getExternalId();
         this.istId = cardInfo.getIdentificationNumber();

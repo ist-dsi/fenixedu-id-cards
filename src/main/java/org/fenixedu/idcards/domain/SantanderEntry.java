@@ -161,7 +161,7 @@ public class SantanderEntry extends SantanderEntry_Base {
         updateState(state, DateTime.now());
     }
 
-    public void updateState(SantanderCardState state, DateTime time) {
+    private void updateState(SantanderCardState state, DateTime time) {
         if (getState() != state) {
             createSantanderCardStateTransition(state, time);
             setState(state);
@@ -174,7 +174,7 @@ public class SantanderEntry extends SantanderEntry_Base {
         updateStateAndNotify(state, DateTime.now());
     }
 
-    public void updateStateAndNotify(SantanderCardState state, DateTime time) {
+    private void updateStateAndNotify(SantanderCardState state, DateTime time) {
         if (getState() != state) {
             createSantanderCardStateTransition(state, time);
             setState(state);
@@ -183,7 +183,7 @@ public class SantanderEntry extends SantanderEntry_Base {
         setLastUpdate(time);
     }
 
-    public void createSantanderCardStateTransition(SantanderCardState state, DateTime date) {
+    private void createSantanderCardStateTransition(SantanderCardState state, DateTime date) {
         SantanderCardInfo cardInfo = getSantanderCardInfo();
         SantanderCardStateTransition transation = cardInfo.getLastTransition();
         DateTime lastTransactionTime = transation != null ? transation.getTransitionDate() : null;
