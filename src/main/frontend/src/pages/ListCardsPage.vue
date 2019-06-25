@@ -374,11 +374,14 @@
           <div
             v-if="openOtherReasonInput"
             class="f-field">
-            <input
+            <textarea
               id="cardRequestReason-other-text"
               v-model="otherRequestReasonText"
-              type="text"
-              class="f-field__input">
+              name="cardRequestReason-other-text"
+              cols="30"
+              rows="6"
+              class="f-field__textarea"
+              @input="changedOtherRequestReasonText"/>
           </div>
         </form>
       </template>
@@ -725,7 +728,14 @@ export default {
     async confirmRequestNewCard () {
       try {
         this.hasPendingRequest = true
-        await this.requestNewCard()
+        if (this.currentRequestReason) {
+          await this.requestNewCard({
+            requestReason: this.currentRequestReason === this.requestReasons.OTHER ? `OTHER: ${this.otherRequestReasonText}` : this.currentRequestReason
+          })
+          this.currentRequestReason = undefined
+        } else {
+          await this.requestNewCard({ requestReason: '' })
+        }
       } catch (err) {
         console.error(err)
       }
@@ -792,6 +802,9 @@ export default {
       this.currentRequestReason = reason
       this.openOtherReasonInput = isOther
       this.isConfirmRequestWithReasonDisabled = isOther
+    },
+    changedOtherRequestReasonText () {
+      this.isConfirmRequestWithReasonDisabled = this.otherRequestReasonText.length === 0
     },
     async confirmResponsabilities () {
       await this.openRequestNewCardModal()
