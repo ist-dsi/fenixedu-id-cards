@@ -2,11 +2,11 @@ package org.fenixedu.idcards.service;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import java.util.Locale;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.signals.Signal;
 import org.fenixedu.idcards.domain.PickupLocation;
 import org.fenixedu.idcards.domain.SantanderCardState;
@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
+
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
@@ -43,10 +44,6 @@ public class SantanderIdCardsService {
      */
     private static final int SANTANDER_SYNC_DAYS = 1;
 
-    private static final Set<SantanderCardState> CAN_REQUEST_CARD_STATES =
-            Stream.of(SantanderCardState.PENDING, SantanderCardState.IGNORED, SantanderCardState.NEW,
-                    SantanderCardState.READY_FOR_PRODUCTION).collect(Collectors.toSet());
-
     private SantanderSdkService santanderCardService;
     private IUserInfoService userInfoService;
 
@@ -57,8 +54,6 @@ public class SantanderIdCardsService {
 
         Signal.register(SantanderEntry.STATE_CHANGED, CardStateTransitionNotifications::notifyUser);
     }
-
-    private Logger logger = LoggerFactory.getLogger(SantanderIdCardsService.class);
 
     public SantanderCardDto generateCardPreview(User user) throws SantanderValidationException {
         SantanderUser santanderUser = new SantanderUser(user, userInfoService);
@@ -122,8 +117,8 @@ public class SantanderIdCardsService {
         case PRODUCTION:
             return checkAndUpdateState(entry);
         default:
-            logger.debug("SantanderEntry " + entry.getExternalId() + " has unknown state (" + cardState.name() + ")");
-            throw new RuntimeException();
+            LOGGER.debug("SantanderEntry " + entry.getExternalId() + " has unknown state (" + cardState.name() + ")");
+            return entry;
         }
     }
 
@@ -168,9 +163,10 @@ public class SantanderIdCardsService {
                 entry.updateStateAndNotify(SantanderCardState.IGNORED);
             }
             return entry;
-
+        case UNKNOWN:
+            LOGGER.debug("Card has unkown state:  " + status);
         default:
-            logger.debug("Not supported status:  " + status);
+            LOGGER.debug("Not supported status:  " + status);
         }
 
         return entry;
@@ -230,14 +226,15 @@ public class SantanderIdCardsService {
         } else if (availableActions.contains(RegisterAction.REMI)) {
             return createRegister(user, RegisterAction.REMI);
         } else {
-            throw new SantanderValidationException("User cannot request a card at the moment!");
+            throw new SantanderValidationException("santander.id.cards.error.user.cannot.request.card");
         }
 
     }
 
     public SantanderEntry createRegister(User user, RegisterAction action) throws SantanderValidationException {
         if (!getPersonAvailableActions(user.getCurrentSantanderEntry()).contains(action)) {
-            throw new RuntimeException("Action (" + action.name() + ") not available for user " + user.getUsername());
+            LOGGER.debug("Action (" + action.name() + ") not available for user " + user.getUsername());
+            throw new SantanderValidationException("santander.id.cards.error.wrong.request.action");
         }
 
         SantanderUser santanderUser = new SantanderUser(user, userInfoService);
@@ -256,12 +253,13 @@ public class SantanderIdCardsService {
         santanderEntry.saveResponse(response);
 
         if (response.getErrorType() != null) {
-            throw new SantanderValidationException(response.getErrorType().toString());
+            throw new SantanderValidationException(response.getErrorType().getErrorMessage());
         }
     }
 
     @Atomic(mode = TxMode.WRITE)
-    private SantanderEntry createOrResetEntry(User user, CardPreviewBean cardPreviewBean, PickupLocation pickupLocation) {
+    private SantanderEntry createOrResetEntry(User user, CardPreviewBean cardPreviewBean, PickupLocation pickupLocation)
+            throws SantanderValidationException {
         SantanderEntry entry = user.getCurrentSantanderEntry();
 
         if (entry == null) {
@@ -281,7 +279,7 @@ public class SantanderIdCardsService {
             return new SantanderEntry(user, cardPreviewBean, pickupLocation);
         default:
             //should be impossible to reach;
-            throw new RuntimeException();
+            throw new SantanderValidationException("santander.id.cards.error.santander.entry.invalid.state");
         }
     }
 
@@ -296,7 +294,14 @@ public class SantanderIdCardsService {
             return true;
         }
 
-        return CAN_REQUEST_CARD_STATES.stream()
-                .noneMatch(state -> state.equals(currentSantanderEntry.getSantanderCardInfo().getCurrentState()));
+        return !getPersonAvailableActions(currentSantanderEntry).isEmpty();
+    }
+
+    public String getErrorMessage(Locale locale, String errorLabels) {
+        String[] errorMessages = errorLabels.split("\n");
+        String errorDescription = "";
+        for (String errorMessage : errorMessages)
+            errorDescription += BundleUtil.getString("resources.CardGenerationResources", locale, errorMessage);
+        return errorDescription;
     }
 }

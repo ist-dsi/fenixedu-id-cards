@@ -5,6 +5,7 @@ import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.security.SkipCSRF;
 import org.fenixedu.commons.i18n.I18N;
+import org.fenixedu.idcards.domain.SantanderCardInfo;
 import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.idcards.domain.SantanderEntry;
 import org.fenixedu.idcards.service.SantanderIdCardsService;
@@ -19,10 +20,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.fenixedu.idcards.domain.SantanderCardInfo;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
+
 import pt.ist.fenixframework.FenixFramework;
 
 @RestController
@@ -78,7 +79,8 @@ public class IdCardsController {
             SantanderEntry entry = cardService.createRegister(user);
             cardService.sendRegister(user, entry);
         } catch (SantanderValidationException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(cardService.getErrorMessage(user.getProfile().getPreferredLocale(), e.getMessage()));
         }
 
         return ResponseEntity.ok().build();
@@ -90,7 +92,7 @@ public class IdCardsController {
             return ResponseEntity.ok(cardService.generateCardPreview(user));
         } catch (SantanderValidationException e) {
             JsonObject error = new JsonObject();
-            error.addProperty("error", e.getMessage());
+            error.addProperty("error", cardService.getErrorMessage(user.getProfile().getPreferredLocale(), e.getMessage()));
             return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(error.toString());
         }
     }
