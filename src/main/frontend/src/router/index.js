@@ -11,7 +11,7 @@ import UnauthorizedPage from '@/pages/UnauthorizedPage'
 Vue.use(Router)
 
 const router = new Router({
-  mode: 'history',
+  mode: 'hash',
   base: '/tecnico-card',
   routes: [
     {
