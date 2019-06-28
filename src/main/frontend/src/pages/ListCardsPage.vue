@@ -22,6 +22,7 @@
             v-touch:end="dragEnd"
             v-if="isMobile"
             ref="cardsContainer"
+            :style="{ transform: `translate(${convertRemToPixels(cardPadding + cardMargin - (cardWidth + cardMargin * 2) * (cardsPage.cards.length - 1))}px)` }"
             class="slideshow__cards-wrapper">
             <template v-if="selectedCard">
               <template v-for="card in availableCards">
