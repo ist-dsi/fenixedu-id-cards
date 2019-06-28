@@ -10,8 +10,8 @@ async function getPreview () {
   return response.data
 }
 
-async function requestNew () {
-  await client.post('/idcards', null, { headers: { 'X-Requested-With': 'fenixedu-id-cards-frontend' } })
+async function requestNew ({ requestReason }) {
+  await client.post('/idcards', requestReason, { headers: { 'X-Requested-With': 'fenixedu-id-cards-frontend', 'Content-Type': 'text/plain' } })
 }
 
 async function deliverCard (id) {

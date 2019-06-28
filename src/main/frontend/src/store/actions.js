@@ -31,8 +31,8 @@ export const fetchPreview = async ({ commit }) => {
   commit(types.RECEIVE_PREVIEW, { cardPreview })
 }
 
-export const requestNewCard = async ({ commit }) => {
-  await CardsAPI.requestNew()
+export const requestNewCard = async ({ commit }, { requestReason }) => {
+  await CardsAPI.requestNew({ requestReason })
 }
 
 export const changeLocale = async ({ commit }, { language }) => {
