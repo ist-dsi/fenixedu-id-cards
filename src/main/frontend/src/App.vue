@@ -1,9 +1,25 @@
 <template>
-  <router-view />
+  <div>
+    <div v-if="isInitialLoading">
+      <loading />
+    </div>
+    <router-view v-else />
+  </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import Loading from '@/components/Loading'
+
 export default {
+  components: {
+    Loading
+  },
+  computed: {
+    ...mapState([
+      'isInitialLoading'
+    ])
+  }
 }
 </script>
 

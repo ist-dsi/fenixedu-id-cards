@@ -7,6 +7,10 @@ export const setTopMessage = ({ commit }, { active, msg, dismiss, type }) => {
   commit(types.SET_TOP_MESSAGE, { active, msg, dismiss, type })
 }
 
+export const setInitialLoading = ({ commit }, { isInitialLoading }) => {
+  commit(types.SET_INITIAL_LOADING, { isInitialLoading })
+}
+
 export const fetchProfile = async ({ commit }) => {
   return ProfileAPI.get()
     .then(profile => commit(types.RECEIVE_PROFILE, profile))

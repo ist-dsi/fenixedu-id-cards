@@ -5,6 +5,9 @@ export default {
   [types.SET_TOP_MESSAGE] (state, { active, msg, dismiss, type }) {
     state.topMessage = { active, msg, dismiss, type }
   },
+  [types.SET_INITIAL_LOADING] (state, { isInitialLoading }) {
+    Vue.set(state, 'isInitialLoading', isInitialLoading)
+  },
   [types.RECEIVE_PROFILE] (state, { profile }) {
     Vue.set(state, 'profile', profile)
   },
