@@ -17,7 +17,9 @@ const router = new Router({
     {
       path: '',
       async beforeEnter (to, from, next) {
+        store.dispatch('setInitialLoading', { isInitialLoading: true })
         await store.dispatch('fetchProfile')
+        store.dispatch('setInitialLoading', { isInitialLoading: false })
         next()
       },
       component: PageWithNavBarAndFooterLayout,
@@ -32,8 +34,10 @@ const router = new Router({
           name: 'ListCardsPage',
           component: ListCardsPage,
           async beforeEnter (to, from, next) {
+            store.dispatch('setInitialLoading', { isInitialLoading: true })
             await store.dispatch('changeCurrentUser', { username: store.state.profile.username })
             await store.dispatch('fetchCards')
+            store.dispatch('setInitialLoading', { isInitialLoading: false })
             next()
           }
         },
@@ -56,8 +60,10 @@ const router = new Router({
             if (!store.state.profile.admin) {
               next('/unauthorized')
             }
+            store.dispatch('setInitialLoading', { isInitialLoading: true })
             await store.dispatch('changeCurrentUser', { username: to.params.username.toLowerCase() })
             await store.dispatch('fetchCards')
+            store.dispatch('setInitialLoading', { isInitialLoading: false })
             next()
           }
         },

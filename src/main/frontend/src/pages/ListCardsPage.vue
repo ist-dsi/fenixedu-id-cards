@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="profile && currentUser"
+    v-if="profile && currentUser && !isInitialLoading"
     class="layout-list-cards">
     <div
       v-if="cardsPage.cards.length > 0"
@@ -569,7 +569,8 @@ export default {
       'cardsPage',
       'cardPreview',
       'profile',
-      'currentUser'
+      'currentUser',
+      'isInitialLoading'
     ]),
     selectedCard () {
       const { cards } = this.cardsPage

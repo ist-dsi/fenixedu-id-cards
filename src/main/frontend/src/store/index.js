@@ -10,6 +10,7 @@ Vue.use(Vuex)
 
 const state = {
   topMessage: { active: false, msg: { pt: ' ', en: '' }, dismiss: false, type: '' },
+  isInitialLoading: false,
   profile: {},
   cardsPage: {},
   cardPreview: {},
