@@ -48,7 +48,9 @@
             </template>
           </div>
         </div>
-        <ol class="slideshow__carousel-status">
+        <ol
+          v-if="availableCards.length > 1"
+          class="slideshow__carousel-status">
           <li
             v-for="card in availableCards"
             :key="card.cardId"
@@ -587,7 +589,7 @@ export default {
     },
     nextCard () {
       if (this.selectedCardIndex > 0) {
-        return this.cardsPage.cards[this.selectedCardIndex - 1]
+        return this.availableCards[this.selectedCardIndex - 1]
       }
       return false
     },
