@@ -2,11 +2,11 @@
   <div
     v-if="profile && profile.admin"
     class="layout-admin-user-search-page">
-    <h1 class="h2">Admin Page</h1>
+    <h1 class="h2">{{ $t('title.admin.page') }}</h1>
     <div class="user-search">
       <input
         v-model="username"
-        :placeholder="$t('placeholder.search.user')"
+        :placeholder="$t('placeholder.searchUser')"
         @keyup.enter="goToUserPage" >
       <button
         class="btn btn--primary btn--outline"

@@ -9,7 +9,7 @@
       alt="">
     <span
       v-if="cardState === cardStates.REQUESTED || cardState === cardStates.EXPIRED"
-      class="label label--sm id-card__label label--primary">{{ visualCardStates[cardState] }}</span>
+      class="label label--sm id-card__label label--primary">{{ $t(`id-card.states.${visualCardStates[cardState].toLowerCase()}`) }}</span>
     <img
       src="~@/assets/images/TecnicoLisboa.svg"
       class="id-card__logo"
@@ -52,7 +52,7 @@
           {{ cardInfo.istId }}
         </dd>
         <dt class="id-card__info-due-date-label">
-          {{ $t('id-card.label.valid.thru') }}
+          {{ $t('id-card.label.validThru') }}
         </dt>
         <dd class="id-card__info-due-date">
           {{ cardInfo.expiryDate }}
@@ -65,7 +65,7 @@
     v-else
     class="id-card id-card--empty-state">
     <slot name="empty-state-message">
-      <h1>No card</h1>
+      <h1>{{ $t('label.info.noCard') }}</h1>
     </slot>
   </div>
 </template>

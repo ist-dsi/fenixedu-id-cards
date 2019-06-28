@@ -13,8 +13,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -226,7 +224,7 @@ public class SantanderIdCardsServiceTest {
         service.sendRegister(user, service.createRegister(user, RegisterAction.RENU));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = SantanderValidationException.class)
     public void createRegister_previousCard_cantRegister_RENU_61Days() throws SantanderValidationException {
         when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview(REQUEST_LINE1, DateTime.now().plusDays(61)));
         when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(successResponse());
@@ -263,7 +261,7 @@ public class SantanderIdCardsServiceTest {
         service.sendRegister(user, service.createRegister(user, RegisterAction.RENU));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = SantanderValidationException.class)
     public void createRegister_withWrongAction_hasntExpired_RENU() throws SantanderValidationException {
         when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview(REQUEST_LINE1, DateTime.now().plusDays(61)));
         when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(successResponse());
@@ -305,7 +303,7 @@ public class SantanderIdCardsServiceTest {
         service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = SantanderValidationException.class)
     public void createRegister_withWrongAction_noCard_RENU() throws SantanderValidationException {
         when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview());
         when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(successResponse());
@@ -316,7 +314,7 @@ public class SantanderIdCardsServiceTest {
         service.sendRegister(user, service.createRegister(user, RegisterAction.RENU));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = SantanderValidationException.class)
     public void createRegister_withWrongAction_notIssued_NOVO() throws SantanderValidationException {
         when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview());
         when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(successResponse());
@@ -333,7 +331,7 @@ public class SantanderIdCardsServiceTest {
         service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = SantanderValidationException.class)
     public void createRegister_withWrongAction_issued_NOVO() throws SantanderValidationException {
         when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview());
         when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(successResponse());
@@ -352,7 +350,7 @@ public class SantanderIdCardsServiceTest {
         service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = SantanderValidationException.class)
     public void createRegister_withWrongAction_noCard_REMI() throws SantanderValidationException {
         when(mockedService.generateCardRequest(any(CreateRegisterRequest.class))).thenReturn(createCardPreview());
         when(mockedService.createRegister(any(CardPreviewBean.class))).thenReturn(successResponse());
@@ -1084,7 +1082,8 @@ public class SantanderIdCardsServiceTest {
         try {
             service.sendRegister(user, service.createRegister(user, RegisterAction.NOVO));  //Exception must be thrown because action is not valid
             fail("Action is not valid");
-        } catch (RuntimeException rte) {}
+        } catch (SantanderValidationException sve) {
+        }
 
         // ##### Assert #####
         verify(mockedService, times(1)).createRegister(any(CardPreviewBean.class));

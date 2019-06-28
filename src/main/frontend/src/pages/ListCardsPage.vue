@@ -74,13 +74,13 @@
       <template>
         <id-card>
           <template slot="empty-state-message">
-            <h1 class="h5 h5--ssp">No card yet</h1>
+            <h1 class="h5 h5--ssp">{{ $t('label.card.emptyState.title') }}</h1>
             <p
               v-if="!isAdminView"
-              class="">Looks like you don't have any Técnico Lisboa card.</p>
+              class="">{{ $t('label.card.emptyState.message') }}</p>
             <p
               v-else
-              class="">Looks like this user does not have any Técnico Lisboa card.</p>
+              class="">{{ $t('label.card.emptyState.message.admin') }}</p>
           </template>
         </id-card>
       </template>
@@ -92,18 +92,18 @@
         v-if="profile.canRequestCard && !isAdminView"
         class="btn btn--primary btn--outline"
         @click.prevent="openRequestNewCardWithReasonModal">
-        Request new
+        {{ $t('btn.card.requestNew') }}
       </button>
       <button
         v-else-if="!isSelectedCardDelivered && isAdminView"
         class="btn btn--primary btn--outline"
         @click.prevent="openConfirmDeliverCardModal">
-        Deliver card
+        {{ $t('btn.card.deliver') }}
       </button>
       <button
         class="p--default timeline__toggle"
         @click.prevent="toggleTimeline">
-        View card history
+        {{ $t('btn.card.history') }}
       </button>
     </div>
     <div
@@ -112,7 +112,7 @@
       <button
         class="btn btn--primary"
         @click.prevent="openRequestNewCardModal">
-        Request new
+        {{ $t('btn.card.requestNew') }}
       </button>
     </div>
     <div class="layout-list-cards__timeline">
@@ -128,7 +128,7 @@
                   class="timeline__item-status"/>
                 <div class="timeline__item-text">
                   <h2 class="h5--ssp timeline__item-title">
-                    {{ stateMessages[transition] }}
+                    {{ $t(`message.cardStates.${stateTransitionLabels[transition]}`) }}
                     <img
                       v-if="transition === cardStates.READY_FOR_PICKUP && isTransitionComplete(index)"
                       src="~@/assets/images/icon-info.svg"
@@ -165,9 +165,9 @@
               </div>
               <div class="card-row__text">
                 <h1 class="card-row__title h4--ssp">
-                  Card features
+                  {{ $t('label.featuredContent.features.title') }}
                 </h1>
-                <p>Get to know the power you have in your hands</p>
+                <p>{{ $t('label.featuredContent.features.message') }}</p>
               </div>
               <div class="card-row__meta">
                 <figure class="figure figure--icon list-features__meta-icons">
@@ -193,9 +193,9 @@
               </div>
               <div class="card-row__text">
                 <h1 class="card-row__title h4--ssp">
-                  Discounts and promotions
+                  {{ $t('label.featuredContent.discounts.title') }}
                 </h1>
-                <p>Provides access to protocols and agreements with a broad set of partners</p>
+                <p>{{ $t('label.featuredContent.discounts.message') }}</p>
               </div>
               <div class="card-row__meta">
                 <figure class="figure figure--icon list-features__meta-icons">
@@ -216,8 +216,8 @@
       v-model="requestNewCardModal">
       <template slot="modal-panel">
         <template v-if="!hasPendingRequest">
-          <h1 class="h2">Is everything right?</h1>
-          <p>This data is obtained from Fenix.</p>
+          <h1 class="h2">{{ $t('modal.title.requestNew') }}</h1>
+          <p>{{ $t('modal.message.first.requestNew') }}</p>
           <id-card
             v-if="cardPreview"
             :key="cardPreview.cardId"
@@ -225,7 +225,7 @@
             :cardtype="'idtecnico'"
             :is-preview="true"
           />
-          <p>Please confirm if it is updated so your card has the accurate info about you.</p>
+          <p>{{ $t('modal.message.second.requestNew') }}</p>
         </template>
         <loading v-if="hasPendingRequest" />
       </template>
@@ -236,12 +236,12 @@
           <button
             class="btn btn--slate btn--outline"
             @click.prevent="openEditInfoModal">
-            Edit
+            {{ $t('btn.edit') }}
           </button>
           <button
             class="btn btn--primary"
             @click.prevent="confirmRequestNewCard">
-            Confirm
+            {{ $t('btn.confirm') }}
           </button>
         </div>
       </template>
@@ -255,8 +255,8 @@
             src="~@/assets/images/icon-check.svg"
             alt="Check icon">
         </figure>
-        <h1 class="h2">Card requested</h1>
-        <p>Your card request was successfull, you'll be notified for its pickup.</p>
+        <h1 class="h2">{{ $t('modal.title.success') }}</h1>
+        <p>{{ $t('modal.message.success') }}</p>
       </template>
     </modal>
     <modal
@@ -269,25 +269,26 @@
             src="~@/assets/images/icon-warning.svg"
             alt="Warning icon">
         </figure>
-        <h1 class="h2">Edit your info</h1>
+        <h1 class="h2">{{ $t('modal.title.editInfo') }}</h1>
         <p>
-          Your personal data is managed in Fenix.
-          Please click
+          {{ $t('modal.message.editInfo') }}
+          <br>
+          {{ $t('modal.message.parts.first.editInfo') }}
           <span
             class="layout-list-cards__modal-paragraph-link"
             @click.prevent="editData">
-            "<u>edit</u>"
+            "<u>{{ $t('label.lower.edit') }}</u>"
           </span>
-          to open a new window where you'll change your info.
-          When you're done please come back to this screen and select
+          {{ $t('modal.message.parts.second.editInfo') }}
+          {{ $t('modal.message.parts.third.editInfo') }}
           <span v-if="!editClicked">
-            "<u>next</u>".
+            "<u>{{ $t('label.lower.next') }}</u>".
           </span>
           <span
             v-else
             class="layout-list-cards__modal-paragraph-link"
             @click.prevent="openConfirmDataModal">
-            "<u>next</u>".
+            "<u>{{ $t('label.lower.next') }}</u>".
           </span>
         </p>
       </template>
@@ -296,19 +297,19 @@
           <button
             class="btn btn--slate btn--outline"
             @click.prevent="editInfoModal = false">
-            Cancel
+            {{ $t('btn.cancel') }}
           </button>
           <button
             v-if="!editClicked"
             class="btn btn--primary"
             @click.prevent="editData">
-            Edit
+            {{ $t('btn.edit') }}
           </button>
           <button
             v-else
             class="btn btn--primary"
             @click.prevent="openConfirmDataModal">
-            Next
+            {{ $t('btn.next') }}
           </button>
         </div>
       </template>
@@ -319,8 +320,8 @@
       v-model="confirmDataModal">
       <template slot="modal-panel">
         <template v-if="!hasPendingRequest">
-          <h1 class="h2">Your next card</h1>
-          <p>This data is obtained from Fenix.<br>Please confirm if it is updated so your card has the accurate info about you.</p>
+          <h1 class="h2">{{ $t('modal.title.confirmData') }}</h1>
+          <p>{{ $t('modal.message.first.confirmData') }}<br>{{ $t('modal.message.second.confirmData') }}</p>
           <id-card
             v-if="cardPreview"
             :key="cardPreview.cardId"
@@ -338,12 +339,12 @@
           <button
             class="btn btn--slate btn--outline"
             @click.prevent="openEditInfoModal">
-            Edit
+            {{ $t('btn.edit') }}
           </button>
           <button
             class="btn btn--primary"
             @click.prevent="confirmRequestNewCard">
-            Confirm
+            {{ $t('btn.confirm') }}
           </button>
         </div>
       </template>
@@ -353,7 +354,7 @@
       :withfooter="true"
       v-model="requestNewCardWithReasonModal">
       <template slot="modal-panel">
-        <h1 class="h2">Why do you need a new card?</h1>
+        <h1 class="h2">{{ $t('modal.title.requestNewWithReason') }}</h1>
         <form action="">
           <div
             v-for="reason in requestReasons"
@@ -368,7 +369,7 @@
               @click="changeCurrentRequestReason(reason)">
             <label
               :for="reason.toLowerCase().split(' ')[0]"
-              class="f-field__label f-field__label--radio">{{ `${reason.charAt(0)}${reason.slice(1).toLowerCase()}` }}</label>
+              class="f-field__label f-field__label--radio">{{ $t(`label.requestReason.${reason.toLowerCase().split(' ')[0]}`) }}</label>
           </div>
           <div
             v-if="openOtherReasonInput"
@@ -386,14 +387,14 @@
           <button
             class="btn btn--slate btn--outline"
             @click.prevent="closeRequestNewCardWithReasonModal">
-            Cancel
+            {{ $t('btn.cancel') }}
           </button>
           <button
             :disabled="isConfirmRequestWithReasonDisabled"
             :class="{ 'btn--disabled': isConfirmRequestWithReasonDisabled }"
             class="btn btn--primary"
             @click.prevent="confirmRequestNewCardWithReason">
-            Confirm
+            {{ $t('btn.confirm') }}
           </button>
         </div>
       </template>
@@ -408,8 +409,8 @@
             src="~@/assets/images/icon-warning.svg"
             alt="Warning icon">
         </figure>
-        <h1 class="h2">With a great card,<br>great responsabilities</h1>
-        <p>If you have access to secure doors, please report the accident to the campus security.</p>
+        <h1 class="h2">{{ $t('modal.title.parts.first.cardResponsabilities') }}<br>{{ $t('modal.title.parts.second.cardResponsabilities') }}</h1>
+        <p>{{ $t('modal.message.cardResponsabilities') }}</p>
       </template>
       <template slot="modal-footer">
         <div class="btn--group layout-list-cards__modal-footer">
@@ -417,12 +418,12 @@
             :href="`tel: ${securityPhoneNumber}`"
             target="_blank"
             class="btn btn--slate btn--outline">
-            Call
+            {{ $t('btn.call') }}
           </a>
           <button
             class="btn btn--primary"
             @click.prevent="confirmResponsabilities">
-            Next
+            {{ $t('btn.next') }}
           </button>
         </div>
       </template>
@@ -437,15 +438,15 @@
             src="~@/assets/images/icon-check.svg"
             alt="Check icon">
         </figure>
-        <h1 class="h2">Ready for pickup</h1>
-        <p>Your card is ready to be delivered to you at Técnico Santander agency (Central Pavillion).</p>
+        <h1 class="h2">{{ $t('modal.title.readyForPickup') }}</h1>
+        <p>{{ $t('modal.message.readyForPickup') }} Técnico Santander agency (Central Pavillion).</p>
       </template>
       <template slot="modal-footer">
         <a
           :href="tecnicoSantanderMapsUrl"
           target="_blank"
           class="btn btn--primary btn--outline layout-list-cards__modal-footer">
-          Get directions
+          {{ $t('btn.getDirections') }}
         </a>
       </template>
     </modal>
@@ -474,8 +475,8 @@
               src="~@/assets/images/icon-warning.svg"
               alt="Warning icon">
           </figure>
-          <h1 class="h2">Confirm deliver card</h1>
-          <p>This action cannot be reversed. Are you sure you want to deliver this card?</p>
+          <h1 class="h2">{{ $t('modal.title.confirmDeliver') }}</h1>
+          <p>{{ $t('modal.message.confirmDeliver') }}</p>
         </template>
         <loading v-if="hasPendingRequest" />
       </template>
@@ -486,12 +487,12 @@
           <button
             class="btn btn--slate btn--outline"
             @click.prevent="closeConfirmDeliverCardModal">
-            Cancel
+            {{ $t('btn.cancel') }}
           </button>
           <button
             class="btn btn--primary"
             @click.prevent="deliverSelectedCard">
-            Confirm
+            {{ $t('btn.confirm') }}
           </button>
         </div>
       </template>
@@ -501,11 +502,11 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import Vue from 'vue'
 import Modal from '@/components/utils/Modal'
 import IdCard from '@/components/IdCard'
 import Loading from '@/components/Loading'
 import * as cardStates from '@/utils/cards/CardStates'
-import stateMessages from '@/utils/cards/CardStateMessages'
 import * as requestReasons from '@/utils/reasons/RequestReasons'
 
 export default {
@@ -536,7 +537,13 @@ export default {
         cardStates.READY_FOR_PICKUP,
         cardStates.DELIVERED
       ],
-      stateMessages,
+      stateTransitionLabels: {
+        [cardStates.REQUESTED]: 'requested',
+        [cardStates.BANK_REQUEST]: 'bankRequest',
+        [cardStates.IN_PRODUCTION]: 'inProduction',
+        [cardStates.READY_FOR_PICKUP]: 'readyForPickup',
+        [cardStates.DELIVERED]: 'delivered'
+      },
       requestNewCardModal: false,
       successModal: false,
       editInfoModal: false,
@@ -705,7 +712,7 @@ export default {
         }
       } catch (err) {
         this.currentError = {
-          title: 'Error while previewing card',
+          title: Vue.i18n.translate('error.card.preview.title'),
           message: err.response.data.error
         }
         this.displayErrorModal = true
