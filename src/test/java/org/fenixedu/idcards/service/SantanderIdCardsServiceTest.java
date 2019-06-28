@@ -55,7 +55,7 @@ public class SantanderIdCardsServiceTest {
 
     private static final DateTime EXPIRY_DATE_EXPIRED = DateTime.now().minusYears(10);
 
-    private static final DateTime EXPIRY_DATE_NOT_EXPIRED = DateTime.now();
+    private static final DateTime EXPIRY_DATE_NOT_EXPIRED = DateTime.now().plusDays(1);
 
     private static final DateTime EXPEDITION_DATE1 = DateTime.now().minusYears(3);
 

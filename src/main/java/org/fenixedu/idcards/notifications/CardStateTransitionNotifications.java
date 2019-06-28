@@ -21,7 +21,7 @@ public class CardStateTransitionNotifications {
         Message.fromSystem()
                 .to(Group.users(entry.getUser()))
                 .template("message.template.santander.card.state.transition")
-                .parameter("newState", entry.getSantanderCardInfo().getCurrentState())
+                .parameter("newState", entry.getSantanderCardInfo().getCurrentState().getLocalizedName(entry.getUser().getProfile().getPreferredLocale()))
         .and().wrapped().send();
 
     }

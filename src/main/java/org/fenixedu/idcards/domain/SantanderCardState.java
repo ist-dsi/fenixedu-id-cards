@@ -1,5 +1,9 @@
 package org.fenixedu.idcards.domain;
 
+import org.fenixedu.bennu.core.i18n.BundleUtil;
+
+import java.util.Locale;
+
 public enum SantanderCardState {
 
     PENDING,        //Initial state; If not changed it means that something went when communicating with santander
@@ -18,6 +22,10 @@ public enum SantanderCardState {
 
     DELIVERED,
 
-    EXPIRED
+    EXPIRED;
+
+    public String getLocalizedName(Locale locale) {
+        return BundleUtil.getString("resources.FenixEduIdCardsResources", locale, this.getClass().getName() + "." + name());
+    }
 }
 
