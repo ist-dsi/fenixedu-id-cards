@@ -468,15 +468,20 @@
       :withfooter="true"
       v-model="confirmDeliverCardModal">
       <template slot="modal-panel">
-        <figure class="figure figure--icon modal-panel__icons">
-          <img
-            src="~@/assets/images/icon-warning.svg"
-            alt="Warning icon">
-        </figure>
-        <h1 class="h2">Confirm deliver card</h1>
-        <p>This action cannot be reversed. Are you sure you want to deliver this card?</p>
+        <template v-if="!hasPendingRequest">
+          <figure class="figure figure--icon modal-panel__icons">
+            <img
+              src="~@/assets/images/icon-warning.svg"
+              alt="Warning icon">
+          </figure>
+          <h1 class="h2">Confirm deliver card</h1>
+          <p>This action cannot be reversed. Are you sure you want to deliver this card?</p>
+        </template>
+        <loading v-if="hasPendingRequest" />
       </template>
-      <template slot="modal-footer">
+      <template
+        v-if="!hasPendingRequest"
+        slot="modal-footer">
         <div class="btn--group layout-list-cards__modal-footer">
           <button
             class="btn btn--slate btn--outline"
@@ -692,7 +697,6 @@ export default {
       try {
         this.hasPendingRequest = true
         await this.fetchPreview()
-        this.hasPendingRequest = false
         this.requestNewCardModal = true
 
         if (this.displayErrorModal) {
@@ -700,13 +704,13 @@ export default {
           this.resetCurrentError()
         }
       } catch (err) {
-        this.hasPendingRequest = false
         this.currentError = {
           title: 'Error while previewing card',
           message: err.response.data.error
         }
         this.displayErrorModal = true
       }
+      this.hasPendingRequest = false
     },
     resetCurrentError () {
       this.currentError = { title: '', message: '' }
@@ -715,14 +719,13 @@ export default {
       try {
         this.hasPendingRequest = true
         await this.requestNewCard()
-        this.hasPendingRequest = false
       } catch (err) {
-        this.hasPendingRequest = false
         console.error(err)
       }
 
       await this.fetchCards()
       await this.fetchProfile()
+      this.hasPendingRequest = false
       this.openSuccessModal()
     },
     openSuccessModal () {
@@ -790,9 +793,11 @@ export default {
     async deliverSelectedCard () {
       try {
         const id = this.selectedCard.cardId
+        this.hasPendingRequest = true
         await this.deliverCard({ id })
         await this.fetchCards()
         this.closeConfirmDeliverCardModal()
+        this.hasPendingRequest = false
       } catch (err) {
         console.error(err)
       }
