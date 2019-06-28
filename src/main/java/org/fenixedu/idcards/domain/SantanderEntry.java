@@ -93,6 +93,10 @@ public class SantanderEntry extends SantanderEntry_Base {
         reset(cardPreviewBean, pickupLocation);
     }
 
+    public SantanderCardState getState() {
+        return getSantanderCardInfo().getCurrentState();
+    }
+
     public CardPreviewBean getCardPreviewBean() {
         CardPreviewBean cardPreviewBean = new CardPreviewBean();
         SantanderCardInfo card = getSantanderCardInfo();
@@ -164,7 +168,6 @@ public class SantanderEntry extends SantanderEntry_Base {
     public void updateState(SantanderCardState state, DateTime time) {
         if (getState() != state) {
             createSantanderCardStateTransition(state, time);
-            setState(state);
         }
         setLastUpdate(time);
     }
@@ -177,7 +180,6 @@ public class SantanderEntry extends SantanderEntry_Base {
     public void updateStateAndNotify(SantanderCardState state, DateTime time) {
         if (getState() != state) {
             createSantanderCardStateTransition(state, time);
-            setState(state);
             Signal.emit(STATE_CHANGED, this);
         }
         setLastUpdate(time);
