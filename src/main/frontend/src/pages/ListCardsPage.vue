@@ -91,7 +91,7 @@
       <button
         v-if="profile.canRequestCard && !isAdminView"
         class="btn btn--primary btn--outline"
-        @click.prevent="openRequestNewCardWithReasonModal">
+        @click.prevent="hasAllCardsExpired ? openRequestNewCardModal() : openRequestNewCardWithReasonModal()">
         {{ $t('btn.card.requestNew') }}
       </button>
       <button
@@ -641,6 +641,10 @@ export default {
       const { history } = this.selectedCard
 
       return history.findIndex(t => t.state === this.cardStates.DELIVERED) !== -1
+    },
+    hasAllCardsExpired () {
+      const { cards } = this.cardsPage
+      return cards && this.cardsPage.cards.every(c => c.currentState === this.cardStates.EXPIRED)
     }
   },
   watch: {
