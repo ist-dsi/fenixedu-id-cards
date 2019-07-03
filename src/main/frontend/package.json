@@ -15,7 +15,7 @@
     "clean": "rm -rf node_modules package-lock.json"
   },
   "dependencies": {
-    "axios": "0.17.0",
+    "axios": "0.18.1",
     "v-scroll-lock": "^1.0.1",
     "vue": "2.5.17",
     "vue-click-outside": "^1.0.7",
