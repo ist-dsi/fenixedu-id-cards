@@ -72,7 +72,7 @@ public class IdCardsController {
     @SkipCSRF
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> requestCard(@RequestHeader("X-Requested-With") String requestedWith, User user,
-            @RequestBody String requestReason) {
+            @RequestBody(required = false) String requestReason) {
 
         if (!cardService.canRequestCard(user)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
