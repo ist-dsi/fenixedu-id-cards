@@ -152,7 +152,7 @@
                         <goals>
                             <goal>exec</goal>
                         </goals>
-                        <phase>prepare-package</phase>
+                        <phase>generate-sources</phase>
                         <configuration>
                             <workingDirectory>src/main/frontend</workingDirectory>
                             <executable>npm</executable>
