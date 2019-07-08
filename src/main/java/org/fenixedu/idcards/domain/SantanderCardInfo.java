@@ -25,7 +25,7 @@ public class SantanderCardInfo extends SantanderCardInfo_Base {
         setPickupLocation(pickupLocation);
     }
 
-    public DateTime getFirstTransictionDate() {
+    public DateTime getFirstTransitionDate() {
         SantanderCardStateTransition stateTransition = getSantanderCardStateTransitionsSet().stream()
                 .min(SantanderCardStateTransition.COMPARATOR_BY_TRANSITION_DATE).orElse(null);
         return stateTransition == null ? null : stateTransition.getTransitionDate();
@@ -51,6 +51,11 @@ public class SantanderCardInfo extends SantanderCardInfo_Base {
         }
 
         return stateTransition.getState();
+    }
+
+    public boolean isDelivered() {
+        return getSantanderCardStateTransitionsSet().stream()
+                .anyMatch(t -> SantanderCardState.DELIVERED.equals(t.getState()));
     }
 
     @Atomic
