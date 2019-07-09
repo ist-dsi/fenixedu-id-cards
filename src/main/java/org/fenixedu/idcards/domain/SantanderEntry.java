@@ -175,7 +175,6 @@ public class SantanderEntry extends SantanderEntry_Base {
         if (getSantanderCardInfo().getSantanderCardStateTransitionsSet().stream()
                 .noneMatch(t -> state.equals(t.getState()))) {
             createSantanderCardStateTransition(state, time);
-            setState(state);
             if (notify) {
                 Signal.emit(STATE_CHANGED, this);
             }
