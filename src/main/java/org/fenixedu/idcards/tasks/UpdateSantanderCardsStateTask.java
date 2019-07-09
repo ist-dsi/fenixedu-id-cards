@@ -3,6 +3,7 @@ package org.fenixedu.idcards.tasks;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.Group;
@@ -16,6 +17,7 @@ import org.fenixedu.messaging.core.domain.Message;
 import org.fenixedu.santandersdk.dto.RegisterAction;
 import org.fenixedu.santandersdk.exception.SantanderNoRoleAvailableException;
 import org.fenixedu.santandersdk.exception.SantanderValidationException;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,14 +48,22 @@ public class UpdateSantanderCardsStateTask extends CronTask {
         List<RegisterAction> availableActions = cardsService.getPersonAvailableActions(user);
 
         switch (oldCardState) {
-        case IGNORED:
-        case ISSUED:
-        case EXPIRED:
-        case DELIVERED:
-            break;
-        default:
-            //If getRegister endpoint is called we must wait
-            sleep();
+            case IGNORED:
+            case ISSUED:
+
+            case EXPIRED:
+            case DELIVERED:
+                break;
+            default:
+                //If getRegister endpoint is called we must wait
+                sleep();
+        }
+
+        SantanderCardState newState = user.getCurrentSantanderEntry().getState();
+
+        if (SantanderCardState.ISSUED.equals(newState) && DateTime.now().isBefore(user.getCurrentSantanderEntry()
+                .getSantanderCardInfo().getLastTransition().getTransitionDate().plusDays(30))) {
+            throw new NotImplementedException();
         }
 
         return availableActions.contains(RegisterAction.NOVO) || availableActions.contains(RegisterAction.RENU);
