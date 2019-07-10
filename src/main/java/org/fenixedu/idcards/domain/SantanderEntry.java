@@ -125,17 +125,17 @@ public class SantanderEntry extends SantanderEntry_Base {
     public void saveResponse(CreateRegisterResponse response) {
 
         if (response.wasRegisterSuccessful()) {
-            update(SantanderCardState.NEW, response);
+            update(SantanderCardState.NEW, response, true);
             return;
         }
 
         ErrorType errorType = response.getErrorType();
         switch (errorType) {
             case REQUEST_REFUSED:
-                update(SantanderCardState.IGNORED, response);
+                update(SantanderCardState.IGNORED, response, false);
                 break;
             case SANTANDER_COMMUNICATION:
-                update(SantanderCardState.PENDING, response);
+                update(SantanderCardState.PENDING, response, false);
                 break;
             default:
                 break;
@@ -143,8 +143,8 @@ public class SantanderEntry extends SantanderEntry_Base {
         setLastUpdate(DateTime.now());
     }
 
-    private void update(SantanderCardState state, CreateRegisterResponse response) {
-        updateStateAndNotify(state, DateTime.now());
+    private void update(SantanderCardState state, CreateRegisterResponse response, boolean notify) {
+        updateState(state, DateTime.now(), notify);
         setResponseLine(Strings.isNullOrEmpty(response.getResponseLine()) ? "" : response.getResponseLine());
         setErrorDescription(Strings.isNullOrEmpty(response.getErrorDescription()) ? "" : response.getErrorDescription());
     }
