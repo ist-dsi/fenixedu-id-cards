@@ -145,7 +145,7 @@ export default {
         overflow: hidden;
         background-color: white;
         box-shadow: 0 0.625rem 1.25rem 0 rgba(black,.2);
-        border-radius: 0.5rem;
+        border-radius: 0.75rem;
         background-repeat: no-repeat;
         background-size: 100% 100%;
         position: relative;
@@ -154,8 +154,8 @@ export default {
     }
     .id-card__background {
         position: absolute;
-        top: 0;
-        left: 0;
+        top: 0.0625rem;
+        left: -0.0625rem;
         bottom: 0;
         right: 0;
         width: 100%;
