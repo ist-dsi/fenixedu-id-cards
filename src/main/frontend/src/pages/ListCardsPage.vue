@@ -130,7 +130,8 @@
                   <h2 class="h5--ssp timeline__item-title">
                     {{ $t(`message.cardStates.${stateTransitionLabels[transition]}`) }}
                     <img
-                      v-if="transition === cardStates.READY_FOR_PICKUP && isTransitionComplete(index)"
+                      v-if="transition === cardStates.READY_FOR_PICKUP && isTransitionComplete(index)
+                      && !isTransitionComplete(stateTransitions.indexOf(cardStates.DELIVERED)) && selectedCard.currentState !== cardStates.EXPIRED"
                       src="~@/assets/images/icon-info.svg"
                       class="icon timeline__item-icon"
                       @click.prevent="readyForPickupModal = true" >
