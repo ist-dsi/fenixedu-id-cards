@@ -249,6 +249,7 @@
     </modal>
     <modal
       v-scroll-lock="successModal"
+      :withfooter="true"
       v-model="successModal">
       <template slot="modal-panel">
         <figure class="figure figure--icon modal-panel__icons">
@@ -258,6 +259,15 @@
         </figure>
         <h1 class="h2">{{ $t('modal.title.success') }}</h1>
         <p>{{ $t('modal.message.success') }}</p>
+      </template>
+      <template slot="modal-footer">
+        <div class="btn--group layout-list-cards__modal-footer">
+          <button
+            class="btn btn--primary"
+            @click.prevent="successModal = false">
+            {{ $t('btn.finish') }}
+          </button>
+        </div>
       </template>
     </modal>
     <modal
