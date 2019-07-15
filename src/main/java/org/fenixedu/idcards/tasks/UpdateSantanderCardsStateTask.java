@@ -59,12 +59,12 @@ public class UpdateSantanderCardsStateTask extends CronTask {
                 sleep();
         }
 
-        SantanderCardState newState = user.getCurrentSantanderEntry().getState();
+        /*SantanderCardState newState = user.getCurrentSantanderEntry().getState();
 
         if (SantanderCardState.ISSUED.equals(newState) && DateTime.now().isBefore(user.getCurrentSantanderEntry()
                 .getSantanderCardInfo().getLastTransition().getTransitionDate().plusDays(30))) {
             throw new NotImplementedException();
-        }
+        }*/
 
         return availableActions.contains(RegisterAction.NOVO) || availableActions.contains(RegisterAction.RENU);
     }
