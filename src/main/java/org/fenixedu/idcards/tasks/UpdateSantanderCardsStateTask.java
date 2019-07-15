@@ -3,17 +3,15 @@ package org.fenixedu.idcards.tasks;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
-import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.scheduler.CronTask;
 import org.fenixedu.bennu.scheduler.annotation.Task;
 import org.fenixedu.bennu.spring.BennuSpringContextHelper;
 import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.idcards.domain.SantanderEntry;
+import org.fenixedu.idcards.notifications.CardNotifications;
 import org.fenixedu.idcards.service.SantanderIdCardsService;
-import org.fenixedu.messaging.core.domain.Message;
 import org.fenixedu.santandersdk.dto.RegisterAction;
 import org.fenixedu.santandersdk.exception.SantanderNoRoleAvailableException;
 import org.fenixedu.santandersdk.exception.SantanderValidationException;
@@ -59,13 +57,6 @@ public class UpdateSantanderCardsStateTask extends CronTask {
                 sleep();
         }
 
-        /*SantanderCardState newState = user.getCurrentSantanderEntry().getState();
-
-        if (SantanderCardState.ISSUED.equals(newState) && DateTime.now().isBefore(user.getCurrentSantanderEntry()
-                .getSantanderCardInfo().getLastTransition().getTransitionDate().plusDays(30))) {
-            throw new NotImplementedException();
-        }*/
-
         return availableActions.contains(RegisterAction.NOVO) || availableActions.contains(RegisterAction.RENU);
     }
 
@@ -95,12 +86,7 @@ public class UpdateSantanderCardsStateTask extends CronTask {
 
     private void notifyMissingInformation(User user, String errors) {
         Locale locale = user.getProfile().getPreferredLocale();
-
-        Message.fromSystem()
-                .to(Group.users(user))
-                .template("message.template.santander.card.automatic.generation.first.card.error.missing.information")
-                .parameter("errorDescription", cardsService.getErrorMessage(locale, errors))
-                .and().wrapped().send();
+        CardNotifications.notifyMissingInformation(user, cardsService.getErrorMessage(locale, errors));
     }
 
     private void sleep() {

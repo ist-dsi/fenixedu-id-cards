@@ -1,5 +1,6 @@
 package org.fenixedu.idcards.notifications;
 
+import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.idcards.domain.PickupLocation;
 import org.fenixedu.idcards.domain.SantanderCardState;
@@ -7,6 +8,7 @@ import org.fenixedu.idcards.domain.SantanderEntry;
 import org.fenixedu.messaging.core.domain.Message;
 import org.fenixedu.messaging.core.template.DeclareMessageTemplate;
 import org.fenixedu.messaging.core.template.TemplateParameter;
+import org.joda.time.DateTime;
 
 @DeclareMessageTemplate(
         id = "message.template.santander.card.state.transition.requested",
@@ -29,12 +31,7 @@ import org.fenixedu.messaging.core.template.TemplateParameter;
         id = "message.template.santander.card.expiring",
         description = "Card is expiring in some days",
         subject = "Card expiring soon",
-        text = "Your card is expiring soon. Please review your card info, so it comes accurately in your next card and it can proceed to the automatic request.",
-        parameters = {
-                @TemplateParameter(id = "pickupLocation", description = "Location to pickup card"),
-                @TemplateParameter(id = "morningHours", description = "Morning hours"),
-                @TemplateParameter(id ="afternoonHours", description = "Afternoon Hours")
-        }
+        text = "Your card is expiring soon. Please review your card info, so it comes accurately in your next card and it can proceed to the automatic request."
 )
 @DeclareMessageTemplate(
         id = "message.template.santander.card.request.missing.info",
@@ -48,12 +45,13 @@ import org.fenixedu.messaging.core.template.TemplateParameter;
 public class CardNotifications {
 
     public static void notifyStateTransition(SantanderEntry entry) {
-        if (SantanderCardState.NEW.equals(entry.getSantanderCardInfo().getCurrentState())) {
+        if (SantanderCardState.NEW.equals(entry.getState())) {
             Message.fromSystem()
                     .to(Group.users(entry.getUser()))
                     .template("message.template.santander.card.state.transition.requested")
                     .and().wrapped().send();
-        } else if (SantanderCardState.ISSUED.equals(entry.getSantanderCardInfo().getCurrentState())) {
+        } else if (SantanderCardState.ISSUED.equals(entry.getState()) && DateTime.now().plusDays(15).isBefore(entry.getSantanderCardInfo()
+                .getLastTransition().getTransitionDate()) && entry.getWasPickupNotified()) {
             PickupLocation pickupLocation = entry.getSantanderCardInfo().getPickupLocation();
             Message.fromSystem()
                     .to(Group.users(entry.getUser()))
@@ -64,5 +62,20 @@ public class CardNotifications {
                     .parameter("afternoonHours", pickupLocation.getAfternoonHours().toString())
                     .and().wrapped().send();
         }
+    }
+
+    public static void notifyCardExpiring(User user) {
+        Message.fromSystem()
+                .to(Group.users(user))
+                .template("message.template.santander.card.expiring")
+                .and().wrapped().send();
+    }
+
+    public static void notifyMissingInformation(User user, String missingInfo) {
+        Message.fromSystem()
+                .to(Group.users(user))
+                .template("message.template.santander.card.request.missing.info")
+                .parameter("missingInfo", missingInfo)
+                .and().wrapped().send();
     }
 }
