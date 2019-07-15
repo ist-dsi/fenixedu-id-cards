@@ -13,6 +13,7 @@ import org.fenixedu.santandersdk.dto.CardPreviewBean;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse.ErrorType;
 import org.fenixedu.santandersdk.dto.GetRegisterResponse;
+import org.fenixedu.santandersdk.service.SantanderEntryValidator;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 
@@ -109,7 +110,7 @@ public class SantanderEntry extends SantanderEntry_Base {
     }
 
     public DateTime getCreationDate() {
-        return getSantanderCardInfo().getFirstTransictionDate();
+        return getSantanderCardInfo().getFirstTransitionDate();
     }
 
     public void reset(CardPreviewBean cardPreviewBean, PickupLocation pickupLocation, String requestReason) {
@@ -125,17 +126,17 @@ public class SantanderEntry extends SantanderEntry_Base {
     public void saveResponse(CreateRegisterResponse response) {
 
         if (response.wasRegisterSuccessful()) {
-            update(SantanderCardState.NEW, response);
+            update(SantanderCardState.NEW, response, true);
             return;
         }
 
         ErrorType errorType = response.getErrorType();
         switch (errorType) {
             case REQUEST_REFUSED:
-                update(SantanderCardState.IGNORED, response);
+                update(SantanderCardState.IGNORED, response, false);
                 break;
             case SANTANDER_COMMUNICATION:
-                update(SantanderCardState.PENDING, response);
+                update(SantanderCardState.PENDING, response, false);
                 break;
             default:
                 break;
@@ -143,8 +144,8 @@ public class SantanderEntry extends SantanderEntry_Base {
         setLastUpdate(DateTime.now());
     }
 
-    private void update(SantanderCardState state, CreateRegisterResponse response) {
-        updateStateAndNotify(state, DateTime.now());
+    private void update(SantanderCardState state, CreateRegisterResponse response, boolean notify) {
+        updateState(state, DateTime.now(), notify);
         setResponseLine(Strings.isNullOrEmpty(response.getResponseLine()) ? "" : response.getResponseLine());
         setErrorDescription(Strings.isNullOrEmpty(response.getErrorDescription()) ? "" : response.getErrorDescription());
     }
@@ -175,7 +176,6 @@ public class SantanderEntry extends SantanderEntry_Base {
         if (getSantanderCardInfo().getSantanderCardStateTransitionsSet().stream()
                 .noneMatch(t -> state.equals(t.getState()))) {
             createSantanderCardStateTransition(state, time);
-            setState(state);
             if (notify) {
                 Signal.emit(STATE_CHANGED, this);
             }
@@ -277,5 +277,29 @@ public class SantanderEntry extends SantanderEntry_Base {
 
         return getSantanderCardHistory(user).stream()
                 .anyMatch(e -> e.getMifareNumber() != null && e.getMifareNumber().equals(mifare));
+    }
+
+    public static String getLastMifareNumber(User user) {
+        return SantanderEntry.getSantanderEntryHistory(user).stream()
+                .filter(e -> e.getSantanderCardInfo().getMifareNumber() != null
+                        && e.getSantanderCardInfo().isDelivered())
+                .min(REVERSE_COMPARATOR_BY_CREATED_DATE)
+                .map(e -> e.getSantanderCardInfo().getMifareNumber())
+                .orElse(null);
+    }
+
+    public static SantanderEntry readByUsernameAndRoleCode(String username, String roleCode) {
+        User user = User.findByUsername(username);
+        if (user == null) {
+            return null;
+        }
+
+        SantanderEntryValidator entryValidator = new SantanderEntryValidator();
+
+        return SantanderEntry.getSantanderEntryHistory(user).stream()
+                .filter(e -> e.getSantanderCardInfo().isDelivered() &&
+                        roleCode.equals(entryValidator.getValue(e.getRequestLine(), 21)))
+                .min(REVERSE_COMPARATOR_BY_CREATED_DATE)
+                .orElse(null);
     }
 }

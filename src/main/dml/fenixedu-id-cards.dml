@@ -30,7 +30,6 @@ class SantanderEntry {
     String responseLine;    
     String errorDescription;
     String requestReason;
-    SantanderCardState state;
 }
 
 class SantanderCardInfo {	

@@ -1,2 +1,31 @@
 language: java
+jdk:
+  - openjdk8
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.m2
+
+env:
+  - NODE_VERSION="10.5.0"
+
+before_install:
+  - wget https://raw.githubusercontent.com/creationix/nvm/v0.34.0/nvm.sh -O ~/.nvm/nvm.sh
+  - source ~/.nvm/nvm.sh
+  - nvm install $NODE_VERSION
+  - nvm use $NODE_VERSION
+  - node --version
+  - npm --version
+
+install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+
+before_script:
+  - echo '------------------------------------'
+  - ls src/main/frontend/dist
+  - ls src/main/webapp/tecnico-card
+  - jar tvf target/*.jar | grep tecnico-card
+  - echo '------------------------------------'
+
+script: mvn clean test -Dexec.skip -Dorg.apache.jasper.compiler.Parser.STRICT_QUOTE_ESCAPING=false jspc:compile -B
 

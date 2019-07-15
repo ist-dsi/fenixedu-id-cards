@@ -91,7 +91,7 @@
       <button
         v-if="profile.canRequestCard && !isAdminView"
         class="btn btn--primary btn--outline"
-        @click.prevent="openRequestNewCardWithReasonModal">
+        @click.prevent="hasAllCardsExpired ? openRequestNewCardModal() : openRequestNewCardWithReasonModal()">
         {{ $t('btn.card.requestNew') }}
       </button>
       <button
@@ -130,7 +130,8 @@
                   <h2 class="h5--ssp timeline__item-title">
                     {{ $t(`message.cardStates.${stateTransitionLabels[transition]}`) }}
                     <img
-                      v-if="transition === cardStates.READY_FOR_PICKUP && isTransitionComplete(index)"
+                      v-if="transition === cardStates.READY_FOR_PICKUP && isTransitionComplete(index)
+                      && !isTransitionComplete(stateTransitions.indexOf(cardStates.DELIVERED)) && selectedCard.currentState !== cardStates.EXPIRED"
                       src="~@/assets/images/icon-info.svg"
                       class="icon timeline__item-icon"
                       @click.prevent="readyForPickupModal = true" >
@@ -248,6 +249,7 @@
     </modal>
     <modal
       v-scroll-lock="successModal"
+      :withfooter="true"
       v-model="successModal">
       <template slot="modal-panel">
         <figure class="figure figure--icon modal-panel__icons">
@@ -257,6 +259,15 @@
         </figure>
         <h1 class="h2">{{ $t('modal.title.success') }}</h1>
         <p>{{ $t('modal.message.success') }}</p>
+      </template>
+      <template slot="modal-footer">
+        <div class="btn--group layout-list-cards__modal-footer">
+          <button
+            class="btn btn--primary"
+            @click.prevent="successModal = false">
+            {{ $t('btn.finish') }}
+          </button>
+        </div>
       </template>
     </modal>
     <modal
@@ -641,6 +652,10 @@ export default {
       const { history } = this.selectedCard
 
       return history.findIndex(t => t.state === this.cardStates.DELIVERED) !== -1
+    },
+    hasAllCardsExpired () {
+      const { cards } = this.cardsPage
+      return cards && this.cardsPage.cards.every(c => c.currentState === this.cardStates.EXPIRED)
     }
   },
   watch: {
