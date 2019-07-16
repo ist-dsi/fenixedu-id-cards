@@ -304,10 +304,17 @@ public class SantanderIdCardsService {
     }
 
     public String getErrorMessage(Locale locale, String errorLabels) {
+        if (locale == null) {
+            locale = Locale.getDefault();
+        }
+
         String[] errorMessages = errorLabels.split("\n");
-        String errorDescription = "";
-        for (String errorMessage : errorMessages)
-            errorDescription += BundleUtil.getString("resources.CardGenerationResources", locale, errorMessage);
-        return errorDescription;
+        StringBuilder errorDescription = new StringBuilder();
+
+        for (String errorMessage : errorMessages) {
+            errorDescription.append(BundleUtil.getString("resources.CardGenerationResources", locale, errorMessage));
+        }
+
+        return errorDescription.toString();
     }
 }
