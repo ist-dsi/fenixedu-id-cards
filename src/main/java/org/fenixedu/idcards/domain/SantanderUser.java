@@ -6,7 +6,6 @@ import java.util.List;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.idcards.service.IUserInfoService;
 import org.fenixedu.santandersdk.dto.CreateRegisterRequest;
-import org.fenixedu.santandersdk.dto.PickupAddress;
 import org.fenixedu.santandersdk.dto.RegisterAction;
 import org.fenixedu.santandersdk.exception.SantanderNoRoleAvailableException;
 
@@ -48,7 +47,7 @@ public class SantanderUser {
         } else if (roles.contains("GRANT_OWNER")) {
             return "GRANT_OWNER";
         } else {
-            throw new SantanderNoRoleAvailableException("Person has no valid role");
+            throw new SantanderNoRoleAvailableException("santander.id.cards.missing.role");
         }
     }
 
