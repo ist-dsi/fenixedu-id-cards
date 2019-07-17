@@ -36,16 +36,16 @@ public class SantanderUser {
     public String getRole() throws SantanderNoRoleAvailableException {
         List<String> roles = userInfoService.getUserRoles(user);
 
-        if (roles.contains("STUDENT")) {
-            return "STUDENT";
-        } else if (roles.contains("TEACHER")) {
-            return "TEACHER";
-        } else if (roles.contains("RESEARCHER")) {
-            return "RESEARCHER";
-        } else if (roles.contains("EMPLOYEE")) {
+        if (roles.contains("EMPLOYEE")) {
             return "EMPLOYEE";
+        } else if (roles.contains("STUDENT")) {
+            return "STUDENT";
         } else if (roles.contains("GRANT_OWNER")) {
             return "GRANT_OWNER";
+        } else if (roles.contains("RESEARCHER")) {
+            return "RESEARCHER";
+        } else if (roles.contains("TEACHER")) {
+            return "TEACHER";
         } else {
             throw new SantanderNoRoleAvailableException("santander.id.cards.missing.role");
         }
