@@ -4,10 +4,10 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.idcards.exception.SantanderCardNoPermissionException;
 import org.fenixedu.idcards.service.IUserInfoService;
 import org.fenixedu.santandersdk.dto.CreateRegisterRequest;
 import org.fenixedu.santandersdk.dto.RegisterAction;
-import org.fenixedu.santandersdk.exception.SantanderNoRoleAvailableException;
 
 public class SantanderUser {
     private User user;
@@ -18,7 +18,7 @@ public class SantanderUser {
         this.userInfoService = userInfoService;
     }
 
-    public CreateRegisterRequest toCreateRegisterRequest(RegisterAction action) throws SantanderNoRoleAvailableException {
+    public CreateRegisterRequest toCreateRegisterRequest(RegisterAction action) throws SantanderCardNoPermissionException {
         CreateRegisterRequest createRegisterRequest = new CreateRegisterRequest();
 
         createRegisterRequest.setRole(getRole());
@@ -33,7 +33,7 @@ public class SantanderUser {
         return createRegisterRequest;
     }
 
-    public String getRole() throws SantanderNoRoleAvailableException {
+    public String getRole() throws SantanderCardNoPermissionException {
         List<String> roles = userInfoService.getUserRoles(user);
 
         if (roles.contains("STUDENT")) {
@@ -47,11 +47,11 @@ public class SantanderUser {
         } else if (roles.contains("GRANT_OWNER")) {
             return "GRANT_OWNER";
         } else {
-            throw new SantanderNoRoleAvailableException("santander.id.cards.missing.role");
+            throw new SantanderCardNoPermissionException("santander.id.cards.missing.permission");
         }
     }
 
-    public PickupLocation getUserPickupLocation() throws SantanderNoRoleAvailableException {
+    public PickupLocation getUserPickupLocation() throws SantanderCardNoPermissionException {
         String userRole = getRole();
         String userCampus = getCampus();
 
@@ -81,8 +81,13 @@ public class SantanderUser {
         return userInfoService.getUserDepartmentAcronym(user);
     }
 
-    public String getCampus() {
-        return userInfoService.getCampus(user);
+    public String getCampus() throws SantanderCardNoPermissionException {
+        String userCampus = userInfoService.getCampus(user);
+
+        if (userCampus == null)
+            throw new SantanderCardNoPermissionException("santander.id.cards.missing.permission");
+
+        return userCampus;
     }
 
     public User getUser() {
