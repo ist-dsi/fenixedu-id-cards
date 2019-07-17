@@ -862,14 +862,20 @@ export default {
         this.swipePosX2 = this.swipePosX1 - event.touches[0].clientX
         this.swipePosX1 = event.touches[0].clientX
       }
-      this.$refs.cardsContainer.style.transform = `translate(${currentPosition - this.swipePosX2}px)`
+
+      const deltaPos = currentPosition - this.swipePosX2
+      const maxDrag = this.convertRemToPixels(this.cardPadding + this.cardMargin - (this.cardWidth + this.cardMargin * 2) * (this.cardsPage.cards.length - 1))
+      const minDrag = this.convertRemToPixels(this.cardPadding + this.cardMargin)
+      if (deltaPos >= maxDrag && deltaPos <= minDrag) {
+        this.$refs.cardsContainer.style.transform = `translate(${currentPosition - this.swipePosX2}px)`
+      }
     },
     dragEnd (event) {
       const transform = this.$refs.cardsContainer.style.transform
       const finalPosition = transform.replace(/[a-zA-Z()]/g, '')
-      if (finalPosition - this.swipePosInitial < -20 && this.nextCard) {
+      if (finalPosition - this.swipePosInitial < -40 && this.nextCard) {
         this.selectNextCard()
-      } else if (finalPosition - this.swipePosInitial > 20 && this.previousCard) {
+      } else if (finalPosition - this.swipePosInitial > 40 && this.previousCard) {
         this.selectPreviousCard()
       } else {
         this.shiftCards(0)
