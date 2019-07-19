@@ -723,22 +723,9 @@ export default {
       return date ? date.split('/').reverse().join('-') : undefined
     },
     async openRequestNewCardModal () {
-      try {
-        this.hasPendingRequest = true
-        await this.fetchPreview()
-        this.requestNewCardModal = true
-
-        if (this.displayErrorModal) {
-          this.displayErrorModal = false
-          this.resetCurrentError()
-        }
-      } catch (err) {
-        this.currentError = {
-          title: Vue.i18n.translate('error.card.preview.title'),
-          message: err.response.data.error
-        }
-        this.displayErrorModal = true
-      }
+      this.hasPendingRequest = true
+      this.requestNewCardModal = true
+      await this.getCardPreview({ errorCallback: this.closeCardDataModals })
       this.hasPendingRequest = false
     },
     resetCurrentError () {
@@ -778,16 +765,29 @@ export default {
       this.editClicked = true
     },
     async openConfirmDataModal () {
-      this.hasPendingRequest = true
-      await this.fetchPreview()
-      this.hasPendingRequest = false
       this.editInfoModal = false
-      this.confirmDataModal = true
       this.editClicked = false
+      this.hasPendingRequest = true
+      this.confirmDataModal = true
+      await this.getCardPreview({ errorCallback: this.closeCardDataModals })
+      this.hasPendingRequest = false
     },
     closeCardDataModals () {
       this.requestNewCardModal = false
       this.confirmDataModal = false
+    },
+    async getCardPreview ({ errorCallback }) {
+      this.resetCurrentError()
+      try {
+        await this.fetchPreview()
+      } catch (err) {
+        errorCallback()
+        this.currentError = {
+          title: Vue.i18n.translate('error.card.preview.title'),
+          message: err.response.data.error
+        }
+        this.displayErrorModal = true
+      }
     },
     openRequestNewCardWithReasonModal () {
       this.openOtherReasonInput = false
