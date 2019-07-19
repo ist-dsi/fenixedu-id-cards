@@ -259,13 +259,12 @@ public class SantanderEntry extends SantanderEntry_Base {
     }
 
     public boolean canRenovateCard() {
-        SantanderCardInfo cardInfo = getSantanderCardInfo();
-
-        if (cardInfo == null) {
+        if (getState() == SantanderCardState.IGNORED && getPrevious() == null)
             return false;
-        }
 
-        DateTime expiryDate = getSantanderCardInfo().getExpiryDate();
+        DateTime expiryDate = getState() == SantanderCardState.IGNORED ? getPrevious().getSantanderCardInfo()
+                .getExpiryDate() : getSantanderCardInfo().getExpiryDate();
+
         return canReemitCard() && expiryDate != null
                 && Days.daysBetween(DateTime.now().withTimeAtStartOfDay(), expiryDate.withTimeAtStartOfDay()).getDays() <= 60;
     }
@@ -275,8 +274,8 @@ public class SantanderEntry extends SantanderEntry_Base {
             return false;
         }
 
-        return getSantanderCardHistory(user).stream()
-                .anyMatch(e -> e.getMifareNumber() != null && e.getMifareNumber().equals(mifare));
+        return getSantanderEntryHistory(user).stream().anyMatch(e -> e.getSantanderCardInfo().getMifareNumber() != null
+                && e.getSantanderCardInfo().getMifareNumber().equals(mifare));
     }
 
     public static String getLastMifareNumber(User user) {
