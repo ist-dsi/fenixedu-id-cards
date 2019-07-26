@@ -953,7 +953,7 @@ export default {
 }
 .slideshow__cards {
   position: relative;
-  height: 13.75rem;
+  height: 14.5rem;
   max-width: 25.875rem;
   margin: 0 auto;
 }
@@ -1158,7 +1158,7 @@ export default {
   }
   .slideshow__cards {
     max-width: 32rem;
-    height: 19rem;
+    height: 20rem;
   }
   .slideshow__cards-wrapper {
     display: unset;
