@@ -15,7 +15,7 @@
     <div class="button-container">
       <button
         class="btn btn--light"
-        @click.prevent="() => console.log('ola')">
+      >
         {{ $t('btn.edit') }}
       </button>
     </div>
@@ -113,9 +113,18 @@ export default {
 
 .button-container {
   width: 100%;
-  box-shadow: 0 -0.0625rem 0 0 rgba($dark, 0.1);
   margin-top: auto;
   padding: 1rem 1rem;
+  display: flex;
+  justify-content: center;
+
+  @media (min-width: 768px) {
+    max-width: 16rem;
+  }
+
+  @media (max-width: 768px) {
+    box-shadow: 0 -0.0625rem 0 0 rgba($dark, 0.1);
+  }
 
   & .btn {
     width: 100%;
