@@ -15,21 +15,30 @@
     <div class="button-container">
       <button
         class="btn btn--light"
+        @click.prevent="openEditModal"
       >
         {{ $t('btn.edit') }}
       </button>
     </div>
+    <modal
+      v-scroll-lock="editModal"
+      :withfooter="true"
+      v-model="editModal">
+      ola
+    </modal>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import IdCard from '@/components/IdCard'
+import Modal from '@/components/utils/Modal'
 
 export default {
   name: 'CardPreviewPage',
   components: {
-    IdCard
+    IdCard,
+    Modal
   },
   props: {
     isAdminView: {
@@ -42,7 +51,8 @@ export default {
     return {
       mobileMenuBreakpoint: 768,
       isMobile: false,
-      windowWidth: 0
+      windowWidth: 0,
+      editModal: false
     }
   },
   computed: {
@@ -75,6 +85,9 @@ export default {
   methods: {
     getWindowWidth () {
       this.windowWidth = window.innerWidth
+    },
+    openEditModal () {
+      this.editModal = true
     }
   }
 }
