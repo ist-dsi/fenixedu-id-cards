@@ -8,6 +8,7 @@ import org.fenixedu.idcards.exception.SantanderCardNoPermissionException;
 import org.fenixedu.idcards.service.IUserInfoService;
 import org.fenixedu.santandersdk.dto.CreateRegisterRequest;
 import org.fenixedu.santandersdk.dto.RegisterAction;
+import pt.ist.fenixframework.Atomic;
 
 public class SantanderUser {
     private User user;
@@ -23,7 +24,8 @@ public class SantanderUser {
 
         createRegisterRequest.setRole(getRole());
         createRegisterRequest.setPhoto(getPhoto());
-        createRegisterRequest.setName(user.getDisplayName());
+        createRegisterRequest.setCardName(getName());
+        createRegisterRequest.setFullName(getFullName());
         createRegisterRequest.setDepartmentAcronym(getDepartmentAcronym());
         createRegisterRequest.setCampus(getCampus());
         createRegisterRequest.setUsername(user.getUsername());
@@ -93,4 +95,28 @@ public class SantanderUser {
     public User getUser() {
         return user;
     }
+
+    public String getName() {
+        if (user.getSantanderUserInfo() == null) {
+            setUserInfo();
+        }
+
+        return user.getSantanderUserInfo().getCardName();
+    }
+
+    @Atomic
+    private void setUserInfo() {
+        final String fullName = getFullName();
+        final String[] fullNameParts = fullName.trim().split(" ");
+        final String cardName = fullNameParts[0] + " " + fullNameParts[fullNameParts.length - 1];
+
+        SantanderUserInfo santanderUserInfo = new SantanderUserInfo();
+        santanderUserInfo.setCardName(cardName);
+        user.setSantanderUserInfo(santanderUserInfo);
+    }
+
+    public String getFullName() {
+        return user.getProfile().getFullName();
+    }
+
 }

@@ -18,9 +18,20 @@ async function deliverCard (id) {
   await client.put(`/idcards/${id}/deliver`, null, { headers: { 'X-Requested-With': 'fenixedu-id-cards-frontend' } })
 }
 
+async function getUserNames () {
+  const response = await client.get('/idcards/user-names')
+  return response.data
+}
+
+async function changeCardName (cardName) {
+  await client.post('/idcards/change-card-name', cardName, { headers: { 'X-Requested-With': 'fenixedu-id-cards-frontend', 'Content-Type': 'text/plain' } })
+}
+
 export default {
   getCards,
   getPreview,
   requestNew,
-  deliverCard
+  deliverCard,
+  getUserNames,
+  changeCardName
 }

@@ -235,7 +235,7 @@
         slot="modal-footer">
         <div class="btn--group layout-list-cards__modal-footer">
           <button
-            class="btn btn--slate btn--outline"
+            class="btn btn--light"
             @click.prevent="openEditInfoModal">
             {{ $t('btn.edit') }}
           </button>
@@ -270,61 +270,9 @@
         </div>
       </template>
     </modal>
-    <modal
-      v-scroll-lock="editInfoModal"
-      :withfooter="true"
-      v-model="editInfoModal">
-      <template slot="modal-panel">
-        <figure class="figure figure--icon modal-panel__icons">
-          <img
-            src="~@/assets/images/icon-warning.svg"
-            alt="Warning icon">
-        </figure>
-        <h1 class="h2">{{ $t('modal.title.editInfo') }}</h1>
-        <p>
-          {{ $t('modal.message.editInfo') }}
-          <br>
-          {{ $t('modal.message.parts.first.editInfo') }}
-          <span
-            class="layout-list-cards__modal-paragraph-link"
-            @click.prevent="editData">
-            "<u>{{ $t('label.lower.edit') }}</u>"
-          </span>
-          {{ $t('modal.message.parts.second.editInfo') }}
-          {{ $t('modal.message.parts.third.editInfo') }}
-          <span v-if="!editClicked">
-            "<u>{{ $t('label.lower.next') }}</u>".
-          </span>
-          <span
-            v-else
-            class="layout-list-cards__modal-paragraph-link"
-            @click.prevent="openConfirmDataModal">
-            "<u>{{ $t('label.lower.next') }}</u>".
-          </span>
-        </p>
-      </template>
-      <template slot="modal-footer">
-        <div class="btn--group layout-list-cards__modal-footer">
-          <button
-            class="btn btn--slate btn--outline"
-            @click.prevent="editInfoModal = false">
-            {{ $t('btn.cancel') }}
-          </button>
-          <button
-            v-if="!editClicked"
-            class="btn btn--primary"
-            @click.prevent="editData">
-            {{ $t('btn.edit') }}
-          </button>
-          <button
-            v-else
-            class="btn btn--primary"
-            @click.prevent="openConfirmDataModal">
-            {{ $t('btn.next') }}
-          </button>
-        </div>
-      </template>
-    </modal>
+    <edit-info
+      :open="editInfoModal"
+      @close="closeEditModal"/>
     <modal
       v-scroll-lock="confirmDataModal"
       :withfooter="true"
@@ -348,7 +296,7 @@
         slot="modal-footer">
         <div class="btn--group layout-list-cards__modal-footer">
           <button
-            class="btn btn--slate btn--outline"
+            class="btn btn--light"
             @click.prevent="openEditInfoModal">
             {{ $t('btn.edit') }}
           </button>
@@ -399,7 +347,7 @@
       <template slot="modal-footer">
         <div class="btn--group layout-list-cards__modal-footer">
           <button
-            class="btn btn--slate btn--outline"
+            class="btn btn--light"
             @click.prevent="closeRequestNewCardWithReasonModal">
             {{ $t('btn.cancel') }}
           </button>
@@ -431,7 +379,7 @@
           <a
             :href="`tel: ${securityPhoneNumber}`"
             target="_blank"
-            class="btn btn--slate btn--outline">
+            class="btn btn--light">
             {{ $t('btn.call') }}
           </a>
           <button
@@ -500,7 +448,7 @@
         slot="modal-footer">
         <div class="btn--group layout-list-cards__modal-footer">
           <button
-            class="btn btn--slate btn--outline"
+            class="btn btn--light"
             @click.prevent="closeConfirmDeliverCardModal">
             {{ $t('btn.cancel') }}
           </button>
@@ -521,6 +469,7 @@ import Vue from 'vue'
 import Modal from '@/components/utils/Modal'
 import IdCard from '@/components/IdCard'
 import Loading from '@/components/Loading'
+import EditInfo from '@/components/EditInfo'
 import * as cardStates from '@/utils/cards/CardStates'
 import * as requestReasons from '@/utils/reasons/RequestReasons'
 import * as pickupLocations from '@/utils/pickup/PickupLocations'
@@ -531,7 +480,8 @@ export default {
   components: {
     IdCard,
     Modal,
-    Loading
+    Loading,
+    EditInfo
   },
   props: {
     isAdminView: {
@@ -760,9 +710,9 @@ export default {
       this.editClicked = false
       this.editInfoModal = true
     },
-    editData () {
-      window.open(this.changeDataUrl, '_blank')
-      this.editClicked = true
+    closeEditModal () {
+      this.editInfoModal = false
+      this.openRequestNewCardModal()
     },
     async openConfirmDataModal () {
       this.editInfoModal = false
