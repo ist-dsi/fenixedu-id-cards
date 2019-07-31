@@ -7,6 +7,7 @@ import PageNotFoundPage from '@/pages/PageNotFoundPage'
 import AdminUserSearchPage from '@/pages/AdminUserSearchPage'
 import AdminViewUserCardsPage from '@/pages/AdminViewUserCardsPage'
 import UnauthorizedPage from '@/pages/UnauthorizedPage'
+import CardReviewPage from '@/pages/CardReviewPage'
 
 Vue.use(Router)
 
@@ -28,6 +29,17 @@ const router = new Router({
           path: '/unauthorized',
           name: 'UnauthorizedPage',
           component: UnauthorizedPage
+        },
+        {
+          path: '/review',
+          name: 'CardReviewPage',
+          component: CardReviewPage,
+          async beforeEnter (to, from, next) {
+            store.dispatch('setInitialLoading', { isInitialLoading: true })
+            await store.dispatch('fetchPreview')
+            store.dispatch('setInitialLoading', { isInitialLoading: false })
+            next()
+          }
         },
         {
           path: '/',

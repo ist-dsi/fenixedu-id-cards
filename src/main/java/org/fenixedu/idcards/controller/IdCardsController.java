@@ -8,6 +8,7 @@ import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.idcards.domain.SantanderCardInfo;
 import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.idcards.domain.SantanderEntry;
+import org.fenixedu.idcards.domain.SantanderUserInfo;
 import org.fenixedu.idcards.service.SantanderIdCardsService;
 import org.fenixedu.santandersdk.exception.SantanderValidationException;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 
+import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
 
 @RestController
@@ -67,6 +69,24 @@ public class IdCardsController {
         response.addProperty("canRequestCard", cardService.canRequestCard(user));
         response.addProperty("language", I18N.getLocale().getLanguage());
         return ResponseEntity.ok(response.toString());
+    }
+
+    @RequestMapping(value = "user-names", method = RequestMethod.GET)
+    public ResponseEntity<?> userNames(User user) {
+        JsonObject response = new JsonObject();
+        response.addProperty("givenNames", user.getProfile().getGivenNames());
+        response.addProperty("familyNames", user.getProfile().getFamilyNames());
+        return ResponseEntity.ok(response.toString());
+    }
+
+    @SkipCSRF
+    @RequestMapping(value = "change-card-name", method = RequestMethod.POST)
+    public ResponseEntity<?> changeCardName(User user, @RequestBody String cardName) {
+        if (updateCardName(user, cardName)) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.badRequest().build();
     }
 
     @SkipCSRF
@@ -140,6 +160,22 @@ public class IdCardsController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+    @Atomic
+    private boolean updateCardName(User user, String cardName) {
+        SantanderUserInfo userInfo = user.getSantanderUserInfo();
+
+        if (SantanderUserInfo.isCardNameValid(user, cardName)) {
+            if (userInfo == null) {
+                userInfo = new SantanderUserInfo();
+            }
+
+            userInfo.setCardName(cardName);
+            return true;
+        }
+
+        return false;
     }
 
     private boolean isIdCardManager(User user) {
