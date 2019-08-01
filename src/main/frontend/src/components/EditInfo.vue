@@ -39,7 +39,9 @@ export default {
       windowWidth: 0,
       hasPendingRequest: false,
       userNamesList: [],
-      userNames: {}
+      userNames: {},
+      selectedGivenNames: 0,
+      selectedFamilyNames: 0
     }
   },
   computed: {
@@ -74,11 +76,23 @@ export default {
       this.hasPendingRequest = true
       const response = await CardsAPI.getUserNames()
       this.userNames = response
-      this.userNamesList = [...response.givenNames, ...response.familyNames]
+      this.userNamesList = [...response.givenNames.map(n => ({ label: n, isGivenName: true })),
+        ...response.familyNames.map(n => ({ label: n, isGivenName: false }))]
+      this.selectedGivenNames = response.givenNames.length
+      this.selectedFamilyNames = response.familyNames.length
       this.hasPendingRequest = false
     },
-    removeUserName (i) {
-      this.userNamesList.splice(i, 1)
+    removeUserName (item, index) {
+      console.log(index)
+      if (item.isGivenName) {
+        this.userNamesList.splice(index, 1)
+        this.selectedGivenNames--
+      }
+
+      if (!item.isGivenName) {
+        this.userNamesList.splice(index, 1)
+        this.selectedFamilyNames--
+      }
     }
   }
 }

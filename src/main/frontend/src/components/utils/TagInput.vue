@@ -8,12 +8,12 @@
       v-for="(tag, i) in tags"
       :key="i"
       class="f-tag-field__tag">
-      {{ tag }}
+      {{ tag.label }}
       <button
         type="button"
         class="f-tag-field__tag-remove"
         aria-label="Remove"
-        @click.prevent="removeTag(i)">
+        @click.prevent="removeTag(tag, i)">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="14"
