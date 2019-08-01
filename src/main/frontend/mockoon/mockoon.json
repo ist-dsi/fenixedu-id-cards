@@ -1,16 +1,16 @@
 {
   "id": "mockoon_export",
-  "checksum": "db78a527bcebae1900d6559e9bcc90d3",
+  "checksum": "ed36ccceb2671a347a131c265d0a66b6",
   "subject": "environment",
   "data": {
-    "uuid": "bef23750-90eb-11e9-abef-5f0e476985ee",
+    "uuid": "cfc935b0-b459-11e9-9fb9-374beff4f5cb",
     "name": "Tecnico Card",
     "endpointPrefix": "",
     "latency": 0,
     "port": 8990,
     "routes": [
       {
-        "uuid": "bef23752-90eb-11e9-abef-5f0e476985ee",
+        "uuid": "cfc95cc1-b459-11e9-9fb9-374beff4f5cb",
         "documentation": "",
         "method": "get",
         "endpoint": "idcards/ist999999",
@@ -19,7 +19,7 @@
         "statusCode": "200",
         "headers": [
           {
-            "uuid": "bef23753-90eb-11e9-abef-5f0e476985ee",
+            "uuid": "cfc95cc2-b459-11e9-9fb9-374beff4f5cb",
             "key": "",
             "value": ""
           }
@@ -28,7 +28,7 @@
         "duplicates": []
       },
       {
-        "uuid": "bef23754-90eb-11e9-abef-5f0e476985ee",
+        "uuid": "cfc95cc3-b459-11e9-9fb9-374beff4f5cb",
         "documentation": "",
         "method": "get",
         "endpoint": "idcardss/ist999999",
@@ -37,7 +37,7 @@
         "statusCode": "200",
         "headers": [
           {
-            "uuid": "bef23755-90eb-11e9-abef-5f0e476985ee",
+            "uuid": "cfc95cc4-b459-11e9-9fb9-374beff4f5cb",
             "key": "",
             "value": ""
           }
@@ -46,7 +46,7 @@
         "duplicates": []
       },
       {
-        "uuid": "bef23756-90eb-11e9-abef-5f0e476985ee",
+        "uuid": "cfc95cc5-b459-11e9-9fb9-374beff4f5cb",
         "documentation": "",
         "method": "get",
         "endpoint": "idcardsss/ist999999",
@@ -55,7 +55,7 @@
         "statusCode": "200",
         "headers": [
           {
-            "uuid": "bef23757-90eb-11e9-abef-5f0e476985ee",
+            "uuid": "cfc95cc6-b459-11e9-9fb9-374beff4f5cb",
             "key": "",
             "value": ""
           }
@@ -64,7 +64,7 @@
         "duplicates": []
       },
       {
-        "uuid": "bef23758-90eb-11e9-abef-5f0e476985ee",
+        "uuid": "cfc95cc7-b459-11e9-9fb9-374beff4f5cb",
         "documentation": "",
         "method": "get",
         "endpoint": "idcardssss/ist999999",
@@ -73,7 +73,7 @@
         "statusCode": "200",
         "headers": [
           {
-            "uuid": "bef23759-90eb-11e9-abef-5f0e476985ee",
+            "uuid": "cfc95cc8-b459-11e9-9fb9-374beff4f5cb",
             "key": "",
             "value": ""
           }
@@ -82,7 +82,7 @@
         "duplicates": []
       },
       {
-        "uuid": "bef23760-90eb-11e9-abef-5f0e476985ee",
+        "uuid": "cfc95cc9-b459-11e9-9fb9-374beff4f5cb",
         "documentation": "",
         "method": "get",
         "endpoint": "idcards/ist1",
@@ -91,7 +91,7 @@
         "statusCode": "200",
         "headers": [
           {
-            "uuid": "bef23761-90eb-11e9-abef-5f0e476985ee",
+            "uuid": "cfc95cca-b459-11e9-9fb9-374beff4f5cb",
             "key": "",
             "value": ""
           }
@@ -100,7 +100,7 @@
         "duplicates": []
       },
       {
-        "uuid": "bef2375a-90eb-11e9-abef-5f0e476985ee",
+        "uuid": "cfc95ccb-b459-11e9-9fb9-374beff4f5cb",
         "documentation": "",
         "method": "get",
         "endpoint": "idcards/preview",
@@ -109,7 +109,7 @@
         "statusCode": "200",
         "headers": [
           {
-            "uuid": "bef2375b-90eb-11e9-abef-5f0e476985ee",
+            "uuid": "cfc95ccc-b459-11e9-9fb9-374beff4f5cb",
             "key": "",
             "value": ""
           }
@@ -118,7 +118,7 @@
         "duplicates": []
       },
       {
-        "uuid": "bef23762-90eb-11e9-abef-5f0e476985ee",
+        "uuid": "cfc95ccd-b459-11e9-9fb9-374beff4f5cb",
         "documentation": "",
         "method": "post",
         "endpoint": "idcards/",
@@ -127,7 +127,7 @@
         "statusCode": "200",
         "headers": [
           {
-            "uuid": "bef23763-90eb-11e9-abef-5f0e476985ee",
+            "uuid": "cfc95cce-b459-11e9-9fb9-374beff4f5cb",
             "key": "",
             "value": ""
           }
@@ -136,7 +136,7 @@
         "duplicates": []
       },
       {
-        "uuid": "ec42a710-9426-11e9-9475-e3cf243dac25",
+        "uuid": "cfc95ccf-b459-11e9-9fb9-374beff4f5cb",
         "documentation": "",
         "method": "put",
         "endpoint": "idcards/51f6e412-762d-11e9-8f9e-2a86e4085a57/deliver",
@@ -145,7 +145,7 @@
         "statusCode": "200",
         "headers": [
           {
-            "uuid": "ec42a711-9426-11e9-9475-e3cf243dac25",
+            "uuid": "cfc95cd0-b459-11e9-9fb9-374beff4f5cb",
             "key": "",
             "value": ""
           }
@@ -154,7 +154,7 @@
         "duplicates": []
       },
       {
-        "uuid": "c3a00940-91ee-11e9-afae-ed9c78bf1d63",
+        "uuid": "cfc95cd1-b459-11e9-9fb9-374beff4f5cb",
         "documentation": "",
         "method": "get",
         "endpoint": "idcards/user-info",
@@ -163,7 +163,7 @@
         "statusCode": "200",
         "headers": [
           {
-            "uuid": "c3a00941-91ee-11e9-afae-ed9c78bf1d63",
+            "uuid": "cfc95cd2-b459-11e9-9fb9-374beff4f5cb",
             "key": "",
             "value": ""
           }
@@ -172,7 +172,7 @@
         "duplicates": []
       },
       {
-        "uuid": "79a1b660-9426-11e9-9475-e3cf243dac25",
+        "uuid": "cfc95cd3-b459-11e9-9fb9-374beff4f5cb",
         "documentation": "",
         "method": "get",
         "endpoint": "idcards/user-infoo",
@@ -181,7 +181,7 @@
         "statusCode": "200",
         "headers": [
           {
-            "uuid": "79a1b661-9426-11e9-9475-e3cf243dac25",
+            "uuid": "cfc95cd4-b459-11e9-9fb9-374beff4f5cb",
             "key": "",
             "value": ""
           }
@@ -190,7 +190,7 @@
         "duplicates": []
       },
       {
-        "uuid": "7dfc36e0-9426-11e9-9475-e3cf243dac25",
+        "uuid": "cfc95cd5-b459-11e9-9fb9-374beff4f5cb",
         "documentation": "",
         "method": "get",
         "endpoint": "idcards/user-infooo",
@@ -199,7 +199,7 @@
         "statusCode": "200",
         "headers": [
           {
-            "uuid": "7dfc36e1-9426-11e9-9475-e3cf243dac25",
+            "uuid": "cfc95cd6-b459-11e9-9fb9-374beff4f5cb",
             "key": "",
             "value": ""
           }
@@ -208,7 +208,7 @@
         "duplicates": []
       },
       {
-        "uuid": "839ddd60-9426-11e9-9475-e3cf243dac25",
+        "uuid": "cfc95cd7-b459-11e9-9fb9-374beff4f5cb",
         "documentation": "",
         "method": "get",
         "endpoint": "idcards/user-infoooo",
@@ -217,7 +217,7 @@
         "statusCode": "200",
         "headers": [
           {
-            "uuid": "839ddd61-9426-11e9-9475-e3cf243dac25",
+            "uuid": "cfc95cd8-b459-11e9-9fb9-374beff4f5cb",
             "key": "",
             "value": ""
           }
@@ -226,7 +226,7 @@
         "duplicates": []
       },
       {
-        "uuid": "bef2375c-90eb-11e9-abef-5f0e476985ee",
+        "uuid": "cfc95cd9-b459-11e9-9fb9-374beff4f5cb",
         "documentation": "",
         "method": "get",
         "endpoint": "api/fenix/v1/person",
@@ -235,7 +235,7 @@
         "statusCode": "200",
         "headers": [
           {
-            "uuid": "bef2375d-90eb-11e9-abef-5f0e476985ee",
+            "uuid": "cfc95cda-b459-11e9-9fb9-374beff4f5cb",
             "key": "",
             "value": ""
           }
@@ -244,7 +244,7 @@
         "duplicates": []
       },
       {
-        "uuid": "bef23764-90eb-11e9-abef-5f0e476985ee",
+        "uuid": "cfc95cdb-b459-11e9-9fb9-374beff4f5cb",
         "documentation": "",
         "method": "get",
         "endpoint": "api/bennu-core/profile/localavatar/ist999999",
@@ -253,7 +253,7 @@
         "statusCode": "200",
         "headers": [
           {
-            "uuid": "bef23765-90eb-11e9-abef-5f0e476985ee",
+            "uuid": "cfc95cdc-b459-11e9-9fb9-374beff4f5cb",
             "key": "",
             "value": ""
           }
@@ -262,7 +262,7 @@
         "duplicates": []
       },
       {
-        "uuid": "4f6c4d10-92be-11e9-a6d9-7549abe558eb",
+        "uuid": "cfc95cdd-b459-11e9-9fb9-374beff4f5cb",
         "documentation": "",
         "method": "post",
         "endpoint": "api/bennu-core/profile/locale/pt-PT",
@@ -271,7 +271,7 @@
         "statusCode": "200",
         "headers": [
           {
-            "uuid": "4f6c4d11-92be-11e9-a6d9-7549abe558eb",
+            "uuid": "cfc95cde-b459-11e9-9fb9-374beff4f5cb",
             "key": "",
             "value": ""
           }
@@ -280,7 +280,7 @@
         "duplicates": []
       },
       {
-        "uuid": "5d257c10-92be-11e9-a6d9-7549abe558eb",
+        "uuid": "cfc95cdf-b459-11e9-9fb9-374beff4f5cb",
         "documentation": "",
         "method": "post",
         "endpoint": "api/bennu-core/profile/locale/en-GB",
@@ -289,7 +289,25 @@
         "statusCode": "200",
         "headers": [
           {
-            "uuid": "5d257c11-92be-11e9-a6d9-7549abe558eb",
+            "uuid": "cfc95ce0-b459-11e9-9fb9-374beff4f5cb",
+            "key": "",
+            "value": ""
+          }
+        ],
+        "file": null,
+        "duplicates": []
+      },
+      {
+        "uuid": "fbb6a1d0-b459-11e9-9fb9-374beff4f5cb",
+        "documentation": "",
+        "method": "get",
+        "endpoint": "idcards/user-names",
+        "body": "{\n    \"givenNames\": [\"Ana\", \"Rita\"],\n    \"familyNames\": [\"Vicente\", \"Severo\"]\n}",
+        "latency": 0,
+        "statusCode": "200",
+        "headers": [
+          {
+            "uuid": "fbb6a1d1-b459-11e9-9fb9-374beff4f5cb",
             "key": "",
             "value": ""
           }
@@ -306,7 +324,7 @@
     "cors": true,
     "headers": [
       {
-        "uuid": "bef23751-90eb-11e9-abef-5f0e476985ee",
+        "uuid": "cfc95cc0-b459-11e9-9fb9-374beff4f5cb",
         "key": "Content-Type",
         "value": "application/json"
       }
