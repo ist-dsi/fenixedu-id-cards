@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="cardPreview && !isInitialLoading"
-    class="layout-list-cards">
+    class="page-container">
     <div class="title-container">
       <h1 class="h3--ssp">Your next card</h1>
       <p v-if="isMobile">Here's a preview of your new card with your information reviewed.</p>
@@ -24,7 +24,24 @@
       v-scroll-lock="editModal"
       :withfooter="true"
       v-model="editModal">
-      ola
+      <template slot="modal-panel">
+        <edit-info />
+      </template>
+      <template
+        slot="modal-footer">
+        <div class="btn--group layout-list-cards__modal-footer">
+          <button
+            class="btn btn--light"
+            @click.prevent="">
+            {{ $t('btn.cancel') }}
+          </button>
+          <button
+            class="btn btn--primary"
+            @click.prevent="">
+            {{ $t('btn.confirm') }}
+          </button>
+        </div>
+      </template>
     </modal>
   </div>
 </template>
@@ -33,19 +50,14 @@
 import { mapState } from 'vuex'
 import IdCard from '@/components/IdCard'
 import Modal from '@/components/utils/Modal'
+import EditInfo from '@/components/EditInfo'
 
 export default {
   name: 'CardPreviewPage',
   components: {
     IdCard,
-    Modal
-  },
-  props: {
-    isAdminView: {
-      type: Boolean,
-      required: false,
-      default: false
-    }
+    Modal,
+    EditInfo
   },
   data () {
     return {
@@ -97,7 +109,7 @@ export default {
 // import variables
 @import "@/assets/scss/_variables.scss";
 
-.layout-list-cards {
+.page-container {
   max-width: 71.25rem;
   display: flex;
   flex-flow: column nowrap;

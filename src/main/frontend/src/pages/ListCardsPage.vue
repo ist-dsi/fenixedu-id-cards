@@ -235,7 +235,7 @@
         slot="modal-footer">
         <div class="btn--group layout-list-cards__modal-footer">
           <button
-            class="btn btn--slate btn--outline"
+            class="btn btn--light"
             @click.prevent="openEditInfoModal">
             {{ $t('btn.edit') }}
           </button>
@@ -306,7 +306,7 @@
       <template slot="modal-footer">
         <div class="btn--group layout-list-cards__modal-footer">
           <button
-            class="btn btn--slate btn--outline"
+            class="btn btn--light"
             @click.prevent="editInfoModal = false">
             {{ $t('btn.cancel') }}
           </button>
@@ -348,7 +348,7 @@
         slot="modal-footer">
         <div class="btn--group layout-list-cards__modal-footer">
           <button
-            class="btn btn--slate btn--outline"
+            class="btn btn--light"
             @click.prevent="openEditInfoModal">
             {{ $t('btn.edit') }}
           </button>
@@ -399,7 +399,7 @@
       <template slot="modal-footer">
         <div class="btn--group layout-list-cards__modal-footer">
           <button
-            class="btn btn--slate btn--outline"
+            class="btn btn--light"
             @click.prevent="closeRequestNewCardWithReasonModal">
             {{ $t('btn.cancel') }}
           </button>
@@ -431,7 +431,7 @@
           <a
             :href="`tel: ${securityPhoneNumber}`"
             target="_blank"
-            class="btn btn--slate btn--outline">
+            class="btn btn--light">
             {{ $t('btn.call') }}
           </a>
           <button
@@ -500,7 +500,7 @@
         slot="modal-footer">
         <div class="btn--group layout-list-cards__modal-footer">
           <button
-            class="btn btn--slate btn--outline"
+            class="btn btn--light"
             @click.prevent="closeConfirmDeliverCardModal">
             {{ $t('btn.cancel') }}
           </button>
