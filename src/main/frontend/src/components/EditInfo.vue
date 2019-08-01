@@ -1,44 +1,75 @@
 <template>
-  <div>
-    <loading v-if="hasPendingRequest" />
-    <div
-      v-if="!hasPendingRequest"
-      class="container">
-      <h1 class="h2">Is everything right?</h1>
-      <div class="section-container">
-        <p class="p-default">Photo</p>
-        <p class="small">Your photo is managed in Fenix. In case you want
-        to change it, please mind that it will be pending approval to figure on your card.
-        </p>
-      </div>
-      <div class="section-container">
-        <div>
-          <p class="p-default">Name</p>
-          <a @click.prevent="resetNames">Reset</a>
+  <modal
+    v-scroll-lock="open"
+    :withfooter="true"
+    v-model="open">
+    <template slot="modal-panel">
+      <div>
+        <loading v-if="hasPendingRequest" />
+        <div
+          v-if="!hasPendingRequest"
+          class="container">
+          <h1 class="h2">Is everything right?</h1>
+          <div class="section-container">
+            <p class="p-default">Photo</p>
+            <p class="small">Your photo is managed in Fenix. In case you want
+            to change it, please mind that it will be pending approval to figure on your card.
+            </p>
+          </div>
+          <div class="section-container">
+            <div>
+              <p class="p-default">Name</p>
+              <a @click.prevent="resetNames">Reset</a>
+            </div>
+            <tag-input
+              :tags="userNamesList"
+              @remove-tag="removeUserName" />
+            <p
+              :class="{ danger: selectedFamilyNames < 1 || selectedGivenNames < 1}"
+              class="small">If you want to shorten your displayed name,
+              choose at least one of your first and last names.
+            </p>
+          </div>
         </div>
-        <tag-input
-          :tags="userNamesList"
-          @remove-tag="removeUserName" />
-        <p
-          :class="{ danger: selectedFamilyNames < 1 || selectedGivenNames < 1}"
-          class="small">If you want to shorten your displayed name,
-          choose at least one of your first and last names.
-        </p>
       </div>
-    </div>
-  </div>
+    </template>
+    <template
+      slot="modal-footer">
+      <div class="btn--group layout-list-cards__modal-footer">
+        <button
+          class="btn btn--light"
+          @click.prevent="">
+          {{ $t('btn.cancel') }}
+        </button>
+        <button
+          :class="{ 'btn--disabled': selectedFamilyNames < 1 || selectedGivenNames < 1}"
+          class="btn btn--primary"
+          @click.prevent="">
+          {{ $t('btn.confirm') }}
+        </button>
+      </div>
+    </template>
+  </modal>
 </template>
 
 <script>
 import CardsAPI from '@/api/cards'
 import Loading from '@/components/Loading'
+import Modal from '@/components/utils/Modal'
 import TagInput from '@/components/utils/TagInput'
 
 export default {
-  name: 'CardPreviewPage',
+  name: 'EditInfo',
   components: {
     TagInput,
-    Loading
+    Loading,
+    Modal
+  },
+  props: {
+    open: {
+      type: Boolean,
+      required: true
+    }
   },
   data () {
     return {

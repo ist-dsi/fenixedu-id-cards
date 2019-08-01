@@ -20,43 +20,19 @@
         {{ $t('btn.edit') }}
       </button>
     </div>
-    <modal
-      v-scroll-lock="editModal"
-      :withfooter="true"
-      v-model="editModal">
-      <template slot="modal-panel">
-        <edit-info />
-      </template>
-      <template
-        slot="modal-footer">
-        <div class="btn--group layout-list-cards__modal-footer">
-          <button
-            class="btn btn--light"
-            @click.prevent="">
-            {{ $t('btn.cancel') }}
-          </button>
-          <button
-            class="btn btn--primary"
-            @click.prevent="">
-            {{ $t('btn.confirm') }}
-          </button>
-        </div>
-      </template>
-    </modal>
+    <edit-info :open="editModal" />
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import IdCard from '@/components/IdCard'
-import Modal from '@/components/utils/Modal'
 import EditInfo from '@/components/EditInfo'
 
 export default {
   name: 'CardPreviewPage',
   components: {
     IdCard,
-    Modal,
     EditInfo
   },
   data () {
