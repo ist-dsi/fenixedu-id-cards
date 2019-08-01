@@ -4,7 +4,7 @@
     <div
       v-if="!hasPendingRequest"
       class="container">
-      <h1 class="h3--ssp">Is everything right?</h1>
+      <h1 class="h2">Is everything right?</h1>
       <div class="section-container">
         <p class="p-default">Photo</p>
         <p class="small">Your photo is managed in Fenix. In case you want
@@ -12,10 +12,18 @@
         </p>
       </div>
       <div class="section-container">
-        <p class="p-default">Name</p>
+        <div>
+          <p class="p-default">Name</p>
+          <a @click.prevent="resetNames">Reset</a>
+        </div>
         <tag-input
           :tags="userNamesList"
           @remove-tag="removeUserName" />
+        <p
+          :class="{ danger: selectedFamilyNames < 1 || selectedGivenNames < 1}"
+          class="small">If you want to shorten your displayed name,
+          choose at least one of your first and last names.
+        </p>
       </div>
     </div>
   </div>
@@ -76,14 +84,10 @@ export default {
       this.hasPendingRequest = true
       const response = await CardsAPI.getUserNames()
       this.userNames = response
-      this.userNamesList = [...response.givenNames.map(n => ({ label: n, isGivenName: true })),
-        ...response.familyNames.map(n => ({ label: n, isGivenName: false }))]
-      this.selectedGivenNames = response.givenNames.length
-      this.selectedFamilyNames = response.familyNames.length
+      this.resetNames()
       this.hasPendingRequest = false
     },
     removeUserName (item, index) {
-      console.log(index)
       if (item.isGivenName) {
         this.userNamesList.splice(index, 1)
         this.selectedGivenNames--
@@ -93,6 +97,12 @@ export default {
         this.userNamesList.splice(index, 1)
         this.selectedFamilyNames--
       }
+    },
+    resetNames () {
+      this.userNamesList = [...this.userNames.givenNames.map(n => ({ label: n, isGivenName: true })),
+        ...this.userNames.familyNames.map(n => ({ label: n, isGivenName: false }))]
+      this.selectedGivenNames = this.userNames.givenNames.length
+      this.selectedFamilyNames = this.userNames.familyNames.length
     }
   }
 }
@@ -100,6 +110,7 @@ export default {
 
 <style lang="scss">
 // import variables
+@import "@/assets/scss/_variables.scss";
 
 .container {
   text-align: left;
@@ -115,6 +126,10 @@ export default {
   & p:first-child {
     margin-bottom: 1rem;
   }
+}
+
+.danger {
+  color: $magenta;
 }
 
 </style>

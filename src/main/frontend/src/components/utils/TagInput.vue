@@ -93,8 +93,8 @@ export default {
     getWindowWidth () {
       this.windowWidth = window.innerWidth
     },
-    removeTag (i) {
-      this.$emit('remove-tag', i)
+    removeTag (item, index) {
+      this.$emit('remove-tag', item, index)
     }
   }
 }
