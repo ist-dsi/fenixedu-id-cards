@@ -2,7 +2,8 @@
   <modal
     v-scroll-lock="open"
     :withfooter="true"
-    v-model="open">
+    :value="open"
+    @input="$emit('close')">
     <template slot="modal-panel">
       <div>
         <loading v-if="hasPendingRequest" />
@@ -38,7 +39,7 @@
       <div class="btn--group layout-list-cards__modal-footer">
         <button
           class="btn btn--light"
-          @click.prevent="">
+          @click.prevent="$emit('close')">
           {{ $t('btn.cancel') }}
         </button>
         <button

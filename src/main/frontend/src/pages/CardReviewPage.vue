@@ -20,7 +20,9 @@
         {{ $t('btn.edit') }}
       </button>
     </div>
-    <edit-info :open="editModal" />
+    <edit-info
+      :open="editModal"
+      @close="closeEditModal"/>
   </div>
 </template>
 
@@ -76,6 +78,9 @@ export default {
     },
     openEditModal () {
       this.editModal = true
+    },
+    closeEditModal () {
+      this.editModal = false
     }
   }
 }
