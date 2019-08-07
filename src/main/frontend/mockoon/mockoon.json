@@ -1,6 +1,6 @@
 {
   "id": "mockoon_export",
-  "checksum": "ed36ccceb2671a347a131c265d0a66b6",
+  "checksum": "8e9068ba595c6841765111b9ec86016d",
   "subject": "environment",
   "data": {
     "uuid": "cfc935b0-b459-11e9-9fb9-374beff4f5cb",
@@ -302,7 +302,7 @@
         "documentation": "",
         "method": "get",
         "endpoint": "idcards/user-names",
-        "body": "{\n    \"givenNames\": [\"Ana\", \"Rita\"],\n    \"familyNames\": [\"Vicente\", \"Severo\"]\n}",
+        "body": "{\n    \"givenNames\": \"Ana Rita\",\n    \"familyNames\": \"Vicente Severo\"\n}",
         "latency": 0,
         "statusCode": "200",
         "headers": [

@@ -69,6 +69,14 @@ public class IdCardsController {
         return ResponseEntity.ok(response.toString());
     }
 
+    @RequestMapping(value = "user-names", method = RequestMethod.GET)
+    public ResponseEntity<?> userNames(User user) {
+        JsonObject response = new JsonObject();
+        response.addProperty("givenNames", user.getProfile().getGivenNames());
+        response.addProperty("familyNames", user.getProfile().getFamilyNames());
+        return ResponseEntity.ok(response.toString());
+    }
+
     @SkipCSRF
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> requestCard(@RequestHeader("X-Requested-With") String requestedWith, User user,

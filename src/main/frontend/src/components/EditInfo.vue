@@ -131,10 +131,12 @@ export default {
       }
     },
     resetNames () {
-      this.userNamesList = [...this.userNames.givenNames.map(n => ({ label: n, isGivenName: true })),
-        ...this.userNames.familyNames.map(n => ({ label: n, isGivenName: false }))]
-      this.selectedGivenNames = this.userNames.givenNames.length
-      this.selectedFamilyNames = this.userNames.familyNames.length
+      const givenNamesList = this.userNames.givenNames.split(' ')
+      const familyNamesList = this.userNames.familyNames.split(' ')
+      this.userNamesList = [...givenNamesList.map(n => ({ label: n, isGivenName: true })),
+        ...familyNamesList.map(n => ({ label: n, isGivenName: false }))]
+      this.selectedGivenNames = givenNamesList.length
+      this.selectedFamilyNames = familyNamesList.length
     }
   }
 }
