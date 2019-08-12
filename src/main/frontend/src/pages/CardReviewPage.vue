@@ -1,18 +1,20 @@
 <template>
   <div
     v-if="cardPreview && !isInitialLoading"
-    class="page-container">
-    <div class="title-container">
-      <h1 class="h3--ssp">Your next card</h1>
-      <p v-if="isMobile">Here's a preview of your new card with your information reviewed.</p>
-    </div>
+    class="layout-list-cards">
+    <h1 class="h2">Your next card</h1>
+    <p
+      v-if="isMobile"
+      class="p--default">Here's a preview of your new card <br>with your information reviewed.</p>
     <id-card
       :card-info="cardPreview"
       :cardtype="'idtecnico'"
       :is-preview="true"
     />
-    <p v-if="!isMobile">Here's a preview of your new card with your information reviewed.</p>
-    <div class="button-container">
+    <p
+      v-if="!isMobile"
+      class="p--default">Here's a preview of your new card <br>with your information reviewed.</p>
+    <div class="layout-list-cards__actions">
       <button
         class="btn btn--light"
         @click.prevent="openEditModal"
@@ -90,50 +92,36 @@ export default {
 // import variables
 @import "@/assets/scss/_variables.scss";
 
-.page-container {
-  max-width: 71.25rem;
-  display: flex;
-  flex-flow: column nowrap;
-  align-items: center;
-  position: relative;
-  justify-content: stretch;
-  flex-grow: 1;
-  overflow-x: hidden;
-  margin: 5rem 0 0;
-  text-align: center;
+.layout-list-cards {
 
-  & > p {
-    max-width: 16rem;
-    margin-top: 2rem;
+  .h2 {
+    margin: 15vh auto 1rem;
+  }
+
+  .p--default {
+    text-align: center;
   }
 }
 
-.title-container {
-  max-width: 17rem;
-  margin-bottom: 1rem;
-
-  @media (min-width: 768px) {
-    margin-bottom: 2rem;
-  }
+.id-card {
+  margin: 1rem auto 2rem;
 }
 
-.button-container {
-  width: 100%;
+.layout-list-cards__actions {
+  max-width: 100%;
   margin-top: auto;
   padding: 1rem 1rem;
-  display: flex;
-  justify-content: center;
+
+  .btn {
+    width: 100%;
+  }
 
   @media (min-width: 768px) {
-    max-width: 16rem;
+    max-width: 19rem;
   }
 
   @media (max-width: 768px) {
-    box-shadow: 0 -0.0625rem 0 0 rgba($dark, 0.1);
-  }
-
-  & .btn {
-    width: 100%;
+    box-shadow: 0 -.0625rem 0 0 rgba($dark, 0.1);
   }
 }
 
