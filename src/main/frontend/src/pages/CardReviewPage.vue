@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="cardPreview && !isInitialLoading"
-    class="layout-list-cards">
+    class="layout-list-cards layout-list-cards-form">
     <h1 class="h2">Your next card</h1>
     <p
       v-if="isMobile"
@@ -92,36 +92,36 @@ export default {
 // import variables
 @import "@/assets/scss/_variables.scss";
 
-.layout-list-cards {
+.layout-list-cards.layout-list-cards-form {
 
-  .h2 {
+  > .h2 {
     margin: 15vh auto 1rem;
   }
 
   .p--default {
     text-align: center;
   }
-}
 
-.id-card {
-  margin: 1rem auto 2rem;
-}
-
-.layout-list-cards__actions {
-  max-width: 100%;
-  margin-top: auto;
-  padding: 1rem 1rem;
-
-  .btn {
-    width: 100%;
+  .id-card {
+    margin: 1rem auto 2rem;
   }
 
-  @media (min-width: 768px) {
-    max-width: 19rem;
-  }
+  .layout-list-cards__actions {
+    max-width: 100%;
+    margin-top: auto;
+    padding: 1rem 1rem;
 
-  @media (max-width: 768px) {
-    box-shadow: 0 -.0625rem 0 0 rgba($dark, 0.1);
+    .btn {
+      width: 100%;
+    }
+
+    @media (min-width: 768px) {
+      max-width: 19rem;
+    }
+
+    @media (max-width: 768px) {
+      box-shadow: 0 -.0625rem 0 0 rgba($dark, 0.1);
+    }
   }
 }
 
