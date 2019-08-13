@@ -99,24 +99,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-// import variables
-
-.container {
-  text-align: left;
-
-  & h1 {
-    text-align: center;
-  }
-}
-
-.section-container {
-  margin: 3rem 0;
-
-  & p:first-child {
-    margin-bottom: 1rem;
-  }
-}
-
-</style>

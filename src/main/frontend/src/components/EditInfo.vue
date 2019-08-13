@@ -3,31 +3,39 @@
     v-scroll-lock="open"
     :withfooter="true"
     :value="open"
+    class="modal--lg"
     @input="$emit('close')">
     <template slot="modal-panel">
       <div>
         <loading v-if="hasPendingRequest" />
         <div
           v-if="!hasPendingRequest"
-          class="container">
+          class="form">
           <h1 class="h2">Is everything right?</h1>
-          <div class="section-container">
+          <div class="f-group">
             <p class="p-default">Photo</p>
-            <p class="small">Your photo is managed in Fenix. In case you want
-            to change it, please mind that it will be pending approval to figure on your card.
+            <p class="small f-field--readonly">Your photo is managed in your <a
+              class="u-active-link"
+              href="https://fenix.tecnico.ulisboa.pt/">Fenix personal area</a>. In case you want
+              to <a
+                class="u-active-link"
+                href="https://fenix.tecnico.ulisboa.pt/">change it</a>, please mind that it will be pending approval to figure on your card.
             </p>
           </div>
-          <div class="section-container">
+          <div class="f-group">
             <div>
               <p class="p-default">Name</p>
-              <a @click.prevent="resetNames">Reset</a>
+              <a
+                class="u-active-link small"
+                @click.prevent="resetNames">Reset</a>
             </div>
             <tag-input
               :tags="userNamesList"
-              @remove-tag="removeUserName" />
+              class="f-field--danger"
+              @remove-tag="removeUserName"/>
             <p
               :class="{ danger: selectedFamilyNames < 1 || selectedGivenNames < 1}"
-              class="small">If you want to shorten your displayed name,
+              class="small f-field__validation">If you want to shorten your displayed name,
               choose at least one of your first and last names.
             </p>
           </div>
@@ -146,24 +154,33 @@ export default {
 // import variables
 @import "@/assets/scss/_variables.scss";
 
-.container {
+.layout-list-cards.layout-list-cards-form .f-group{
   text-align: left;
 
-  & h1 {
-    text-align: center;
+  .f-field--readonly {
+    margin: 1rem 0;
   }
-}
 
-.section-container {
-  margin: 3rem 0;
-
-  & p:first-child {
-    margin-bottom: 1rem;
+  &:last-child {
+    .p-default {
+      float: left;
+    }
+    .u-active-link {
+      float: right;
+      margin-top: 5px;
+    }
   }
-}
 
-.danger {
-  color: $magenta;
+  .f-tag-field {
+    margin-top: 2rem;
+  }
+
+  .f-field--danger {
+    border-color: red;
+    + .f-field__validation{
+      color: red;
+    }
+  }
 }
 
 </style>
