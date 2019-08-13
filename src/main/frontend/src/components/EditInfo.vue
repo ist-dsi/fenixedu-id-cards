@@ -13,7 +13,7 @@
           class="form">
           <h1 class="h2">Is everything right?</h1>
           <div class="f-group">
-            <p class="p-default">Photo</p>
+            <p>Photo</p>
             <p class="small f-field--readonly">Your photo is managed in your <a
               class="u-active-link"
               href="https://fenix.tecnico.ulisboa.pt/">Fenix personal area</a>. In case you want
@@ -24,7 +24,7 @@
           </div>
           <div class="f-group">
             <div>
-              <p class="p-default">Name</p>
+              <p>Name</p>
               <a
                 class="u-active-link small"
                 @click.prevent="resetNames">Reset</a>
@@ -162,7 +162,7 @@ export default {
   }
 
   &:last-child {
-    .p-default {
+    p:first-child {
       float: left;
     }
     .u-active-link {
@@ -172,7 +172,7 @@ export default {
   }
 
   .f-tag-field {
-    margin-top: 2rem;
+    margin-top: 2.5rem;
   }
 
   .f-field--danger {
