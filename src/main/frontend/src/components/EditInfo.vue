@@ -168,6 +168,7 @@ export default {
     .u-active-link {
       float: right;
       margin-top: 5px;
+      font-weight: 400;
     }
   }
 
@@ -176,9 +177,9 @@ export default {
   }
 
   .f-field--danger {
-    border-color: red;
+    border-color: $magenta;
     + .f-field__validation{
-      color: red;
+      color: $magenta;
     }
   }
 }
