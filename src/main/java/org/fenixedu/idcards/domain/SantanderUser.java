@@ -23,7 +23,8 @@ public class SantanderUser {
 
         createRegisterRequest.setRole(getRole());
         createRegisterRequest.setPhoto(getPhoto());
-        createRegisterRequest.setName(user.getDisplayName());
+        createRegisterRequest.setCardName(getName());
+        createRegisterRequest.setFullName(getFullName());
         createRegisterRequest.setDepartmentAcronym(getDepartmentAcronym());
         createRegisterRequest.setCampus(getCampus());
         createRegisterRequest.setUsername(user.getUsername());
@@ -93,4 +94,24 @@ public class SantanderUser {
     public User getUser() {
         return user;
     }
+
+    public String getName() {
+        SantanderUserInfo santanderUserInfo = user.getSantanderUserInfo();
+
+        if (santanderUserInfo == null) {
+            String fullName = getFullName();
+            String[] fullNameParts = fullName.trim().split(" ");
+            String cardName = fullNameParts[0] + " " + fullNameParts[fullNameParts.length - 1];
+            cardName = cardName.length() > 40 ? cardName.substring(0, 40) : cardName;
+            santanderUserInfo = new SantanderUserInfo(cardName);
+            user.setSantanderUserInfo(santanderUserInfo);
+        }
+
+        return santanderUserInfo.getCardName();
+    }
+
+    public String getFullName() {
+        return user.getProfile().getFullName();
+    }
+
 }
