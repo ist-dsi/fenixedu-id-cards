@@ -2,13 +2,13 @@
   <div
     class="f-tag-field">
     <p
-      v-if="label !== ''"
-      class="f-tag-field__label">{{ label }}</p>
+      v-if="value !== ''"
+      class="f-tag-field__label">{{ value }}</p>
     <div
       v-for="(tag, i) in tags"
       :key="i"
       class="f-tag-field__tag">
-      {{ tag.label }}
+      {{ tag.value }}
       <button
         type="button"
         class="f-tag-field__tag-remove"
@@ -49,7 +49,7 @@ export default {
   name: 'CardPreviewPage',
   components: {},
   props: {
-    label: {
+    value: {
       type: String,
       required: false,
       default: ''
@@ -59,40 +59,7 @@ export default {
       required: true
     }
   },
-  data () {
-    return {
-      mobileMenuBreakpoint: 768,
-      isMobile: false,
-      windowWidth: 0
-    }
-  },
-  computed: {
-  },
-  watch: {
-    windowWidth: {
-      immediate: true,
-      handler (newWidth, oldWidth) {
-        if (newWidth < this.mobileMenuBreakpoint) {
-          this.isMobile = true
-        } else {
-          this.isMobile = false
-        }
-      }
-    }
-  },
-  mounted () {
-    this.$nextTick(function () {
-      window.addEventListener('resize', this.getWindowWidth)
-      this.getWindowWidth()
-    })
-  },
-  beforeDestroy () {
-    window.removeEventListener('resize', this.getWindowWidth)
-  },
   methods: {
-    getWindowWidth () {
-      this.windowWidth = window.innerWidth
-    },
     removeTag (item, index) {
       this.$emit('remove-tag', item, index)
     }

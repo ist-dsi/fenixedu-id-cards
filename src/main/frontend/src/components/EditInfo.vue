@@ -31,10 +31,10 @@
             </div>
             <tag-input
               :tags="userNamesList"
-              class="f-field--danger"
+              :class="{ 'f-field--danger': isNameInvalid }"
               @remove-tag="removeUserName"/>
             <p
-              :class="{ danger: selectedFamilyNames < 1 || selectedGivenNames < 1}"
+              :class="{ danger: isNameInvalid}"
               class="small f-field__validation">If you want to shorten your displayed name,
               choose at least one of your first and last names.
             </p>
@@ -51,7 +51,7 @@
           {{ $t('btn.cancel') }}
         </button>
         <button
-          :class="{ 'btn--disabled': selectedFamilyNames < 1 || selectedGivenNames < 1}"
+          :class="{ 'btn--disabled': isNameInvalid}"
           class="btn btn--primary"
           @click.prevent="">
           {{ $t('btn.confirm') }}
@@ -82,44 +82,41 @@ export default {
   },
   data () {
     return {
-      mobileMenuBreakpoint: 768,
-      isMobile: false,
-      windowWidth: 0,
       hasPendingRequest: false,
       userNamesList: [],
-      userNames: {},
-      selectedGivenNames: 0,
-      selectedFamilyNames: 0
+      userNames: undefined,
+      exludedNames: ['da', 'das', 'do', 'dos', 'de', 'e']
     }
   },
   computed: {
+    isNameInvalid () {
+      const nameLength = this.userNamesList.reduce((total, name) => total + name.value.length, 0)
+      return nameLength > 40 || this.selectedFamilyNames < 1 || this.selectedGivenNames < 1
+    },
+    selectedGivenNames () {
+      const givenNamesList = this.userNamesList.filter(name => name.isGivenName)
+      return givenNamesList.length - givenNamesList.filter(name => this.exludedNames.includes(name.value)).length
+    },
+    selectedFamilyNames () {
+      const familyNamesList = this.userNamesList.filter(name => !name.isGivenName)
+      return familyNamesList.length - familyNamesList.filter(name => this.exludedNames.includes(name.value)).length
+    }
   },
   watch: {
-    windowWidth: {
+    open: {
       immediate: true,
-      handler (newWidth, oldWidth) {
-        if (newWidth < this.mobileMenuBreakpoint) {
-          this.isMobile = true
-        } else {
-          this.isMobile = false
+      handler (open) {
+        if (open) {
+          if (!this.userNames) {
+            this.fetchUserNames()
+          } else {
+            this.resetNames()
+          }
         }
       }
     }
   },
-  mounted () {
-    this.$nextTick(function () {
-      window.addEventListener('resize', this.getWindowWidth)
-      this.getWindowWidth()
-    })
-    this.fetchUserNames()
-  },
-  beforeDestroy () {
-    window.removeEventListener('resize', this.getWindowWidth)
-  },
   methods: {
-    getWindowWidth () {
-      this.windowWidth = window.innerWidth
-    },
     async fetchUserNames () {
       this.hasPendingRequest = true
       const response = await CardsAPI.getUserNames()
@@ -127,24 +124,14 @@ export default {
       this.resetNames()
       this.hasPendingRequest = false
     },
-    removeUserName (item, index) {
-      if (item.isGivenName) {
-        this.userNamesList.splice(index, 1)
-        this.selectedGivenNames--
-      }
-
-      if (!item.isGivenName) {
-        this.userNamesList.splice(index, 1)
-        this.selectedFamilyNames--
-      }
+    removeUserName (name, index) {
+      this.userNamesList.splice(index, 1)
     },
     resetNames () {
       const givenNamesList = this.userNames.givenNames.split(' ')
       const familyNamesList = this.userNames.familyNames.split(' ')
-      this.userNamesList = [...givenNamesList.map(n => ({ label: n, isGivenName: true })),
-        ...familyNamesList.map(n => ({ label: n, isGivenName: false }))]
-      this.selectedGivenNames = givenNamesList.length
-      this.selectedFamilyNames = familyNamesList.length
+      this.userNamesList = [...givenNamesList.map(n => ({ value: n, isGivenName: true })),
+        ...familyNamesList.map(n => ({ value: n, isGivenName: false }))]
     }
   }
 }
