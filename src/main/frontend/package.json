@@ -8,7 +8,7 @@
     "mock": "cross-env MOCK=true webpack-dev-server --hot --inline --config build/webpack.conf.dev.js",
     "dev": "webpack-dev-server --hot --inline --config build/webpack.conf.dev.js",
     "start": "npm run dev",
-    "dist": "mkdir -p ../webapp/tecnico-card; rm -rf ../webapp/tecnico-card/*; rm -rf dist; webpack --config build/webpack.conf.prod.js; cp dist/* ../webapp/tecnico-card/",
+    "dist": "mkdir -p ../webapp/tecnico-card; rm -rf ../webapp/tecnico-card/*; rm -rf dist; webpack --config build/webpack.conf.prod.js; cp -r dist/* ../webapp/tecnico-card/",
     "lint": "eslint --ext .js,.vue src --fix",
     "analysis": "webpack --mode=production --display-reasons --json --config build/webpack.conf.prod.js > build/analysis.json",
     "prodServer": "http-server dist/",
