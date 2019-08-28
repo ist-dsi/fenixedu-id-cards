@@ -13,7 +13,7 @@ import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.idcards.domain.SantanderEntry;
 import org.fenixedu.idcards.domain.SantanderUser;
 import org.fenixedu.idcards.dto.SantanderCardDto;
-import org.fenixedu.idcards.notifications.CardStateTransitionNotifications;
+import org.fenixedu.idcards.notifications.CardNotifications;
 import org.fenixedu.santandersdk.dto.CardPreviewBean;
 import org.fenixedu.santandersdk.dto.CreateRegisterRequest;
 import org.fenixedu.santandersdk.dto.CreateRegisterResponse;
@@ -53,7 +53,7 @@ public class SantanderIdCardsService {
         this.santanderCardService = santanderCardService;
         this.userInfoService = userInfoService;
 
-        Signal.register(SantanderEntry.STATE_CHANGED, CardStateTransitionNotifications::notifyUser);
+        Signal.register(SantanderEntry.STATE_CHANGED, CardNotifications::notifyStateTransition);
     }
 
     public SantanderCardDto generateCardPreview(User user) throws SantanderValidationException {
@@ -111,7 +111,7 @@ public class SantanderIdCardsService {
         case ISSUED:
         case DELIVERED:
             if (entry.getSantanderCardInfo().getExpiryDate().isBefore(DateTime.now())) {
-                entry.updateStateAndNotify(SantanderCardState.EXPIRED);
+                entry.updateState(SantanderCardState.EXPIRED);
             }
             return entry;
         case PENDING:
@@ -146,7 +146,7 @@ public class SantanderIdCardsService {
 
         case REMI_REQUEST:
         case RENU_REQUEST:
-            entry.updateStateAndNotify(SantanderCardState.NEW);
+            entry.updateState(SantanderCardState.NEW);
             return entry;
 
         case READY_FOR_PRODUCTION:
