@@ -54,6 +54,12 @@ class SantanderUserInfo {
 	String cardName;
 }
 
+class RaspberryPiSession {
+	String ipAddress;
+	String userMifare;
+	DateTime createdAt;
+}
+
 /*
  * Relations definitions
  * 
@@ -64,6 +70,23 @@ relation BennuSantanderEntry {
 	SantanderEntry playsRole santanderEntries {
 		multiplicity *;
 	}
+}
+
+relation BennuRaspberryPiSession {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu;
+	RaspberryPiSession playsRole raspberryPiSession {
+		multiplicity *;
+	}
+}
+
+relation AdminRaspberryPiSession {
+	.org.fenixedu.bennu.core.domain.User playsRole admin;
+	RaspberryPiSession playsRole raspberryPiSession;
+}
+
+relation CardInfoRaspberryPiSession {
+	SantanderCardInfo playsRole userCardInfo;
+	RaspberryPiSession playsRole raspberryPiSession;
 }
 
 relation BennuSantanderCardInfo {
