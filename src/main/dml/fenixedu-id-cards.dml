@@ -30,6 +30,8 @@ class SantanderEntry {
     String responseLine;    
     String errorDescription;
     String requestReason;
+    Boolean wasExpiringNotified;
+    Boolean wasPickupNotified;
 }
 
 class SantanderCardInfo {	

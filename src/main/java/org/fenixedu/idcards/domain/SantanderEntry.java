@@ -55,6 +55,7 @@ public class SantanderEntry extends SantanderEntry_Base {
         setRequestLine(requestedCardBean.getRequestLine());
         setResponseLine("");
         setErrorDescription("");
+        setWasPickupNotified(true);
         SantanderCardInfo cardInfo = new SantanderCardInfo();
         cardInfo.setIdentificationNumber(requestedCardBean.getIdentificationNumber());
         cardInfo.setCardName(requestedCardBean.getCardName());
@@ -78,8 +79,13 @@ public class SantanderEntry extends SantanderEntry_Base {
         updateState(SantanderCardState.NEW, requestDate);
         updateState(SantanderCardState.ISSUED, requestedCardBean.getProductionDate());
 
-        if (DateTime.now().isAfter(cardExpiryTime))
+        if (DateTime.now().isAfter(cardExpiryTime)) {
             updateState(SantanderCardState.EXPIRED, cardExpiryTime);
+            setWasExpiringNotified(true);
+        } else {
+            setWasExpiringNotified(false);
+        }
+
     }
 
     public SantanderEntry(User user, CardPreviewBean cardPreviewBean, PickupLocation pickupLocation, String requestReason) {
@@ -120,6 +126,8 @@ public class SantanderEntry extends SantanderEntry_Base {
         setErrorDescription("");
         setSantanderCardInfo(new SantanderCardInfo(cardPreviewBean, pickupLocation));
         updateState(SantanderCardState.PENDING);
+        setWasExpiringNotified(false);
+        setWasPickupNotified(false);
     }
     
     @Atomic(mode = TxMode.WRITE)
