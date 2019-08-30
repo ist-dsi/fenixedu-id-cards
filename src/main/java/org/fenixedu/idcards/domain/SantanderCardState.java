@@ -1,12 +1,14 @@
 package org.fenixedu.idcards.domain;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
-
 import java.util.Locale;
+
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 
 public enum SantanderCardState {
 
-    PENDING,        //Initial state; If not changed it means that something went when communicating with santander
+    PENDING,        //Initial state; If not changed it means that something went wrong when communicating with santander
+
+    WAITING_INFO,   //Used for first card (this state is used to wait for the user to update his information)
 
     IGNORED,        //Request was rejected  
 
