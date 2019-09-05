@@ -123,3 +123,16 @@ $header-height: 3.5rem;
 $footer-height: 6.25rem;
 $main-height: calc(100vh - #{$footer-height});
 $menu-mobile--width: 16.5rem;
+
+
+
+// ==================== Transitions
+
+@mixin mdTransition {
+	transition-duration: .2s;
+	transition-timing-function: ease-in-out;
+}
+@mixin fastTransition {
+	transition-duration: 600ms;
+    transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}

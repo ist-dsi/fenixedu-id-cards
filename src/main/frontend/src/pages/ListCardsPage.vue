@@ -116,39 +116,41 @@
       </button>
     </div>
     <div class="layout-list-cards__timeline">
-      <template v-if="selectedCard && showTimeline">
-        <div class="timeline">
-          <ol class="timeline__list">
-            <template v-for="(transition, index) in stateTransitions">
-              <li
-                :key="transition"
-                class="timeline__item"><!-- Aria phrase -->
-                <i
-                  :class="{'timeline__item-status--filled' : isTransitionComplete(index)}"
-                  class="timeline__item-status"/>
-                <div class="timeline__item-text">
-                  <h2 class="h5--ssp timeline__item-title">
-                    {{ $t(`message.cardStates.${stateTransitionLabels[transition]}`) }}
-                    <img
-                      v-if="transition === cardStates.READY_FOR_PICKUP && isTransitionComplete(index)
-                      && !isTransitionComplete(stateTransitions.indexOf(cardStates.DELIVERED)) && selectedCard.currentState !== cardStates.EXPIRED"
-                      src="~@/assets/images/icon-info.svg"
-                      class="icon timeline__item-icon"
-                      @click.prevent="readyForPickupModal = true" >
-                  </h2>
-                  <time
-                    v-if="getStateTransitionDate(transition) && isTransitionComplete(index)"
-                    :datetime="getTransitionDateTime(transition)"
-                    class="timeline__item-time p--default">{{ getStateTransitionDate(transition) }}</time>
-                  <p
-                    v-else-if="!getStateTransitionDate(transition) && isTransitionComplete(index)"
-                    class="timeline__item-time p--default">N/A</p>
-                </div>
-              </li>
-            </template>
-          </ol>
-        </div>
-      </template>
+      <transition name="fade">
+        <template v-if="selectedCard && showTimeline">
+          <div class="timeline">
+            <ol class="timeline__list">
+              <template v-for="(transition, index) in stateTransitions">
+                <li
+                  :key="transition"
+                  class="timeline__item"><!-- Aria phrase -->
+                  <i
+                    :class="{'timeline__item-status--filled' : isTransitionComplete(index)}"
+                    class="timeline__item-status"/>
+                  <div class="timeline__item-text">
+                    <h2 class="h5--ssp timeline__item-title">
+                      {{ $t(`message.cardStates.${stateTransitionLabels[transition]}`) }}
+                      <img
+                        v-if="transition === cardStates.READY_FOR_PICKUP && isTransitionComplete(index)
+                        && !isTransitionComplete(stateTransitions.indexOf(cardStates.DELIVERED)) && selectedCard.currentState !== cardStates.EXPIRED"
+                        src="~@/assets/images/icon-info.svg"
+                        class="icon timeline__item-icon"
+                        @click.prevent="readyForPickupModal = true" >
+                    </h2>
+                    <time
+                      v-if="getStateTransitionDate(transition) && isTransitionComplete(index)"
+                      :datetime="getTransitionDateTime(transition)"
+                      class="timeline__item-time p--default">{{ getStateTransitionDate(transition) }}</time>
+                    <p
+                      v-else-if="!getStateTransitionDate(transition) && isTransitionComplete(index)"
+                      class="timeline__item-time p--default">N/A</p>
+                  </div>
+                </li>
+              </template>
+            </ol>
+          </div>
+        </template>
+      </transition>
     </div>
     <div class="layout-list-cards__other-features">
       <ul class="list-features">
@@ -882,6 +884,13 @@ export default {
 // import variables
 @import "@/assets/scss/_variables.scss";
 
+.fade-enter-active, .fade-leave-active {
+  transition-property: opacity;
+  @include mdTransition;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
 .main-header {
   z-index: 100;
 }
