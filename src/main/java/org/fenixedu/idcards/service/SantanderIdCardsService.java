@@ -107,11 +107,12 @@ public class SantanderIdCardsService {
         switch (cardState) {
         case IGNORED:
         case EXPIRED:
+        case WAITING_INFO:
             return entry;
         case ISSUED:
         case DELIVERED:
             if (entry.getSantanderCardInfo().getExpiryDate().isBefore(DateTime.now())) {
-                entry.updateStateAndNotify(SantanderCardState.EXPIRED);
+                entry.updateState(SantanderCardState.EXPIRED);
             }
             return entry;
         case PENDING:
@@ -146,7 +147,7 @@ public class SantanderIdCardsService {
 
         case REMI_REQUEST:
         case RENU_REQUEST:
-            entry.updateStateAndNotify(SantanderCardState.NEW);
+            entry.updateState(SantanderCardState.NEW);
             return entry;
 
         case READY_FOR_PRODUCTION:
@@ -169,7 +170,6 @@ public class SantanderIdCardsService {
             }
             return entry;
         case UNKNOWN:
-            LOGGER.debug("Card has unkown state:  " + status);
         default:
             LOGGER.debug("Not supported status:  " + status);
         }
@@ -276,6 +276,7 @@ public class SantanderIdCardsService {
 
         switch (cardState) {
         case IGNORED:
+        case WAITING_INFO:
             entry.reset(cardPreviewBean, pickupLocation, requestReason);
             return entry;
         case REJECTED:
