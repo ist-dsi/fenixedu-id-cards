@@ -1118,7 +1118,8 @@ export default {
     margin: 0 4rem;
   }
   .card--no-shadow .card-row {
-    padding: 3rem 1.5rem;
+    padding: 2.5rem 1.5rem;
+    min-height: 10.875rem;
   }
   .card-row__title {
     margin-bottom: .375rem;
