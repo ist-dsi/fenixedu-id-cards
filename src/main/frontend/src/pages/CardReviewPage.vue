@@ -55,7 +55,7 @@ export default {
       isMobile: false,
       windowWidth: 0,
       editModal: false,
-      redirectUrl: 'https://fenix.tecnico.ulisboa.pt/authorize-personal-data-access/santander-bank'
+      redirectUrl: 'https://fenix.tecnico.ulisboa.pt/authorize-personal-data-access/cgd-bank'
     }
   },
   computed: {
