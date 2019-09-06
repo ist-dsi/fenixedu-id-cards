@@ -627,6 +627,16 @@ export default {
       window.addEventListener('resize', this.getWindowWidth)
       this.getWindowWidth()
     })
+
+    // If 30 days left to expire
+    this.setTopMessage({
+      active: true,
+      msg: {
+        pt: 'O novo cartão será pedido em 30 dias.', en: 'Your new card will be requested in 30 days.'
+      },
+      dismiss: true,
+      type: 'warn'
+    })
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)
@@ -637,7 +647,8 @@ export default {
       'requestNewCard',
       'fetchCards',
       'deliverCard',
-      'fetchProfile'
+      'fetchProfile',
+      'setTopMessage'
     ]),
     getWindowWidth () {
       this.windowWidth = window.innerWidth
