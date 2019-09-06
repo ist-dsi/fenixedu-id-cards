@@ -11,7 +11,7 @@
 
     <groupId>pt.ist</groupId>
     <artifactId>fenixedu-id-cards</artifactId>
-    <version>5.5.0-SNAPSHOT</version>
+    <version>5.5.0</version>
     <packaging>jar</packaging>
 
     <name>FenixEdu Identification Cards</name>
@@ -47,7 +47,7 @@
         <connection>scm:git:git@github.com:ist-dsi/fenixedu-id-cards.git</connection>
         <developerConnection>scm:git:git@github.com:ist-dsi/fenixedu-id-cards.git</developerConnection>
         <url>http://fenixedu.org</url>
-        <tag>HEAD</tag>
+        <tag>v5.5.0</tag>
     </scm>
 
     <dependencies>
