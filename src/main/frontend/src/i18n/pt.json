@@ -88,5 +88,7 @@
   "text.pickupLocations.tagus.drh": "DRH, Instituto Superior Técnico - TagusPark",
   "text.pickupLocations.ctn.rh": "Recursos Humanos, Campus Tecnológico e Nuclear",
   "text.review.parts.first.page": "O seu cartão terá a informação atualizada",
-  "text.review.parts.second.page": "de acordo com esta pré-visualização."
+  "text.review.parts.second.page": "de acordo com esta pré-visualização.",
+  "edit.info.parts.first.no.photo": "O utilizador não tem foto. Deverá adicionar uma foto para pré-visualizar o seu cartão. A sua foto é gerida na sua",
+  "edit.info.parts.second.no.photo": "área pessoal do Fénix"
 }

@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="cardPreview && !isInitialLoading"
+    v-if="Object.keys(cardPreview).length !== 0 && !isInitialLoading"
     class="layout-list-cards layout-list-cards-form">
     <h1 class="h2">{{ $t('modal.title.confirmData') }}</h1>
     <p
@@ -35,6 +35,20 @@
       :open="editModal"
       :is-from-registration="isValidCandidacyId"
       @close="closeEditModal"/>
+  </div>
+  <div
+    v-else
+    class="modal__panel">
+    <figure class="figure figure--icon modal-panel__icons">
+      <img
+        src="~@/assets/images/icon-error.svg"
+        alt="Error icon">
+    </figure>
+    <h1 class="h2">{{ $t('error.card.preview.title') }}</h1>
+    <p>{{ $t('edit.info.parts.first.no.photo') }} <a
+      class="u-active-link"
+      href="/personal">{{ $t('edit.info.parts.second.no.photo') }}</a>.
+    </p>
   </div>
 </template>
 
@@ -117,6 +131,20 @@ export default {
 <style lang="scss">
 // import variables
 @import "@/assets/scss/_variables.scss";
+
+.modal__panel {
+  width: 100vw;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+}
 
 .layout-list-cards.layout-list-cards-form {
 

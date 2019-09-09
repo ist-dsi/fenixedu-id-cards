@@ -36,7 +36,10 @@ const router = new Router({
           component: CardReviewPage,
           async beforeEnter (to, from, next) {
             store.dispatch('setInitialLoading', { isInitialLoading: true })
-            await store.dispatch('fetchPreview')
+            try {
+              await store.dispatch('fetchPreview')
+            } catch (err) {}
+
             store.dispatch('setInitialLoading', { isInitialLoading: false })
             next()
           }
