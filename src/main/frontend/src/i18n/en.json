@@ -88,5 +88,7 @@
   "text.pickupLocations.tagus.drh": "DRH, Instituto Superior Técnico - TagusPark",
   "text.pickupLocations.ctn.rh": "Human Resources, Campus Tecnológico e Nuclear",
   "text.review.parts.first.page": "Here's a preview of your new card",
-  "text.review.parts.second.page": "with your information reviewed."
+  "text.review.parts.second.page": "with your information reviewed.",
+  "edit.info.parts.first.no.photo": "User has no photo. You should add a photo to preview your card. Your photo is managed in your",
+  "edit.info.parts.second.no.photo": "Fenix personal area"
 }
