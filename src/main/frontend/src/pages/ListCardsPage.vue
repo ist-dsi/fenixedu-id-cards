@@ -630,15 +630,21 @@ export default {
       this.getWindowWidth()
     })
 
-    // If 30 days left to expire
-    this.setTopMessage({
-      active: true,
-      msg: {
-        pt: 'O novo cartão será pedido em 30 dias.', en: 'Your new card will be requested in 30 days.'
-      },
-      dismiss: true,
-      type: 'warn'
-    })
+    if (!this.isAdminView && this.selectedCard) {
+      const daysBeforeRequest = this.selectedCard.daysBeforeRequest
+
+      if (daysBeforeRequest && daysBeforeRequest >= 1 && daysBeforeRequest <= 30) {
+        this.setTopMessage({
+          active: true,
+          msg: {
+            pt: `O novo cartão será pedido em ${daysBeforeRequest} dia(s).`,
+            en: `Your new card will be requested in ${daysBeforeRequest} day(s).`
+          },
+          dismiss: true,
+          type: 'warn'
+        })
+      }
+    }
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.getWindowWidth)
