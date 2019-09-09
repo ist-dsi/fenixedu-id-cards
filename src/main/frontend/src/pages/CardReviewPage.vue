@@ -38,7 +38,7 @@
   </div>
   <div
     v-else
-    class="modal__panel">
+    class="modal__panel review-modal__panel">
     <figure class="figure figure--icon modal-panel__icons">
       <img
         src="~@/assets/images/icon-error.svg"
@@ -132,7 +132,7 @@ export default {
 // import variables
 @import "@/assets/scss/_variables.scss";
 
-.modal__panel {
+.review-modal__panel {
   width: 100vw;
   display: flex;
   flex-flow: column nowrap;
