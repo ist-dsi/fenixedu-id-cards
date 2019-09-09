@@ -127,7 +127,9 @@
                   <i
                     :class="{'timeline__item-status--filled' : isTransitionComplete(index)}"
                     class="timeline__item-status"/>
-                  <div class="timeline__item-text">
+                  <div
+                    :class="{'timeline__item-text--unfilled' : !isTransitionComplete(index)}"
+                    class="timeline__item-text">
                     <h2 class="h5--ssp timeline__item-title">
                       {{ $t(`message.cardStates.${stateTransitionLabels[transition]}`) }}
                       <img
@@ -1054,6 +1056,9 @@ export default {
   .timeline__item-text {
     margin-left: 3rem;
     min-height: 2.6875rem;
+  }
+  .timeline__item-text--unfilled {
+    margin-top: 0.375rem;
   }
   .timeline__item-title {
     margin: 0;
