@@ -681,13 +681,36 @@ export default {
     isTransitionComplete (transitionIndex) {
       const history = this.filteredHistory
       const lastState = history[history.length - 1].state
+      const lastStateIndex = this.stateTransitions.indexOf(lastState)
 
-      return transitionIndex <= this.stateTransitions.indexOf(lastState)
+      if (lastState === 'ISSUED' && transitionIndex === lastStateIndex) {
+        const date = this.getStateTransitionDate(lastState)
+        const dateTime = this.getDateObjectFromStateTransitionDate(date)
+
+        return dateTime <= new Date()
+      }
+
+      return transitionIndex <= lastStateIndex
+    },
+    getDateObjectFromStateTransitionDate (date) {
+      return new Date(date.split('/').reverse().join('-'))
     },
     getStateTransitionDate (transitionState) {
       const history = this.filteredHistory
       const transition = history.find(t => t.state === transitionState)
-      return transition ? transition.when : undefined
+
+      if (!transition) {
+        return undefined
+      }
+
+      let date = transition.when
+      if (transition.state === this.cardStates.READY_FOR_PICKUP) {
+        let dateTime = this.getDateObjectFromStateTransitionDate(date)
+        dateTime.setDate(dateTime.getDate() + 15)
+        date = `${dateTime.getDate().toString().padStart(2, '0')}/${(dateTime.getMonth() + 1).toString().padStart(2, '0')}/${dateTime.getFullYear()}`
+      }
+
+      return date
     },
     getTransitionDateTime (transitionState) {
       const date = this.getStateTransitionDate(transitionState)
