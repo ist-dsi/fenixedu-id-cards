@@ -18,6 +18,8 @@ public class SantanderCardDto {
 
     // New cards are requested 60 days before previous expiry date.
     private static final int DAYS_TO_EXPIRE = 60;
+    // Cards take between 8 and 15 days to arrive the pickup location
+    static final int DAYS_TO_ARRIVE = 15;
 
     public String cardId;
     public String istId;
@@ -40,7 +42,8 @@ public class SantanderCardDto {
             expiryDate = expiryDate.withTimeAtStartOfDay();
             DateTime today = DateTime.now().withTimeAtStartOfDay();
 
-            if (today.isAfter(expiryDate.minusDays(DAYS_TO_EXPIRE + 31)) && today.isBefore(expiryDate.minusDays(DAYS_TO_EXPIRE - 1))) {
+            if (today.isAfter(expiryDate.minusDays(DAYS_TO_EXPIRE + 31)) && today
+                    .isBefore(expiryDate.minusDays(DAYS_TO_EXPIRE - 1))) {
                 this.daysBeforeRequest = Days.daysBetween(today, expiryDate.minusDays(DAYS_TO_EXPIRE)).getDays();
             }
         }
@@ -48,14 +51,15 @@ public class SantanderCardDto {
         this.istId = cardInfo.getIdentificationNumber();
         this.name = cardInfo.getCardName();
         this.role = cardInfo.getRole();
-        
+
         if (cardInfo.getPhoto() != null) {
             this.photo = BaseEncoding.base64().encode(cardInfo.getPhoto());
         }
 
         this.serialNumber = cardInfo.getSerialNumber();
-        this.history = cardInfo.getOrderedTransitions()
-                .stream()
+        this.history = cardInfo.getOrderedTransitions().stream()
+                .filter(t -> !SantanderCardState.ISSUED.equals(t.getState()) || DateTime.now()
+                        .isAfter(t.getTransitionDate().plusDays(DAYS_TO_ARRIVE)))
                 .map(SantanderStateDto::new)
                 .collect(Collectors.toList());
         this.pickupAddress = cardInfo.getPickupLocation().toPickupAddress();
