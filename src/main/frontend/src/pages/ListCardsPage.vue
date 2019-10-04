@@ -133,8 +133,7 @@
                     <h2 class="h5--ssp timeline__item-title">
                       {{ $t(`message.cardStates.${stateTransitionLabels[transition]}`) }}
                       <img
-                        v-if="transition === cardStates.READY_FOR_PICKUP && isTransitionComplete(index)
-                        && !isTransitionComplete(stateTransitions.indexOf(cardStates.DELIVERED)) && selectedCard.currentState !== cardStates.EXPIRED"
+                        v-if="transition === cardStates.READY_FOR_PICKUP && isSelectedCardReadyForPickup"
                         src="~@/assets/images/icon-info.svg"
                         class="icon timeline__item-icon"
                         @click.prevent="readyForPickupModal = true" >
@@ -581,6 +580,11 @@ export default {
     isSelectedCardRequested () {
       return !this.isTransitionComplete(this.stateTransitions.indexOf(this.cardStates.READY_FOR_PICKUP))
     },
+    isSelectedCardReadyForPickup () {
+      return this.isTransitionComplete(this.stateTransitions.indexOf(this.cardStates.READY_FOR_PICKUP)) &&
+             !this.isTransitionComplete(this.stateTransitions.indexOf(this.cardStates.DELIVERED)) &&
+             this.selectedCard.currentState !== this.cardStates.EXPIRED && this.selectedCard.currentState !== this.cardStates.IGNORED
+    },
     availableCards () {
       return this.cardsPage.cards.slice().reverse()
     },
@@ -643,6 +647,10 @@ export default {
           dismiss: true,
           type: 'warn'
         })
+      }
+
+      if (this.isSelectedCardReadyForPickup && !this.isAdminView) {
+        this.readyForPickupModal = true
       }
     }
   },
