@@ -55,7 +55,10 @@ import org.fenixedu.messaging.core.template.TemplateParameter;
         id = "message.template.santander.card.first",
         description = "Review information for first card",
         subject = "IST card information",
-        text = "Please review your card info, so it comes accurately in your next card and it can proceed to the automatic request. Alternativly you can use this (link) to make a manual request after validating your information"
+        text = "Please review your card info, so it comes accurately in your next card and it can proceed to the automatic request. The automatic request will happen in {{ waitingDays }} days. Alternatively you can use this (link) to make a manual request after validating your information",
+        parameters = {
+                @TemplateParameter(id = "waitingDays", description = "Waiting days until automatic request")
+        }
 )
 
 public class CardNotifications {
@@ -107,10 +110,11 @@ public class CardNotifications {
                 .and().wrapped().send();
     }
 
-    public static void notifyFirstCardInfoCheck(User user) {
+    public static void notifyFirstCardInfoCheck(User user, int waitingDays) {
         Message.fromSystem()
             .to(Group.users(user))
             .template("message.template.santander.card.first")
+            .parameter("waitingDays", waitingDays)
             .and().wrapped().send();
     }
 

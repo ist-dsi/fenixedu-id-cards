@@ -68,7 +68,7 @@ public class SantanderCardsRequestTask extends CronTask {
                 if (currentEntry == null) {
                     currentEntry = idCardsService.createRegister(user, "Temporary Entry");
                     currentEntry.updateState(SantanderCardState.WAITING_INFO);
-                    CardNotifications.notifyFirstCardInfoCheck(user);
+                    CardNotifications.notifyFirstCardInfoCheck(user, WAITING_DAYS);
                     logger.debug("Notify user {} to check his card information (current SantanderEntry: {})", user.getUsername(),
                             currentEntry);
                 } else {
