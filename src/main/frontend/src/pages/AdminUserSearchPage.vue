@@ -4,7 +4,7 @@
     class="layout-admin-user-search-page">
     <h1 class="h2">{{ $t('title.admin.page') }}</h1>
     <div class="user-search">
-      <h2 class="h3">Pesquisar Utilizador</h2>
+      <h2 class="h3">{{ $t('label.searchUser.admin') }}</h2>
       <div>
         <input
           v-model="username"
@@ -26,14 +26,14 @@
             src="~@/assets/images/icon-error.svg"
             alt="Error icon">
         </div>
-        <h1 class="h3">Ainda não tem uma sessão aberta</h1>
+        <h1 class="h3">{{ $t('label.info.session.admin') }}</h1>
       </div>
       <div v-else>
         <div class="session-info-container">
-          <h2 class="h3">Sessão Iniciada</h2>
+          <h2 class="h3">{{ $t('label.info.session.open.admin') }}</h2>
           <div>
-            <p class="small">Criada Em: {{ session.createdAt }}</p>
-            <p class="small">Host: {{ session.ipAddress }}</p>
+            <p class="small">{{ $t('label.info.session.created.at.admin') }}: {{ session.createdAt }}</p>
+            <p class="small">{{ $t('label.info.session.host.admin') }}: {{ session.ipAddress }}</p>
           </div>
         </div>
         <div
@@ -47,7 +47,7 @@
           <div
             v-if="session.userIstId"
             class="session-user-container">
-            <h5 class="h5">Dados do Utilizador</h5>
+            <h5 class="h5">{{ $t('label.user.data.admin') }}</h5>
             <div class="user-info-container">
               <div class="photo-container">
                 <img
@@ -65,14 +65,14 @@
                   src="~@/assets/images/icon-check.svg"
                   alt="Check icon">
               </figure>
-              <p>Cartão entregue com sucesso!</p>
+              <p>{{ $t('label.info.card.delivered.admin') }}</p>
             </div>
           </div>
           <div
             v-else
             class="user-not-found-container">
-            <h5 class="h5">Mifare não encontrado</h5>
-            <p>Introduza o username do utilizador para associar o mifare ao cartão do mesmo.</p>
+            <h5 class="h5">{{ $t('label.info.mifare.not.found.admin') }}</h5>
+            <p>{{ $t('label.info.mifare.not.found.insert.data.admin') }}</p>
             <div class="user-not-found">
               <div class="field">
                 <p>Mifare</p>
@@ -88,7 +88,7 @@
               <button
                 class="btn btn--primary btn--outline"
                 @click.prevent="submitUserMifare">
-                Submeter
+                {{ $t('btn.submit') }}
               </button>
             </div>
           </div>
