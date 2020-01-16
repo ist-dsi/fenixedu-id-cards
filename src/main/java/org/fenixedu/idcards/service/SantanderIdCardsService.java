@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import com.google.gson.JsonObject;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.signals.Signal;
@@ -12,6 +13,7 @@ import org.fenixedu.idcards.domain.PickupLocation;
 import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.idcards.domain.SantanderEntry;
 import org.fenixedu.idcards.domain.SantanderUser;
+import org.fenixedu.idcards.domain.SantanderUserInfo;
 import org.fenixedu.idcards.dto.SantanderCardDto;
 import org.fenixedu.idcards.notifications.CardNotifications;
 import org.fenixedu.santandersdk.dto.CardPreviewBean;
@@ -105,26 +107,26 @@ public class SantanderIdCardsService {
         SantanderCardState cardState = entry.getState();
 
         switch (cardState) {
-        case IGNORED:
-        case EXPIRED:
-        case WAITING_INFO:
-            return entry;
-        case ISSUED:
-        case DELIVERED:
-            if (entry.getSantanderCardInfo().getExpiryDate().isBefore(DateTime.now())) {
-                entry.updateState(SantanderCardState.EXPIRED);
-            }
-            return entry;
-        case PENDING:
-            return synchronizeFenixAndSantanderStates(user, entry);
-        case REJECTED:
-        case NEW:
-        case READY_FOR_PRODUCTION:
-        case PRODUCTION:
-            return checkAndUpdateState(entry);
-        default:
-            LOGGER.debug("SantanderEntry " + entry.getExternalId() + " has unknown state (" + cardState.name() + ")");
-            return entry;
+            case IGNORED:
+            case EXPIRED:
+            case WAITING_INFO:
+                return entry;
+            case ISSUED:
+            case DELIVERED:
+                if (entry.getSantanderCardInfo().getExpiryDate().isBefore(DateTime.now())) {
+                    entry.updateState(SantanderCardState.EXPIRED);
+                }
+                return entry;
+            case PENDING:
+                return synchronizeFenixAndSantanderStates(user, entry);
+            case REJECTED:
+            case NEW:
+            case READY_FOR_PRODUCTION:
+            case PRODUCTION:
+                return checkAndUpdateState(entry);
+            default:
+                LOGGER.debug("SantanderEntry " + entry.getExternalId() + " has unknown state (" + cardState.name() + ")");
+                return entry;
         }
     }
 
@@ -141,37 +143,37 @@ public class SantanderIdCardsService {
         GetRegisterStatus status = registerData.getStatus();
 
         switch (status) {
-        case REJECTED_REQUEST:
-            entry.updateState(SantanderCardState.REJECTED);
-            return entry;
+            case REJECTED_REQUEST:
+                entry.updateState(SantanderCardState.REJECTED);
+                return entry;
 
-        case REMI_REQUEST:
-        case RENU_REQUEST:
-            entry.updateState(SantanderCardState.NEW);
-            return entry;
+            case REMI_REQUEST:
+            case RENU_REQUEST:
+                entry.updateState(SantanderCardState.NEW);
+                return entry;
 
-        case READY_FOR_PRODUCTION:
-            entry.updateState(SantanderCardState.READY_FOR_PRODUCTION);
-            return entry;
-        case PRODUCTION:
-            entry.updateState(SantanderCardState.PRODUCTION);
-            return entry;
+            case READY_FOR_PRODUCTION:
+                entry.updateState(SantanderCardState.READY_FOR_PRODUCTION);
+                return entry;
+            case PRODUCTION:
+                entry.updateState(SantanderCardState.PRODUCTION);
+                return entry;
 
-        case ISSUED:
-            if (!SantanderEntry.hasMifare(entry.getUser(), registerData.getMifare())) {
-                entry.updateIssued(registerData);
-            }
-            return entry;
+            case ISSUED:
+                if (!SantanderEntry.hasMifare(entry.getUser(), registerData.getMifare())) {
+                    entry.updateIssued(registerData);
+                }
+                return entry;
 
-        case NO_RESULT:
-            // syncing problem between both services
-            if (!entry.wasRegisterSuccessful()) {
-                entry.updateState(SantanderCardState.IGNORED);
-            }
-            return entry;
-        case UNKNOWN:
-        default:
-            LOGGER.debug("Not supported status:  " + status);
+            case NO_RESULT:
+                // syncing problem between both services
+                if (!entry.wasRegisterSuccessful()) {
+                    entry.updateState(SantanderCardState.IGNORED);
+                }
+                return entry;
+            case UNKNOWN:
+            default:
+                LOGGER.debug("Not supported status:  " + status);
         }
 
         return entry;
@@ -275,18 +277,18 @@ public class SantanderIdCardsService {
         SantanderCardState cardState = entry.getState();
 
         switch (cardState) {
-        case IGNORED:
-        case WAITING_INFO:
-            entry.reset(cardPreviewBean, pickupLocation, requestReason);
-            return entry;
-        case REJECTED:
-        case ISSUED:
-        case DELIVERED:
-        case EXPIRED:
-            return new SantanderEntry(user, cardPreviewBean, pickupLocation, requestReason);
-        default:
-            //should be impossible to reach;
-            throw new SantanderValidationException("santander.id.cards.error.santander.entry.invalid.state");
+            case IGNORED:
+            case WAITING_INFO:
+                entry.reset(cardPreviewBean, pickupLocation, requestReason);
+                return entry;
+            case REJECTED:
+            case ISSUED:
+            case DELIVERED:
+            case EXPIRED:
+                return new SantanderEntry(user, cardPreviewBean, pickupLocation, requestReason);
+            default:
+                //should be impossible to reach;
+                throw new SantanderValidationException("santander.id.cards.error.santander.entry.invalid.state");
         }
     }
 
@@ -318,4 +320,21 @@ public class SantanderIdCardsService {
 
         return errorDescription.toString();
     }
+
+    public JsonObject getUserNames(final User user) {
+        final String normalizedGivenNames = SantanderUserInfo.getNormalizedSantanderUserGivenNames(user);
+        final String normalizedFamilyNames = SantanderUserInfo.getNormalizedSantanderUserFamilyNames(user);
+        JsonObject response = new JsonObject();
+        JsonObject userNames = new JsonObject();
+
+        userNames.addProperty("givenNames", normalizedGivenNames);
+        userNames.addProperty("familyNames", normalizedFamilyNames);
+        response.add("userNames", userNames);
+        response.addProperty("wasNameReplaced",
+                !normalizedGivenNames.equals(user.getProfile().getGivenNames()) || !normalizedFamilyNames
+                        .equals(user.getProfile().getFamilyNames()));
+
+        return response;
+    }
+
 }
