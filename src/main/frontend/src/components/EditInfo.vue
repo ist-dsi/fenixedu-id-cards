@@ -28,7 +28,7 @@
               <p>{{ $t('id-card.label.name') }}</p>
               <a
                 class="u-active-link small"
-                @click.prevent="resetNames">Reset</a>
+                @click.prevent="resetNames">{{ $t('label.reset') }}</a>
             </div>
             <tag-input
               :tags="userNamesList"
@@ -36,12 +36,17 @@
               @remove-tag="removeUserName"/>
             <p
               v-if="userNameExceedsLength"
-              class="small f-field__validation danger">
+              class="small f-field__validation">
               {{ $t('modal.message.editInfo.shorten.name') }}
             </p>
             <p
               v-else
-              class="small f-field__validation">{{ $t('modal.message.editInfo.name.requirements') }}
+              class="small">{{ $t('modal.message.editInfo.name.requirements') }}
+            </p>
+            <p
+              v-if="wasNameReplaced"
+              class="small f-field__validation">
+              {{ $t('modal.message.editInfo.name.changed') }}
             </p>
           </div>
         </div>
@@ -96,6 +101,7 @@ export default {
     return {
       hasPendingRequest: false,
       fullName: undefined,
+      wasNameReplaced: false,
       chosenUserNames: { givenNames: [], familyNames: [] },
       exludedNames: ['da', 'das', 'do', 'dos', 'de', 'e']
     }
@@ -130,8 +136,9 @@ export default {
     ]),
     async fetchUserNames () {
       this.hasPendingRequest = true
-      const response = await CardsAPI.getUserNames()
-      this.fullName = response
+      const { userNames, wasNameReplaced } = await CardsAPI.getUserNames()
+      this.fullName = userNames
+      this.wasNameReplaced = wasNameReplaced
       this.resetNames()
       this.hasPendingRequest = false
     },
@@ -202,9 +209,10 @@ export default {
 
   .f-field--danger {
     border-color: $magenta;
-    + .f-field__validation{
-      color: $magenta;
-    }
+  }
+
+  .f-field__validation{
+    color: $magenta;
   }
 }
 

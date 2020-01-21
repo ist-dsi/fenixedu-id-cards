@@ -86,6 +86,7 @@
   "modal.message.parts.fifth.editInfo": "please mind that it will be pending approval to figure on your card",
   "modal.message.editInfo.shorten.name": "Please shorten your displayed name (until 40 characters).",
   "modal.message.editInfo.name.requirements": "If you want to shorten your displayed name, choose at least one of your first and last names.",
+  "modal.message.editInfo.name.changed": "Your name was adjusted due to limitations of the supported character set available in the card production process.",
   "modal.message.first.confirmData": "This data is obtained from Fenix.",
   "modal.message.second.confirmData": "Please confirm if it is updated so your card has the accurate info about you.",
   "modal.message.cardResponsabilities": "If you have access to secure doors, please report the accident to the campus security unit.",

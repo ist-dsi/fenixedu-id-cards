@@ -77,9 +77,7 @@ public class IdCardsController {
 
     @RequestMapping(value = "user-names", method = RequestMethod.GET)
     public ResponseEntity<?> userNames(User user) {
-        JsonObject response = new JsonObject();
-        response.addProperty("givenNames", user.getProfile().getGivenNames());
-        response.addProperty("familyNames", user.getProfile().getFamilyNames());
+        final JsonObject response = cardService.getUserNames(user);
         return ResponseEntity.ok(response.toString());
     }
 
