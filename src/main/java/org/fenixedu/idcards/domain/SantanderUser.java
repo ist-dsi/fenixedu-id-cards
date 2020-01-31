@@ -54,24 +54,18 @@ public class SantanderUser {
     }
 
     public PickupLocation getUserPickupLocation() throws SantanderCardNoPermissionException {
-        String userRole = getRole();
-        String userCampus = getCampus();
+        final String userRole = getRole();
+        final String userCampus = getCampus();
 
-        if (userRole.equals("STUDENT")) {
-            if (userCampus.equals("Alameda")) {
-                return PickupLocation.ALAMEDA_SANTANDER;
-            } else if (userCampus.equals("Taguspark")) {
-                return PickupLocation.TAGUS_NAGT;
-            }
-        } else {
-            if (userCampus.equals("Alameda")) {
-                return PickupLocation.ALAMEDA_DRH;
-            } else if (userCampus.equals("Taguspark")) {
-                return PickupLocation.TAGUS_DRH;
-            } else if (userCampus.equals("Tecnológico e Nuclear")) {
+        switch (userCampus) {
+            case "Alameda":
+                return userRole.equals("STUDENT") ? PickupLocation.ALAMEDA_SANTANDER : PickupLocation.ALAMEDA_DRH;
+            case "Taguspark":
+                return PickupLocation.TAGUS_AGRHA;
+            case "Tecnológico e Nuclear":
                 return PickupLocation.CTN_RH;
-            }
         }
+
         return null;
     }
 

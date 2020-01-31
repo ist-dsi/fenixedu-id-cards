@@ -35,6 +35,14 @@ public enum PickupLocation {
             "Lisboa",
             "Tagus"
     ),
+    TAGUS_AGRHA(
+            "Área de Gestão de Recursos Humanos e Académicos",
+            "Av. Prof. Doutor Aníbal Cavaco Silva",
+            "Instituto Superior Técnico",
+            "2744-016",
+            "Lisboa",
+            "Tagus"
+    ),
     CTN_RH(
             "Recursos Humanos",
             "Estrada Nacional 10 (ao Km 139,7)",
