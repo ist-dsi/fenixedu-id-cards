@@ -404,8 +404,8 @@
             alt="Check icon">
         </figure>
         <h1 class="h2">{{ $t('modal.title.readyForPickup') }}</h1>
-        <p>{{ $t('modal.message.first.readyForPickup') }} {{ $t(getSelectedCardDisplayPickupLocation()) }}.</p>
-        <p v-if="getSelectedCardPickupLocation() === pickupLocations.ALAMEDA_SANTANDER">{{ $t('modal.message.second.readyForPickup') }}</p>
+        <p>{{ $t('modal.message.readyForPickup') }} {{ $t(getSelectedCardDisplayPickupLocation()) }}.</p>
+        <p v-if="pickupLocationHasPickupSchedule()">{{ $t(getSelectedCardPickupLocationSchedule()) }}</p>
       </template>
       <template slot="modal-footer">
         <a
@@ -475,7 +475,8 @@ import Loading from '@/components/Loading'
 import EditInfo from '@/components/EditInfo'
 import * as cardStates from '@/utils/cards/CardStates'
 import * as requestReasons from '@/utils/reasons/RequestReasons'
-import * as pickupLocations from '@/utils/pickup/PickupLocations'
+import pickupLocationsDisplay from '@/utils/pickup/PickupLocationsDisplay'
+import pickupLocationsSchedule from '@/utils/pickup/PickupLocationsSchedule'
 import pickupLocationsUrls from '@/utils/pickup/PickupLocationsURLs'
 
 export default {
@@ -534,7 +535,8 @@ export default {
       cardFeaturesUrl: 'https://tecnico.ulisboa.pt/pt/viver/servicos/cartao-de-identificacao/',
       discountsAndPromotionsUrl: 'https://drh.tecnico.ulisboa.pt/protocolos-e-acordos/',
       pickupLocationsUrls,
-      pickupLocations,
+      pickupLocationsDisplay,
+      pickupLocationsSchedule,
       swipePosX1: 0,
       swipePosX2: 0,
       swipePosInitial: undefined,
@@ -883,25 +885,19 @@ export default {
         return `${pickupAddress.address2.trim()}, ${pickupAddress.zipCode.trim()}`
       }
 
-      return false
+      return undefined
     },
     getSelectedCardDisplayPickupLocation () {
       const pickupLocation = this.getSelectedCardPickupLocation()
-
-      switch (pickupLocation) {
-        case this.pickupLocations.ALAMEDA_SANTANDER:
-          return 'text.pickupLocations.alameda.santander'
-        case this.pickupLocations.ALAMEDA_DRH:
-          return 'text.pickupLocations.alameda.drh'
-        case this.pickupLocations.TAGUS_NAGT:
-          return 'text.pickupLocations.tagus.nagt'
-        case this.pickupLocations.TAGUS_DRH:
-          return 'text.pickupLocations.tagus.drh'
-        case this.pickupLocations.CTN_RH:
-          return 'text.pickupLocations.ctn.rh'
-        default:
-          return false
-      }
+      return pickupLocation ? this.pickupLocationsDisplay[pickupLocation] : undefined
+    },
+    getSelectedCardPickupLocationSchedule () {
+      const pickupLocation = this.getSelectedCardPickupLocation()
+      return this.pickupLocationHasPickupSchedule ? this.pickupLocationsSchedule[pickupLocation] : undefined
+    },
+    pickupLocationHasPickupSchedule (pick) {
+      const pickupLocation = this.getSelectedCardPickupLocation()
+      return !!this.pickupLocationsSchedule[pickupLocation]
     }
   }
 }
