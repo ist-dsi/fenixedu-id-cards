@@ -36,7 +36,7 @@ public enum PickupLocation {
             "Tagus"
     ),
     TAGUS_AGRHA(
-            "Área de Gestão de Recursos Humanos e Académicos",
+            "AGRHA",
             "Av. Prof. Doutor Aníbal Cavaco Silva",
             "Instituto Superior Técnico",
             "2744-016",
