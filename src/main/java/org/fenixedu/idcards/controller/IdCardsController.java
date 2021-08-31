@@ -4,6 +4,7 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.security.SkipCSRF;
+import org.fenixedu.bennu.vue.pluggable.PluggablesService;
 import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.idcards.domain.RaspberryPiSession;
 import org.fenixedu.idcards.domain.SantanderCardInfo;
@@ -12,6 +13,7 @@ import org.fenixedu.idcards.domain.SantanderEntry;
 import org.fenixedu.idcards.domain.SantanderUserInfo;
 import org.fenixedu.idcards.dto.DeliverSessionMifareRequest;
 import org.fenixedu.idcards.dto.RaspberryPiSessionDto;
+import org.fenixedu.idcards.pluggable.IdCardsPluggablesProvider;
 import org.fenixedu.idcards.service.SantanderIdCardsService;
 import org.fenixedu.santandersdk.exception.SantanderValidationException;
 import org.slf4j.Logger;
@@ -45,6 +47,10 @@ public class IdCardsController {
     @Autowired
     public IdCardsController(SantanderIdCardsService cardService) {
         this.cardService = cardService;
+    }
+
+    static {
+        PluggablesService.registerProvider(new IdCardsPluggablesProvider());
     }
 
     @RequestMapping(value = "{username}", method = RequestMethod.GET)
