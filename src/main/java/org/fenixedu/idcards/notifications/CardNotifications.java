@@ -23,7 +23,7 @@ import org.fenixedu.messaging.core.template.TemplateParameter;
         parameters = {
                 @TemplateParameter(id = "pickupLocation", description = "Location to pickup card"),
                 @TemplateParameter(id = "morningHours", description = "Morning hours"),
-                @TemplateParameter(id ="afternoonHours", description = "Afternoon Hours")
+                @TemplateParameter(id = "afternoonHours", description = "Afternoon Hours")
         }
 )
 @DeclareMessageTemplate(
@@ -63,7 +63,7 @@ import org.fenixedu.messaging.core.template.TemplateParameter;
 
 public class CardNotifications {
 
-    public static void notifyStateTransition(SantanderEntry entry) {
+    public static void notifyStateTransition(final SantanderEntry entry) {
         if (SantanderCardState.NEW.equals(entry.getState())) {
             Message.fromSystem()
                     .to(Group.users(entry.getUser()))
@@ -72,12 +72,10 @@ public class CardNotifications {
         }
     }
 
-    public static void notifyCardPickup(User user) {
-        SantanderEntry entry = user.getCurrentSantanderEntry();
-
-        PickupLocation pickupLocation = entry.getSantanderCardInfo().getPickupLocation();
-
-        String template = PickupLocation.ALAMEDA_SANTANDER.equals(pickupLocation) ?
+    public static void notifyCardPickup(final User user) {
+        final SantanderEntry entry = user.getCurrentSantanderEntry();
+        final PickupLocation pickupLocation = entry.getSantanderCardInfo().getPickupLocation();
+        final String template = PickupLocation.ALAMEDA_SANTANDER.equals(pickupLocation) ?
                 "message.template.santander.card.state.transition.pickup.alameda.santander" :
                 "message.template.santander.card.state.transition.pickup";
 
@@ -95,14 +93,14 @@ public class CardNotifications {
         builder.and().wrapped().send();
     }
 
-    public static void notifyCardExpiring(User user) {
+    public static void notifyCardExpiring(final User user) {
         Message.fromSystem()
                 .to(Group.users(user))
                 .template("message.template.santander.card.expiring")
                 .and().wrapped().send();
     }
 
-    public static void notifyMissingInformation(User user, String missingInfo) {
+    public static void notifyMissingInformation(final User user, final String missingInfo) {
         Message.fromSystem()
                 .to(Group.users(user))
                 .template("message.template.santander.card.request.missing.info")
@@ -110,7 +108,7 @@ public class CardNotifications {
                 .and().wrapped().send();
     }
 
-    public static void notifyFirstCardInfoCheck(User user, int waitingDays) {
+    public static void notifyFirstCardInfoCheck(final User user, final int waitingDays) {
         Message.fromSystem()
             .to(Group.users(user))
             .template("message.template.santander.card.first")
