@@ -11,7 +11,6 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
 
 @Task(englishTitle = "Remind users with expiring cards and cards to pickup", readOnly = true)
@@ -21,38 +20,44 @@ public class SantanderCardsRemindersTask extends CronTask {
     private final int DAYS_TO_EXPIRE = 90;
 
     @Override
-    public Atomic.TxMode getTxMode() {
-        return Atomic.TxMode.READ;
-    }
-
-    @Override
     public void runTask() {
         Bennu.getInstance().getUserSet().stream()
-                .filter(u -> u.getCurrentSantanderEntry() != null
-                        && (SantanderCardState.ISSUED.equals(u.getCurrentSantanderEntry().getState())
-                                || SantanderCardState.DELIVERED.equals(u.getCurrentSantanderEntry().getState())))
+                .filter(u -> u.getCurrentSantanderEntry() != null && canBeNotified(u.getCurrentSantanderEntry()))
                 .forEach(this::remindUser);
     }
 
-    private void remindUser(User user) {
-        SantanderEntry entry = user.getCurrentSantanderEntry();
-        SantanderCardState state = entry.getState();
+    private boolean canBeNotified(final SantanderEntry entry) {
+        return entry != null && (canBePickupNotified(entry) || canBeExpiringNotified(entry));
+    }
 
-        if (SantanderCardState.DELIVERED.equals(state) && !entry.getWasExpiringNotified()
-                && DateTime.now().isAfter(entry.getSantanderCardInfo().getExpiryDate().minusDays(DAYS_TO_EXPIRE))) {
+    private void remindUser(final User user) {
+        final SantanderEntry entry = user.getCurrentSantanderEntry();
+        if (canBeExpiringNotified(entry)) {
             FenixFramework.atomic(() -> {
-                entry.setWasExpiringNotified(true);
                 CardNotifications.notifyCardExpiring(user);
+                entry.setWasExpiringNotified(true);
                 logger.debug("Notifying user for expiring card: {}", user.getUsername());
             });
-        } else if (SantanderCardState.ISSUED.equals(entry.getState()) && !entry.getWasPickupNotified()
-                && DateTime.now().isAfter(entry.getLastUpdate().plusDays(15))
-                && DateTime.now().isBefore(entry.getSantanderCardInfo().getExpiryDate())) {
+        } else if (canBePickupNotified(entry)) {
             FenixFramework.atomic(() -> {
-                entry.setWasPickupNotified(true);
                 CardNotifications.notifyCardPickup(user);
+                entry.setWasPickupNotified(true);
                 logger.debug("Notifying user to pickup card: {}", user.getUsername());
             });
         }
     }
+
+    private boolean canBePickupNotified(final SantanderEntry entry) {
+        final SantanderCardState state = entry.getState();
+        return SantanderCardState.ISSUED.equals(state) && !entry.getWasPickupNotified()
+                && DateTime.now().isAfter(entry.getLastUpdate().plusDays(15))
+                && DateTime.now().isBefore(entry.getSantanderCardInfo().getExpiryDate());
+    }
+
+    private boolean canBeExpiringNotified(final SantanderEntry entry) {
+        final SantanderCardState state = entry.getState();
+        return SantanderCardState.DELIVERED.equals(state) && !entry.getWasExpiringNotified()
+                && DateTime.now().isAfter(entry.getSantanderCardInfo().getExpiryDate().minusDays(DAYS_TO_EXPIRE));
+    }
+
 }
