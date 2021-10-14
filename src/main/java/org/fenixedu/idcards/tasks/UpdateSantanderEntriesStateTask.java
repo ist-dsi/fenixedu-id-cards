@@ -9,6 +9,8 @@ import org.fenixedu.idcards.domain.SantanderCardState;
 import org.fenixedu.idcards.domain.SantanderEntry;
 import org.fenixedu.idcards.service.SantanderIdCardsService;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * @author Tiago Pinho
  */
@@ -24,11 +26,14 @@ public class UpdateSantanderEntriesStateTask extends CronTask {
      */
     private final int WEBSERVICE_WAIT_TIME = 500;
 
+    private final AtomicInteger counter = new AtomicInteger(0);
+
     @Override
     public void runTask() throws Exception {
         Bennu.getInstance().getUserSet().stream()
                 .filter(user -> user.getCurrentSantanderEntry() != null)
                 .forEach(this::updateSantanderEntryState);
+        taskLog("Total entries updated: %s", counter.get());
     }
 
     private void updateSantanderEntryState(final User user) {
@@ -46,6 +51,8 @@ public class UpdateSantanderEntriesStateTask extends CronTask {
             default:
                 // Update user entry state.
                 service.getOrUpdateState(user);
+                // Increment counter
+                counter.getAndIncrement();
                 // Sleep using the webservice wait time.
                 sleep();
         }
