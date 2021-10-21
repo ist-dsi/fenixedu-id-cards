@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author Tiago Pinho
  */
-
 @Task(englishTitle = "Update users santander entry state cron task", readOnly = true)
 public class UpdateSantanderEntriesStateTask extends CronTask {
 
