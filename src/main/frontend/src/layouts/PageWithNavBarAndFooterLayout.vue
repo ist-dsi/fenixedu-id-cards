@@ -2,16 +2,19 @@
   <div
     id="app"
     :class="{ 'nav-is-visible': showSideMenu }"
-    class="page-width-nav-bar-and-footer-bar-layout">
+    class="page-width-nav-bar-and-footer-bar-layout"
+  >
     <top-nav-bar
-      @toggle-mobile-menu="toggleMobileMenu"/>
+      @toggle-mobile-menu="toggleMobileMenu"
+    />
     <div class="page-width-nav-bar-and-footer-bar-layout__main-content main-content">
       <router-view :key="$route.fullPath" />
     </div>
     <bottom-bar />
     <div
       class="page-width-nav-bar-and-footer-bar-layout__overlay"
-      aria-hidden="true"/>
+      aria-hidden="true"
+    />
   </div>
 </template>
 
@@ -43,7 +46,6 @@ export default {
 }
 </script>
 <style lang="scss">
-@import "@/assets/scss/_variables.scss";
 .main-header,
 .main-content,
 .app-footer {
@@ -58,7 +60,7 @@ export default {
   flex-flow: column nowrap;
   min-height: 50rem;
   justify-content: stretch;
-  @media screen and (min-height: 50rem),(min-width: 37.5rem){
+  @media screen and (min-height: 50rem), (min-width: 37.5rem) {
     min-height: 100vh;
   }
 }
@@ -68,8 +70,7 @@ export default {
   display: flex;
   flex-flow: column nowrap;
 }
-.page-width-nav-bar-and-footer-bar-layout.nav-is-visible
-  .page-width-nav-bar-and-footer-bar-layout__overlay {
+.page-width-nav-bar-and-footer-bar-layout.nav-is-visible .page-width-nav-bar-and-footer-bar-layout__overlay {
   opacity: 1;
   visibility: visible;
 }
@@ -86,7 +87,8 @@ export default {
   opacity: 0;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  transition: opacity 600ms cubic-bezier(0.77, 0, 0.175, 1),
+  transition:
+    opacity 600ms cubic-bezier(0.77, 0, 0.175, 1),
     visibility 600ms cubic-bezier(0.77, 0, 0.175, 1);
 }
 .main-content {

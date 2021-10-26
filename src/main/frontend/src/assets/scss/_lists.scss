@@ -1,80 +1,60 @@
 // Lists
 
-
 // Default Lists
 
 ul.block-list li {
-    margin-bottom: 0;
-    @media screen and (min-width: 60rem){
-        margin-bottom: 0.5rem; 
-    }
+  margin-bottom: 0;
+  @media screen and (min-width: 60rem) {
+    margin-bottom: 0.5rem;
+  }
 }
 
 ul.block-list li a {
-    display: block;
-    padding: 1rem 0;
-    @media screen and (min-width: 60rem){
-        padding: 0;
-    }
+  display: block;
+  padding: 1rem 0;
+  @media screen and (min-width: 60rem) {
+    padding: 0;
+  }
 }
-
-
-
-
 
 // Definition Lists
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Layout helpers
 .l-list {
-    // 
+  //
 }
 
 .l-list--inline {
-    display: flex;
-    flex-flow: row wrap;
+  display: flex;
+  flex-flow: row wrap;
 }
 
 .l-list--inline .l-list__item {
-    margin-right: 0.5rem;
-    margin-bottom: 0.5rem;
-    &:last-child {
-        margin-right: 0;
-    }
-    .label{
-        display: inline-block;
-    }
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  &:last-child {
+    margin-right: 0;
+  }
+  .label {
+    display: inline-block;
+  }
 }
 
-.l-list--bulleted{
-    margin-left: 0.875rem;
-    .l-list__item{
-        position: relative;
-        margin: 1rem 0;
-        &:before{
-            content: '';
-            display: block;
-            width: 0.375rem;
-            height: 0.375rem;
-            position: absolute;
-            left: -0.875rem;
-            top: .5rem;
-            border-radius: 0.1875rem;
-            background-color: $blue;
-        }
+.l-list--bulleted {
+  margin-left: 0.875rem;
+  .l-list__item {
+    position: relative;
+    margin: 1rem 0;
+    &::before {
+      content: '';
+      display: block;
+      width: 0.375rem;
+      height: 0.375rem;
+      position: absolute;
+      left: -0.875rem;
+      top: 0.5rem;
+      border-radius: 0.1875rem;
+      background-color: $blue;
     }
+  }
 }

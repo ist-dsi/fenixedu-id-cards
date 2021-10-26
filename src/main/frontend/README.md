@@ -3,7 +3,7 @@
 > The FenixEdu ID Cards frontend application
 
 
-### Running with mock
+<!-- ### Running with mock
 
 **Requirements**:
 
@@ -18,9 +18,9 @@
 
 **Run**:
 
-Run the command related to starting with mock in the build setup.
+Run the command related to starting with mock in the build setup. -->
 
-### Build Setup
+<!-- ### Build Setup
 
 ```bash
 # install dependencies
@@ -37,6 +37,22 @@ npm run dist
 
 # build for production with analysis
 npm run analysis
+
+# clean to remove node_modules and package-lock.json
+npm run clean
+``` -->
+
+### Build Setup
+
+```bash
+# install dependencies
+npm install
+
+# serve with hot reload at localhost:8080
+npm start
+
+# build for production with minification
+npm run build
 
 # clean to remove node_modules and package-lock.json
 npm run clean

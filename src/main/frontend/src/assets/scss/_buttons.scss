@@ -1,405 +1,398 @@
 // Buttons (Design System Buttons)
 
-
 // Default Button
 .btn {
-	position: relative;
-	display: inline-block;
-	font-weight: 600;
-	// font-size: 14px;
-	font-size: 14px;
-	line-height: 22px;
-	border-radius: 2px;
-	border: 1px solid;
-	text-align: center;
-	padding: 8px 16px;
-	white-space: nowrap;
-	transition: border .2s ease-in-out, background .2s ease-in-out, color .2s ease-in-out;
+  position: relative;
+  display: inline-block;
+  font-weight: 600;
+  // font-size: 14px;
+  font-size: 14px;
+  line-height: 22px;
+  border-radius: 2px;
+  border: 1px solid;
+  text-align: center;
+  padding: 8px 16px;
+  white-space: nowrap;
+  transition: border 0.2s ease-in-out, background 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
-
 .btn--blue {
-	@extend .btn;
+  @extend .btn;
 
-	background-color: $blue;
-	border-color: $blue;
-	color: #FFF;
+  background-color: $blue;
+  border-color: $blue;
+  color: #fff;
 
-	&:hover,
-	&:focus,
-	&.btn--hover {
-		background-color: $blue-600;
-		border-color: $blue-600;
-		color: #FFF;
-	}
+  &:hover,
+  &:focus,
+  &.btn--hover {
+    background-color: $blue-600;
+    border-color: $blue-600;
+    color: #fff;
+  }
 
-	&.btn--hover {
-		&:hover,
-		&:focus {
-			background-color: $blue-700;
-			border-color: $blue-700;
-		}
+  &.btn--hover {
+    &:hover,
+    &:focus {
+      background-color: $blue-700;
+      border-color: $blue-700;
+    }
 
-		&:active {
-			background-color: darken($blue-700, 5%);
-			border-color: darken($blue-700, 5%);
-		}
-	}
+    &:active {
+      background-color: darken($blue-700, 5%);
+      border-color: darken($blue-700, 5%);
+    }
+  }
 
-	&:active {
-		background-color: $blue-700;
-		border-color: $blue-700;
-	}
+  &:active {
+    background-color: $blue-700;
+    border-color: $blue-700;
+  }
 
-	&.btn--outline {
-		background-color: transparent;
-		color: $blue;
+  &.btn--outline {
+    background-color: transparent;
+    color: $blue;
 
-		&:hover,
-		&:focus {
-			background-color: $blue-600;
-			border-color: $blue-600;
-			color: #FFF;
-		}
+    &:hover,
+    &:focus {
+      background-color: $blue-600;
+      border-color: $blue-600;
+      color: #fff;
+    }
 
-		&:active {
-			background-color: $blue-700;
-			border-color: $blue-700;
-		}
-	}
+    &:active {
+      background-color: $blue-700;
+      border-color: $blue-700;
+    }
+  }
 }
 
 //btn--danger
 .btn--magenta {
-	@extend .btn;
+  @extend .btn;
 
-	background-color: $magenta;
-	border-color: $magenta;
-	color: #FFF;
+  background-color: $magenta;
+  border-color: $magenta;
+  color: #fff;
 
-	&:hover,
-	&:focus,
-	&.btn--hover {
-		background-color: $magenta-600;
-		border-color: $magenta-600;
-		color: #FFF;
+  &:hover,
+  &:focus,
+  &.btn--hover {
+    background-color: $magenta-600;
+    border-color: $magenta-600;
+    color: #fff;
 
-		.icon--fill {
-			fill: #FFF;
-		}
-	}
+    .icon--fill {
+      fill: #fff;
+    }
+  }
 
-	&.btn--hover {
-		&:hover,
-		&:focus {
-			background-color: $magenta-700;
-			border-color: $magenta-700;
-		}
+  &.btn--hover {
+    &:hover,
+    &:focus {
+      background-color: $magenta-700;
+      border-color: $magenta-700;
+    }
 
-		&:active {
-			background-color: darken($magenta-700, 5%);
-			border-color: darken($magenta-700, 5%);
-		}
-	}
+    &:active {
+      background-color: darken($magenta-700, 5%);
+      border-color: darken($magenta-700, 5%);
+    }
+  }
 
-	&:active {
-		background-color: $magenta-700;
-		border-color: $magenta-700;
-	}
+  &:active {
+    background-color: $magenta-700;
+    border-color: $magenta-700;
+  }
 
-	&.btn--outline {
-		background-color: transparent;
-		color: $magenta;
+  &.btn--outline {
+    background-color: transparent;
+    color: $magenta;
 
-		&:hover,
-		&:focus {
-			background-color: $magenta-600;
-			border-color: $magenta-600;
-			color: #FFF;
-		}
+    &:hover,
+    &:focus {
+      background-color: $magenta-600;
+      border-color: $magenta-600;
+      color: #fff;
+    }
 
-		&:active {
-			background-color: $magenta-700;
-			border-color: $magenta-700;
-		}
-	}
+    &:active {
+      background-color: $magenta-700;
+      border-color: $magenta-700;
+    }
+  }
 }
 //btn--danger
 .btn--green {
-	@extend .btn;
+  @extend .btn;
 
-	background-color: $green;
-	border-color: $green;
-	color: #FFF;
+  background-color: $green;
+  border-color: $green;
+  color: #fff;
 
-	&:hover,
-	&:focus,
-	&.btn--hover {
-		background-color: $green-600;
-		border-color: $green-600;
-		color: #FFF;
+  &:hover,
+  &:focus,
+  &.btn--hover {
+    background-color: $green-600;
+    border-color: $green-600;
+    color: #fff;
 
-		.icon--fill {
-			fill: #FFF;
-		}
-	}
+    .icon--fill {
+      fill: #fff;
+    }
+  }
 
-	&.btn--hover {
-		&:hover,
-		&:focus {
-			background-color: $green-700;
-			border-color: $green-700;
-		}
+  &.btn--hover {
+    &:hover,
+    &:focus {
+      background-color: $green-700;
+      border-color: $green-700;
+    }
 
-		&:active {
-			background-color: darken($green-700, 5%);
-			border-color: darken($green-700, 5%);
-		}
-	}
+    &:active {
+      background-color: darken($green-700, 5%);
+      border-color: darken($green-700, 5%);
+    }
+  }
 
-	&:active {
-		background-color: $green-700;
-		border-color: $green-700;
-	}
+  &:active {
+    background-color: $green-700;
+    border-color: $green-700;
+  }
 
-	&.btn--outline {
-		background-color: transparent;
-		color: $green;
+  &.btn--outline {
+    background-color: transparent;
+    color: $green;
 
-		&:hover,
-		&:focus {
-			background-color: $green-600;
-			border-color: $green-600;
-			color: #FFF;
-		}
+    &:hover,
+    &:focus {
+      background-color: $green-600;
+      border-color: $green-600;
+      color: #fff;
+    }
 
-		&:active {
-			background-color: $green-700;
-			border-color: $green-700;
-		}
-	}
+    &:active {
+      background-color: $green-700;
+      border-color: $green-700;
+    }
+  }
 }
-
 
 // Secondary Button
 .btn--slate {
-	@extend .btn;
+  @extend .btn;
 
-	background-color: $slate;
-	color: #FFF;
-	border-color: $slate;
+  background-color: $slate;
+  color: #fff;
+  border-color: $slate;
 
-	&.btn--outline {
-		background-color: transparent;
-		color: $slate;
-	}
+  &.btn--outline {
+    background-color: transparent;
+    color: $slate;
+  }
 
-	&:hover,
-	&:focus {
-		background-color: $slate-600;
-		border-color: $slate-600;
-		color: #FFF;
-	}
+  &:hover,
+  &:focus {
+    background-color: $slate-600;
+    border-color: $slate-600;
+    color: #fff;
+  }
 
-	&:active {
-		background-color: $slate-700;
-		border-color: $slate-700;
-	}
+  &:active {
+    background-color: $slate-700;
+    border-color: $slate-700;
+  }
 }
 
 // Dark Button
 .btn--dark {
-	@extend .btn;
+  @extend .btn;
 
-	background-color: $dark-400;
-	color: #FFF;
-	border-color: $dark-400;
+  background-color: $dark-400;
+  color: #fff;
+  border-color: $dark-400;
 
-	&.btn--outline {
-		background-color: transparent;
-		color: $dark-400;
-	}
+  &.btn--outline {
+    background-color: transparent;
+    color: $dark-400;
+  }
 
-	&:hover,
-	&:focus {
-		background-color: $dark;
-		border-color: $dark;
-		color: $light-gray-300;
-	}
+  &:hover,
+  &:focus {
+    background-color: $dark;
+    border-color: $dark;
+    color: $light-gray-300;
+  }
 
-	&:active {
-		background-color: $dark-600;
-		border-color: $dark-600;
-		color: $light-gray;
-	}
+  &:active {
+    background-color: $dark-600;
+    border-color: $dark-600;
+    color: $light-gray;
+  }
 }
 
 // Light Button
 .btn--light {
-	@extend .btn;
+  @extend .btn;
 
-	background-color: $light-blue;
-	color: $slate;
-	border-color: $light-blue-600;
+  background-color: $light-blue;
+  color: $slate;
+  border-color: $light-blue-600;
 
-	&.btn--outline {
-		background-color: transparent;
-		color: $slate;
-	}
+  &.btn--outline {
+    background-color: transparent;
+    color: $slate;
+  }
 
-	&:hover,
-	&:focus {
-		background-color: $light-blue-600;
-		border-color: $light-blue-600;
-		color: $slate-600;
-	}
+  &:hover,
+  &:focus {
+    background-color: $light-blue-600;
+    border-color: $light-blue-600;
+    color: $slate-600;
+  }
 
-	&:active {
-		background-color: $light-blue-700;
-		border-color: $light-blue-700;
-	}
+  &:active {
+    background-color: $light-blue-700;
+    border-color: $light-blue-700;
+  }
 }
 
 // White Button
 .btn--white {
-	@extend .btn;
+  @extend .btn;
 
-	background-color: #FFF;
-	color: $blue;
-	border-color: #FFF;
+  background-color: #fff;
+  color: $blue;
+  border-color: #fff;
 
-	&.btn--outline {
-		background-color: transparent;
-		color: #FFF;
-	}
+  &.btn--outline {
+    background-color: transparent;
+    color: #fff;
+  }
 
-	&:hover,
-	&:focus {
-		background-color: #FFF;
-		border-color: #FFF;
-		color: $blue-600;
-	}
+  &:hover,
+  &:focus {
+    background-color: #fff;
+    border-color: #fff;
+    color: $blue-600;
+  }
 
-	&:active {
-		background-color: $light-blue;
-		border-color: $light-blue;
-		color: $blue-700;
-	}
+  &:active {
+    background-color: $light-blue;
+    border-color: $light-blue;
+    color: $blue-700;
+  }
 }
-
-
 
 // Primary Button extending .btn-blue
 
 .btn--primary {
-	@extend .btn--blue;
+  @extend .btn--blue;
 }
 
 // Danger Button extending .btn-magenta
 
 .btn--danger {
-	@extend .btn--magenta;
+  @extend .btn--magenta;
 }
 
 // Danger Button extending .btn-magenta
 
 .btn--success {
-	@extend .btn--green;
+  @extend .btn--green;
 }
 
 // Login Button
 .btn--login,
 .menu .btn--login {
-	@extend .btn--primary;
-	width: 100%;
-	height: auto;
-	padding: 0.75rem 1.375rem;
-	line-height: normal;
-	background-color: $blue-600;
-	border-color: $blue-600;
-	color: white;
+  @extend .btn--primary;
 
-	&:hover,
-	&:focus {
-		background-color: $blue-700;
-		border-color: $blue-700;
-		color: white;
-	}
+  width: 100%;
+  height: auto;
+  padding: 0.75rem 1.375rem;
+  line-height: normal;
+  background-color: $blue-600;
+  border-color: $blue-600;
+  color: white;
 
-	&:active {
-		background-color: darken($blue-700, 5%);
-		border-color: darken($blue-700, 5%);
-	}
+  &:hover,
+  &:focus {
+    background-color: $blue-700;
+    border-color: $blue-700;
+    color: white;
+  }
 
-	@media (min-width: 1200px) {
-		padding: 0.25rem 0.75rem;
-	}
+  &:active {
+    background-color: darken($blue-700, 5%);
+    border-color: darken($blue-700, 5%);
+  }
 
+  @media (min-width: 1200px) {
+    padding: 0.25rem 0.75rem;
+  }
 }
-
 
 // Secondary Button extending .btn-slate
 
 .btn--secondary {
-	@extend .btn--slate;
+  @extend .btn--slate;
 }
-
 
 // ========== Button Size Helper Classes
 
 .btn--sm,
 .btn--small {
-	// font-size: 12px;
-	font-size: 0.875rem;
-	padding: 4px 12px;
+  // font-size: 12px;
+  font-size: 0.875rem;
+  padding: 4px 12px;
 }
-
 
 .btn--lg,
 .btn--large {
-	font-size: 16px;
-	padding: 12px 22px;
+  font-size: 16px;
+  padding: 12px 22px;
 }
 
 .btn--full {
-	width: 100%;
+  width: 100%;
 }
 
 // review
 p + .btn {
-	margin-top: 24px;
+  margin-top: 24px;
 }
-
 
 // ========== Button groups
 
 .btn--group {
-	.btn {
-		margin-right: 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 
-		&:last-child {
-			margin-right: 0;
-		}
-	}
+  .btn {
+    margin-right: 16px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
 }
-
 
 .btn--disabled,
 .btn[disabled] {
-	@extend .btn;
-	opacity: 0.5;
-	pointer-events: none;
-	user-select: none;
+  @extend .btn;
 
-	&:hover,
-	&:focus,
-	&:active {
-		outline: none;
-		pointer-events: none;
-	}
+  opacity: 0.5;
+  pointer-events: none;
+  user-select: none;
+
+  &:hover,
+  &:focus,
+  &:active {
+    outline: none;
+    pointer-events: none;
+  }
 }
-
-
 
 // Login and Logout buttons
 // .btn-submit {
@@ -435,139 +428,131 @@ p + .btn {
 //     border-bottom: 1px solid $dark-400;
 // }
 
-
 // links with circle & arrow icon on the left side
 .btn--arrow {
-	display: block;
-	position: relative;
-	padding-right: 12px;
-	border: 0;
-	font-weight: 600;
-	color: $blue-600;
+  display: block;
+  position: relative;
+  padding-right: 12px;
+  border: 0;
+  font-weight: 600;
+  color: $blue-600;
 
-	&:after {
-		position: absolute;
-		content: "\000BB";
-		margin-left: 4px;
-	}
+  &::after {
+    position: absolute;
+    content: "\000BB";
+    margin-left: 4px;
+  }
 
-	&:hover {
-		color: $blue-700;
-		&:before {
-			background-color: $blue-700;
-			border-color: $blue-700;
-		}
-		&:after {
-			border-color: #FFF;
-		}
-	}
-
-	&:hover {
-		color: $blue-600;
-		border: 0;
-	}
-
-	&:active {
-		color: darken($blue-700, 5%);
-	}
-
-	@media (min-width: 375px) {
-
-	    position: relative;
-	    padding-right: 0;
-	    margin-left: 40px;
-
-	    &:before,
-	    &:after {
-	        content: '';
-	        position: absolute;
-	        transition: all .2s ease-in-out;
-	    }
-	    &:before {
-	        top: 50%;
-	        transform: translateY(-50%);
-	        left: -40px;
-	        width: 30px;
-	        height: 30px;
-	        border: 2px solid currentColor;
-	        border-radius: 50%;
-	    }
-	    &:after {
-	    	margin-left: 0;
-	        top: 6px;
-	        top: 50%;
-	        transform: rotate(45deg) translate(-25%,-40%);
-	        left: -33px;
-	        border: 0.2rem solid currentColor;
-	        border-left: 0;
-	        border-bottom: 0;
-	        width: 10px;
-	        height: 10px;
-	        border-radius: 1px;
-	    }
-
+  &:hover {
+    color: $blue-600;
+    border: 0;
+    &::before {
+      background-color: $blue-700;
+      border-color: $blue-700;
     }
+    &::after {
+      border-color: #fff;
+    }
+  }
 
+  &:active {
+    color: darken($blue-700, 5%);
+  }
+
+  @media (min-width: 375px) {
+    position: relative;
+    padding-right: 0;
+    margin-left: 40px;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      transition: all 0.2s ease-in-out;
+    }
+    &::before {
+      top: 50%;
+      transform: translateY(-50%);
+      left: -40px;
+      width: 30px;
+      height: 30px;
+      border: 2px solid currentColor;
+      border-radius: 50%;
+    }
+    &::after {
+      margin-left: 0;
+      top: 6px;
+      top: 50%;
+      transform: rotate(45deg) translate(-25%, -40%);
+      left: -33px;
+      border: 0.2rem solid currentColor;
+      border-left: 0;
+      border-bottom: 0;
+      width: 10px;
+      height: 10px;
+      border-radius: 1px;
+    }
+  }
 }
 
 // links with double arrow icon on the right side
 .btn--arrow-right {
-	color: $blue-600;
-	font-weight: 600;
+  color: $blue-600;
+  font-weight: 600;
 
-	&:after {
-		content: " \00BB"
-	}
+  &::after {
+    content: " \00BB";
+  }
 
-	&:hover,
-	&:focus {
-		color: $blue-700;
-	}
+  &:hover,
+  &:focus {
+    color: $blue-700;
+  }
 
-	&:active {
-		color: darken($blue-700, 5%);
-	}
+  &:active {
+    color: darken($blue-700, 5%);
+  }
 }
 
 .btn--link {
-	@extend .btn;
+  @extend .btn;
 
-	background-color: transparent;
-	color: $blue-600;
-	border: 0;
-	border-radius: 0;
-	padding: 0;
+  background-color: transparent;
+  color: $blue-600;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
 
-	&:hover,
-	&:focus {
-		background-color: transparent;
-		color: $blue-700;
-	}
+  &:hover,
+  &:focus {
+    background-color: transparent;
+    color: $blue-700;
+  }
 
-	&:active {
-		color: darken($blue-700, 5%);
-	}
+  &:active {
+    color: darken($blue-700, 5%);
+  }
 }
 
 .btn--fake-link {
-	color: $slate;
-	transition: color .2s ease-in-out;
+  color: $slate;
+  transition: color 0.2s ease-in-out;
 
-	&:hover,
-	&:focus {
-		color: $blue-600;
-	}
+  &:hover,
+  &:focus {
+    color: $blue-600;
+  }
 
-	&:active {
-		color: $blue-700;
-	}
+  &:active {
+    color: $blue-700;
+  }
 }
 
 .btn--arrow-down {
-	padding-right: 20px;
+  padding-right: 20px;
 
-	&:after {
-		position: absolute;
+  &::after {
+    position: absolute;
     content: "";
     top: 50%;
     right: 4px;
@@ -575,41 +560,36 @@ p + .btn {
     height: 7px;
     border: 2px solid $blue-600;
     border-left: 0;
-		border-bottom: 0;
-		transition: border-color .2s ease-in-out;
+    border-bottom: 0;
+    transition: border-color 0.2s ease-in-out;
     transform: translateY(-50%) rotate(135deg);
-	}
+  }
 
-	&:hover,
-	&:focus {
-		color: $blue-700;
-	}
+  &:hover,
+  &:focus {
+    color: $blue-700;
+  }
 
-	&:active {
-		color: darken($blue-700, 5%);
-	}
+  &:active {
+    color: darken($blue-700, 5%);
+  }
 }
 
 // testing this
-.btn {
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
-	align-items: center;
-}
 
-.btn--group {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-}
+// The commented code below was moved to the first selector usage of .btn
+// This was made to apply the stylelint rules of removing duplicate selectors.
+// .btn {
+//   display: flex;
+//   flex-direction: row;
+//   justify-content: center;
+//   align-items: center;
+// }
 
 .btn__icon {
-	// margin-right: 4px;
-	margin-right: 8px;
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
+  // margin-right: 4px;
+  margin-right: 8px;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
 }
-
-

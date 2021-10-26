@@ -1,28 +1,34 @@
 <template>
   <header
     v-click-outside="closeMobileMenu"
-    class="main-header">
+    class="main-header"
+  >
     <div class="container container--header">
       <div class="main-header__logo">
         <router-link
           :to="{ name: 'ListCardsPage' }"
           :aria-label="$t('al.tecnicoCard.homepage')"
-          class="logo">
+          class="logo"
+        >
           <svg>
             <g
               fill="none"
-              fill-rule="evenodd">
+              fill-rule="evenodd"
+            >
               <path
                 d="M23.4116667 11.8098782h-1.272381v9.5279744h-2.7538095v-9.5279744h-1.2695238V9.8989231h5.2957143v1.9109551zm-6.7819048-4.9444808l-.0011905 17.5114359c0 2.2698077-1.8461904 3.4450321-4.1230952 3.4450321-2.2766667 0-4.1390476-.9918846-4.1390476-2.918968h.002381c0-.7563653.6159523-1.3701859 1.3747618-1.3701859.7588096 0 1.3742857.6138206 1.3742857 1.3701859h.0011905c0 1.3995962.1121429 2.3492629 1.3864286 2.3492629 1.37 0 1.37-.9539359 1.37-2.875327l.0011905-17.5114359c0-2.2679102 1.8454762-3.4440833 4.1228571-3.4440833 2.2766667 0 4.1390476.9906987 4.1390476 2.9187308h-.0021428c0 .7563654-.6154762 1.3697115-1.3754762 1.3697115-.7585714 0-1.3738095-.6133461-1.3738095-1.3697115h-.0016667c0-1.399359-.1114286-2.3490257-1.3859524-2.3490257-1.3704762 0-1.3697619.9522757-1.3697619 2.8743782zM8.3709524 9.8989231h2.7452381l.0040476 11.4320513H8.3680952l.0028572-11.4320513zM0 .1861859v15.450109C0 29.5478205 15.2492857 37 15.2492857 37s15.3064286-7.4521795 15.3064286-21.3637051V.1861859H0z"
-                fill="#009DE0"/>
+                fill="#009DE0"
+              />
               <text
                 font-family="Klavika"
                 font-size="17"
                 font-weight="500"
-                fill="#45555F">
+                fill="#45555F"
+              >
                 <tspan
                   x="41"
-                  y="21">CARD</tspan>
+                  y="21"
+                >CARD</tspan>
               </text>
             </g>
           </svg>
@@ -30,7 +36,8 @@
       </div>
       <ul
         class="mobile-nav mobile-only"
-        hidden>
+        hidden
+      >
         <li>
           <a
             ref="burguerMenu"
@@ -39,31 +46,37 @@
             aria-controls="main-nav"
             aria-label="Menu"
             href
-            @click.prevent="toggleMobileMenu">
+            @click.prevent="toggleMobileMenu"
+          >
             <span class="icon icon-burguer">
               <svg
                 width="24"
                 height="24"
-                xmlns="http://www.w3.org/2000/svg">
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <g
                   transform="translate(0 4)"
                   class="icon--fill"
                   fill="#2E3242"
-                  fill-rule="evenodd">
+                  fill-rule="evenodd"
+                >
                   <g class="icon-burguer__top-bar"><rect
                     width="24"
                     height="2"
-                    rx="1"/></g>
+                    rx="1"
+                  /></g>
                   <g class="icon-burguer__center-bar"><rect
                     width="24"
                     height="2"
                     rx="1"
-                    y="7"/></g>
+                    y="7"
+                  /></g>
                   <g class="icon-burguer__bottom-bar"><rect
                     width="24"
                     height="2"
                     rx="1"
-                    y="14"/></g>
+                    y="14"
+                  /></g>
                 </g>
               </svg>
             </span>
@@ -74,40 +87,48 @@
       <nav
         id="main-nav"
         ref="nav"
-        class="main-nav menu menu-active">
+        class="main-nav menu menu-active"
+      >
         <ul class="primary-nav">
           <li
             v-if="profile"
             hidden
-            class="has-children mobile-only">
+            class="has-children mobile-only"
+          >
             <a
               href
               aria-controls="profile-menu"
-              @click.prevent="openSubMenu">
+              @click.prevent="openSubMenu"
+            >
               <div class="link-icon">
                 <img
                   :src="`${profile.photo ? 'data:image/png;base64,' + profile.photo.data : undefined }`"
                   :alt="profile.name"
-                  class="user-avatar">
+                  class="user-avatar"
+                >
               </div>
               <div class="link-text">{{ profile.name }}</div>
             </a>
             <ul
               id="profile-menu"
-              class="secondary-nav is-hidden">
+              class="secondary-nav is-hidden"
+            >
               <li
-                class="go-back mobile-only">
+                class="go-back mobile-only"
+              >
                 <a
                   aria-controls="profile-menu"
                   href
-                  @click.prevent="closeSubMenu">
+                  @click.prevent="closeSubMenu"
+                >
                   <span class="link-text">{{ $t('btn.back') }}</span>
                 </a>
               </li>
               <li
                 v-if="profile && profile.admin"
                 hidden
-                class="mobile-only">
+                class="mobile-only"
+              >
                 <button @click.prevent="openAdminPage">
                   <span class="link-text">{{ $t('btn.admin') }}</span>
                 </button>
@@ -115,7 +136,8 @@
               <li class="mobile-only">
                 <button
                   v-if="profile"
-                  @click.stop="logout">
+                  @click.stop="logout"
+                >
                   <span class="link-text">{{ $t('btn.logout') }}</span>
                 </button>
               </li>
@@ -123,18 +145,22 @@
           </li>
           <li
             v-if="isMobile"
-            class="has-children mobile-only">
+            class="has-children mobile-only"
+          >
             <a
               href
-              @click.prevent="openSubMenu">
+              @click.prevent="openSubMenu"
+            >
               <span class="link-text">{{ $t('label.language') }}</span>
             </a>
             <ul class="secondary-nav is-hidden">
               <li
-                class="go-back mobile-only">
+                class="go-back mobile-only"
+              >
                 <a
                   href
-                  @click.prevent="closeSubMenu">
+                  @click.prevent="closeSubMenu"
+                >
                   <span class="link-text">{{ $t('btn.back') }}</span>
                 </a>
               </li>
@@ -142,13 +168,15 @@
                 <a
                   v-if="$i18n.locale() === 'en'"
                   href
-                  @click.prevent="closeMobileMenu() + setLocale('pt')">Português</a>
+                  @click.prevent="closeMobileMenu() + setLocale('pt')"
+                >Português</a>
               </li>
               <li>
                 <a
                   v-if="$i18n.locale() === 'pt'"
                   href
-                  @click.prevent="closeMobileMenu() + setLocale('en')">English</a>
+                  @click.prevent="closeMobileMenu() + setLocale('en')"
+                >English</a>
               </li>
             </ul>
           </li>
@@ -157,24 +185,28 @@
         <ul class="utility-nav">
           <li
             v-if="!isMobile"
-            class="languages">
+            class="languages"
+          >
             <dropdown :size="'md'">
               <a
                 slot="dropdown-trigger"
                 :aria-label="$t('label.language')"
                 href
                 class="lang-trigger"
-                aria-haspopup="true">
+                aria-haspopup="true"
+              >
                 <span class="icon icon-lang">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
-                    height="16">
+                    height="16"
+                  >
                     <path
                       fill="#8F95A1"
                       class="icon--fill"
                       fill-rule="nonzero"
-                      d="M9.399 9.399c-1.202-1.231-2.404-2.35-2.95-4.923h4.48V2.573h-4.48V0H4.48v2.573H0v1.903h4.48c0 .67.11.335 0 .67-.655 2.462-1.42 4.14-4.48 5.707l.656 1.902c2.95-1.566 4.48-3.468 5.136-5.706.656 1.678 1.749 3.02 2.951 4.252L9.4 9.399zM15.3 3.133h-2.514L8.306 16h1.967l1.312-3.804h5.136L18.033 16H20L15.3 3.133zm-3.17 7.049l1.967-5.147 1.968 5.147H12.13z"/>
+                      d="M9.399 9.399c-1.202-1.231-2.404-2.35-2.95-4.923h4.48V2.573h-4.48V0H4.48v2.573H0v1.903h4.48c0 .67.11.335 0 .67-.655 2.462-1.42 4.14-4.48 5.707l.656 1.902c2.95-1.566 4.48-3.468 5.136-5.706.656 1.678 1.749 3.02 2.951 4.252L9.4 9.399zM15.3 3.133h-2.514L8.306 16h1.967l1.312-3.804h5.136L18.033 16H20L15.3 3.133zm-3.17 7.049l1.967-5.147 1.968 5.147H12.13z"
+                    />
                   </svg>
                 </span>
                 <span class="icon-label">{{ $t('label.language') }}</span>
@@ -183,21 +215,25 @@
                 <ul class="dropdown-menu">
                   <li
                     v-if="$i18n.locale() === 'pt'"
-                    class="dropdown-menu__item">
+                    class="dropdown-menu__item"
+                  >
                     <a
                       href
                       class="dropdown-menu__link"
-                      @click.prevent="setLocale('en')">
+                      @click.prevent="setLocale('en')"
+                    >
                       <span class="link-text">English</span>
                     </a>
                   </li>
                   <li
                     v-if="$i18n.locale() === 'en'"
-                    class="dropdown-menu__item">
+                    class="dropdown-menu__item"
+                  >
                     <a
                       href
                       class="dropdown-menu__link"
-                      @click.prevent="setLocale('pt')">
+                      @click.prevent="setLocale('pt')"
+                    >
                       <span class="link-text">Português</span>
                     </a>
                   </li>
@@ -207,38 +243,49 @@
           </li>
           <li
             v-if="profile && !isMobile"
-            class="user">
+            class="user"
+          >
             <dropdown :size="'lg'">
               <a
                 slot="dropdown-trigger"
                 :aria-label="$t('al.account')"
                 href
                 class="user-trigger"
-                aria-haspopup="true">
+                aria-haspopup="true"
+              >
                 <avatar
                   :name="profile.name"
                   :src="`${profile.photo ? 'data:image/png;base64,' + profile.photo.data : undefined }`"
-                  class="figure--36" />
+                  class="figure--36"
+                />
               </a>
               <div slot="dropdown-panel">
                 <div class="dropdown-user__details">
                   <avatar
                     :name="profile.name"
                     :src="`${profile.photo ? 'data:image/png;base64,' + profile.photo.data : undefined }`"
-                    class="figure--48" />
+                    class="figure--48"
+                  />
                   <div class="dropdown-user__text">
                     <div
-                      class="name">{{ profile.name }}</div>
-                    <div class="user-name">{{ profile.username }}</div>
+                      class="name"
+                    >
+                      {{ profile.name }}
+                    </div>
+                    <div class="user-name">
+                      {{ profile.username }}
+                    </div>
                   </div>
                 </div>
                 <ul class="dropdown-menu">
                   <li
                     v-if="profile && profile.admin"
-                    class="dropdown-menu__item">
+                    class="dropdown-menu__item"
+                  >
                     <button
                       class="dropdown-menu__link"
-                      @click.prevent="$router.push({ name: 'AdminUserSearchPage' })">
+                      @click.prevent="$router.push({ name: 'AdminUserSearchPage' })"
+                    >
                       <span class="link-icon">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -263,29 +310,36 @@
                   </li>
                   <li
                     v-if="profile"
-                    class="dropdown-menu__item">
+                    class="dropdown-menu__item"
+                  >
                     <button
                       class="dropdown-menu__link"
-                      @click.stop="logout">
+                      @click.stop="logout"
+                    >
                       <span class="link-icon">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="18"
-                          height="19">
+                          height="19"
+                        >
                           <g
                             fill="none"
-                            fill-rule="evenodd">
-                            <path d="M-6-3h24v24H-6z"/>
+                            fill-rule="evenodd"
+                          >
+                            <path d="M-6-3h24v24H-6z" />
                             <g
                               stroke="#8F95A1"
-                              stroke-linecap="round">
+                              stroke-linecap="round"
+                            >
                               <path
                                 stroke-linejoin="round"
                                 stroke-width="2"
-                                d="M9.076923 1.5h-8V18h7.5750767"/>
+                                d="M9.076923 1.5h-8V18h7.5750767"
+                              />
                               <path
                                 stroke-width="1.8"
-                                d="M12 6l4 4.0122369L12.0256659 14M6 10h9"/>
+                                d="M12 6l4 4.0122369L12.0256659 14M6 10h9"
+                              />
                             </g>
                           </g>
                         </svg>
@@ -298,12 +352,11 @@
             </dropdown>
           </li>
         </ul>
-        <ul/>
+        <ul />
       </nav>
     </div>
     <feedback-top-bar />
   </header>
-
 </template>
 
 <script>
@@ -432,8 +485,6 @@ export default {
 
 </script>
 <style lang="scss">
-// import variables
-@import "@/assets/scss/_variables.scss";
 @import "@/assets/scss/_buttons.scss";
 @import "@/assets/scss/layouts/_header.scss";
 
@@ -470,7 +521,6 @@ export default {
   display: flex;
   flex-direction: row;
   align-items: center;
-
   padding: 0.5rem 0;
 }
 
@@ -478,7 +528,6 @@ export default {
   display: flex;
   flex-direction: row;
   align-items: center;
-
   max-width: 12.5rem;
   height: 100%;
   height: 2.3rem;
@@ -491,9 +540,9 @@ export default {
   height: 100%;
   object-fit: contain;
 }
-.main-header__logo .logo svg.ul{
-    width: 100%;
-    height: auto;
+.main-header__logo .logo svg.ul {
+  width: 100%;
+  height: auto;
 }
 .mobile-nav {
   display: flex;
@@ -515,18 +564,18 @@ export default {
   left: 100%;
 }
 
-.menu .has-children > a:before,
-.menu .go-back > a:before {
-    position: absolute;
-    content: "";
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+.menu .has-children > a::before,
+.menu .go-back > a::before {
+  position: absolute;
+  content: "";
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.menu .has-children > a:after,
-.menu .go-back > a:after {
+.menu .has-children > a::after,
+.menu .go-back > a::after {
   position: absolute;
   content: "";
   top: 50%;
@@ -538,7 +587,7 @@ export default {
   transform: rotate(45deg) translateY(-50%);
 }
 
-.menu .has-children > a:after {
+.menu .has-children > a::after {
   right: 1rem;
 }
 
@@ -546,7 +595,7 @@ export default {
   padding-left: 2.5rem;
 }
 
-.menu .go-back > a:after {
+.menu .go-back > a::after {
   left: 1rem;
   transform: rotate(-135deg) translateY(50%);
 }
@@ -614,10 +663,10 @@ export default {
 }
 
 //mobile active state
-  .primary-nav li .active{
-    color: $blue;
-    font-weight: 600;
-  }
+.primary-nav li .active {
+  color: $blue;
+  font-weight: 600;
+}
 // ================== end of Main Nav on mobile
 
 // ================== Main Nav on desktop
@@ -681,8 +730,8 @@ export default {
     border-bottom: none;
   }
 
-  .main-nav .has-children > a:after,
-  .main-nav .go-back > a:after {
+  .main-nav .has-children > a::after,
+  .main-nav .go-back > a::after {
     content: initial;
   }
 
@@ -700,13 +749,12 @@ export default {
     top: $header-height;
     width: 100%;
     height: auto;
-
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: flex-start;
-
-    transition: opacity 0.2s ease-in-out 0.18s,
+    transition:
+      opacity 0.2s ease-in-out 0.18s,
       visibility 0.2s ease-in-out 0.18s;
   }
 
@@ -893,7 +941,9 @@ export default {
   .icon-burguer__top-bar,
   .icon-burguer__center-bar,
   .icon-burguer__bottom-bar {
-    transition: transform 0.2s ease-in-out, transform-origin 0.2s ease-in-out,
+    transition:
+      transform 0.2s ease-in-out,
+      transform-origin 0.2s ease-in-out,
       opacity 0.2s ease-in-out;
   }
 

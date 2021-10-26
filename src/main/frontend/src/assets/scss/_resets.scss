@@ -2,91 +2,89 @@
 @import "./_variables.scss";
 
 html {
-    box-sizing: border-box;
-    font-size: 100%;
+  box-sizing: border-box;
+  font-size: 100%;
 }
 
 *,
-*:before,
-*:after {
-    box-sizing: inherit;
+*::before,
+*::after {
+  box-sizing: inherit;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    font-family: "Source Sans Pro";
-    font-size: 1rem;
+  margin: 0;
+  padding: 0;
+  /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword */
+  font-family: "Source Sans Pro";
+  font-size: 1rem;
 }
 
-input[type="search"], 
-input[type="text"], 
-input[type="email"]
-input[type="url"], 
+input[type="search"],
+input[type="text"],
+input[type="email"] input[type="url"],
 textarea {
-    -webkit-appearance: none !important;
-    appearance: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
 }
 
 ul,
 ol {
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
 }
 
 ul li,
 ol li {
-    // margin-bottom: 0.25rem;
+  // margin-bottom: 0.25rem;
 }
 
 dl {
-    margin: 0;
+  margin: 0;
 }
 
 a {
-    text-decoration: none;
-    color: $slate;
+  text-decoration: none;
+  color: $slate;
+  transition: all 0.2s ease-in-out;
 
-    transition: all .2s ease-in-out;
+  &:hover,
+  &:focus {
+    // review this
+    color: $blue-600;
+    border-color: $blue-600;
+  }
 
-    &:hover,
-    &:focus {
-        // review this
-        color: $blue-600;
-        border-color: $blue-600;
-    }
-
-    &:active {
-        // review this
-        color: $blue-700;
-        border-color: $blue-700;
-    }
-
+  &:active {
+    // review this
+    color: $blue-700;
+    border-color: $blue-700;
+  }
 }
 
 button {
-    cursor: pointer;
-    background: none;
-    appearance: none;
-    border: 0;
-    padding: 0;
-    margin: 0;
-    text-align: initial;
+  cursor: pointer;
+  background: none;
+  appearance: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  text-align: initial;
 }
 
 input,
 textarea,
 select {
-    outline: none;
-    font-family: $primary-font;
-    line-height: 1.5;
+  outline: none;
+  font-family: $primary-font;
+  line-height: 1.5;
 }
 
-fieldset{
-    border: none;
-    padding: 0;
-    margin: 0;
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
 }
 
 figure {
@@ -95,10 +93,10 @@ figure {
 }
 
 img {
-    max-width: 100%;
+  max-width: 100%;
 }
 
-abbr[title]{
-    border-bottom: none;
-    text-decoration: none;
+abbr[title] {
+  border-bottom: none;
+  text-decoration: none;
 }

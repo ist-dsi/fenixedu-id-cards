@@ -1,53 +1,69 @@
 <template>
   <div
     v-if="Object.keys(cardPreview).length !== 0 && !isInitialLoading"
-    class="layout-list-cards layout-list-cards-form">
-    <h1 class="h2">{{ $t('modal.title.confirmData') }}</h1>
+    class="layout-list-cards layout-list-cards-form"
+  >
+    <h1 class="h2">
+      {{ $t('modal.title.confirmData') }}
+    </h1>
     <p
       v-if="isMobile"
-      class="p--default">
+      class="p--default"
+    >
       {{ $t('text.review.parts.first.page') }} <br>{{ $t('text.review.parts.second.page') }}
     </p>
     <id-card
       :card-info="cardPreview"
       :cardtype="'idtecnico'"
-      :is-preview="true"/>
+      :is-preview="true"
+    />
     <p
       v-if="!isMobile"
-      class="p--default">
+      class="p--default"
+    >
       {{ $t('text.review.parts.first.page') }} <br>{{ $t('text.review.parts.second.page') }}
     </p>
     <div
-      class="layout-list-cards__actions btn--group">
+      class="layout-list-cards__actions btn--group"
+    >
       <button
         class="btn btn--light"
-        @click.prevent="openEditModal">
+        @click.prevent="openEditModal"
+      >
         {{ $t('btn.edit') }}
       </button>
       <button
         v-if="isValidCandidacyId"
         class="btn btn--primary"
-        @click.prevent="redirect">
+        @click.prevent="redirect"
+      >
         {{ $t('btn.finish') }}
       </button>
     </div>
     <edit-info
       :open="editModal"
       :is-from-registration="isValidCandidacyId"
-      @close="closeEditModal"/>
+      @close="closeEditModal"
+    />
   </div>
   <div
     v-else
-    class="modal__panel review-modal__panel">
+    class="modal__panel review-modal__panel"
+  >
     <figure class="figure figure--icon modal-panel__icons">
       <img
         src="~@/assets/images/icon-error.svg"
-        alt="Error icon">
+        alt="Error icon"
+      >
     </figure>
-    <h1 class="h2">{{ $t('error.card.preview.title') }}</h1>
-    <p>{{ $t('edit.info.parts.first.no.photo') }} <a
-      class="u-active-link"
-      href="/personal">{{ $t('edit.info.parts.second.no.photo') }}</a>.
+    <h1 class="h2">
+      {{ $t('error.card.preview.title') }}
+    </h1>
+    <p>
+      {{ $t('edit.info.parts.first.no.photo') }} <a
+        class="u-active-link"
+        href="/personal"
+      >{{ $t('edit.info.parts.second.no.photo') }}</a>.
     </p>
   </div>
 </template>
@@ -129,9 +145,6 @@ export default {
 </script>
 
 <style lang="scss">
-// import variables
-@import "@/assets/scss/_variables.scss";
-
 .review-modal__panel {
   width: 100vw;
   display: flex;
@@ -174,9 +187,8 @@ export default {
     }
 
     @media (max-width: 768px) {
-      box-shadow: 0 -.0625rem 0 0 rgba($dark, 0.1);
+      box-shadow: 0 -0.0625rem 0 0 rgba($dark, 0.1);
     }
   }
 }
-
 </style>

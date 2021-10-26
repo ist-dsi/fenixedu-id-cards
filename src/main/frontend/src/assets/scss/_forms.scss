@@ -1,78 +1,75 @@
-@mixin icon-search($colorcode){
-    background-image: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 19 19' xmlns='http://www.w3.org/2000/svg'%3E%3Cg stroke='%23" + $colorcode +"' stroke-width='2' fill='none' fill-rule='evenodd'%3E%3Cellipse transform='matrix(-1 0 0 1 16.522482 0)' cx='8.261241' cy='8.741259' rx='6.938134' ry='6.972028'/%3E%3Cpath d='M14.016388 13.579784l3.89899 3.55967' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E")
+@mixin icon-search($colorcode) {
+  background-image: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 19 19' xmlns='http://www.w3.org/2000/svg'%3E%3Cg stroke='%23" + $colorcode +"' stroke-width='2' fill='none' fill-rule='evenodd'%3E%3Cellipse transform='matrix(-1 0 0 1 16.522482 0)' cx='8.261241' cy='8.741259' rx='6.938134' ry='6.972028'/%3E%3Cpath d='M14.016388 13.579784l3.89899 3.55967' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E");
 }
 @import '@/assets/scss/forms/_search-form.scss';
 
-.form{
-    margin: 1.5rem 0;
+.form {
+  margin: 1.5rem 0;
 }
 
-.f-inline-group{
-    .f-field{
-        margin-top: 3rem;
-    }
-    .f-field--hidden-label{
-        margin-top: 0;
-    }
+.f-inline-group {
+  .f-field {
+    margin-top: 3rem;
+  }
+  .f-field--hidden-label {
+    margin-top: 0;
+  }
 }
-@media screen and (min-width: 32.5rem){
-    .f-inline-group{
-        display: flex;
-        flex-flow: row nowrap;
-        justify-content: stretch;
-        .f-field{
-            margin: 0 .5rem;
-            // padding: 1.5rem 0 1rem;
-            flex-grow: 1;
-            &:first-child{
-                margin-left: 0;
-            }
-            &:last-child{
-                margin-right: 0;
-            }
-        }
-    }    
+@media screen and (min-width: 32.5rem) {
+  .f-inline-group {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: stretch;
+    .f-field {
+      margin: 0 0.5rem;
+      // padding: 1.5rem 0 1rem;
+      flex-grow: 1;
+      &:first-child {
+        margin-left: 0;
+      }
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
 }
 
-//this class will only be use to separate visually more than one f-group 
-.f-group{
-    padding: .5rem 0 1rem;
-    > .f-field,
-    > .f-field--underline{
-        margin-top: 2rem;
-    }
-    > .f-field:first-child{
-        margin-top: 0;
-    }
-    > .f-field--allways-open,
-    > .f-tag-field{
-        margin-top: 3rem;
-    }
-    
-    > .f-inline-group{
-        margin-top: 2.5rem;
-    }   
-    
+//this class will only be use to separate visually more than one f-group
+.f-group {
+  padding: 0.5rem 0 1rem;
+  > .f-field,
+  > .f-field--underline {
+    margin-top: 2rem;
+  }
+  > .f-field:first-child {
+    margin-top: 0;
+  }
+  > .f-field--allways-open,
+  > .f-tag-field {
+    margin-top: 3rem;
+  }
+
+  > .f-inline-group {
+    margin-top: 2.5rem;
+  }
 }
 .f-group--lg {
-    > .f-field,
-    > .f-field--underline{
-        margin-top: 3rem;
-    }
-    > .f-field:first-child{
-        margin-top: 0;
-    }
-    > .f-field--allways-open,
-    > .f-tag-field{
-        margin-top: 4rem;
-    }
-    
-    > .f-inline-group{
-        margin-top: 3.5rem;
-    }  
+  > .f-field,
+  > .f-field--underline {
+    margin-top: 3rem;
+  }
+  > .f-field:first-child {
+    margin-top: 0;
+  }
+  > .f-field--allways-open,
+  > .f-tag-field {
+    margin-top: 4rem;
+  }
+
+  > .f-inline-group {
+    margin-top: 3.5rem;
+  }
 }
-
-
 
 @import 'forms/_defaults-input';
 @import 'forms/_textarea';
@@ -84,20 +81,20 @@
 @import 'forms/_drag-and-drop';
 @import 'forms/_tags';
 
-.step-navigation{
-    width: 16.5rem;
-    justify-content: center;
-    .btn{
-        min-width: 7.5rem;
-    }
-    .btn:last-child{
-        margin-left: auto;
-    }
+.step-navigation {
+  width: 16.5rem;
+  justify-content: center;
+  .btn {
+    min-width: 7.5rem;
+  }
+  .btn:last-child {
+    margin-left: auto;
+  }
 }
-.f-fieldset{
-    margin-top: 2rem;
+.f-fieldset {
+  margin-top: 2rem;
 }
 .f-fieldset__title + .f-group,
-.f-fieldset__title + .f-inline-group{
-    margin-top: 0;
+.f-fieldset__title + .f-inline-group {
+  margin-top: 0;
 }
