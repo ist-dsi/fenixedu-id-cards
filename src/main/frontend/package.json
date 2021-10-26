@@ -5,14 +5,17 @@
   "author": "DSI <dsi@tecnico.ulisboa.pt>",
   "private": true,
   "scripts": {
-    "clean": "rm -rf node_modules package-lock.json",
     "start": "npm run serve",
     "serve": "vue-cli-service serve",
     "serve:context": "vue-cli-service serve --mode context",
     "build": "vue-cli-service build",
     "lint:js": "vue-cli-service lint",
     "lint:scss": "stylelint \"src/**/*.{vue,scss}\" --fix",
-    "format": "prettier-eslint --write \"src/**/*.{vue,js,scss}\" && stylelint \"src/**/*.scss\" --fix"
+    "format": "prettier-eslint --write \"src/**/*.{vue,js,scss}\" && stylelint \"src/**/*.scss\" --fix",
+    "clean:packages": "rm -rf node_modules package-lock.json",
+    "clean:dist": "mkdir -p ../webapp/tecnico-card; rm -rf ../webapp/tecnico-card/*; rm -rf dist",
+    "copy": "cp -r dist/* ../webapp/tecnico-card/",
+    "production": "npm run clean:dist; npm run build; npm run copy"
   },
   "dependencies": {
     "axios": "0.21.1",

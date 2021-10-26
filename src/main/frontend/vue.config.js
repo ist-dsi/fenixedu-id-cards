@@ -7,7 +7,7 @@ module.exports = {
     // /other-dep/
   ],
   outputDir: 'dist',
-  publicPath: '/',
+  publicPath: process.env.NODE_ENV === 'production' ? '/tecnico-card/' : '/',
   indexPath: 'index.html', // generated index file
   filenameHashing: true,
   runtimeCompiler: false,
