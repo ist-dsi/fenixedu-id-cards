@@ -13,7 +13,7 @@ Vue.use(Router)
 
 const router = new Router({
   mode: 'history',
-  base: '/tecnico-card',
+  base: `${(process.env.VUE_APP_CTX && process.env.NODE_ENV !== 'development') ? process.env.VUE_APP_CTX : ''}/tecnico-card`,
   routes: [
     {
       path: '',

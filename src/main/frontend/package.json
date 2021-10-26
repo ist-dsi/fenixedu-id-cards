@@ -15,7 +15,8 @@
     "clean:packages": "rm -rf node_modules package-lock.json",
     "clean:dist": "mkdir -p ../webapp/tecnico-card; rm -rf ../webapp/tecnico-card/*; rm -rf dist",
     "copy": "cp -r dist/* ../webapp/tecnico-card/",
-    "production": "npm run clean:dist; npm run build; npm run copy"
+    "package:production": "npm run clean:dist; npm run build; npm run copy",
+    "package:staging": "npm run clean:dist; vue-cli-service build --mode staging; npm run copy"
   },
   "dependencies": {
     "axios": "0.21.1",

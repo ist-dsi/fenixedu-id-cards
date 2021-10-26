@@ -7,7 +7,9 @@ module.exports = {
     // /other-dep/
   ],
   outputDir: 'dist',
-  publicPath: process.env.NODE_ENV === 'production' ? '/tecnico-card/' : '/',
+  publicPath: process.env.NODE_ENV === 'production'
+  ? `${process.env.VUE_APP_CTX ? process.env.VUE_APP_CTX : ''}/tecnico-card/`
+  : '/',
   indexPath: 'index.html', // generated index file
   filenameHashing: true,
   runtimeCompiler: false,
@@ -65,11 +67,11 @@ module.exports = {
       },
       progress: true,
       proxy: {
-        '/api': {
+        [`${process.env.VUE_APP_CTX ? process.env.VUE_APP_CTX : ''}/api`]: {
           secure: false,
           target: 'http://localhost:8080'
         },
-        '/idcards': {
+        [`${process.env.VUE_APP_CTX ? process.env.VUE_APP_CTX : ''}/idcards`]: {
           secure: false,
           target: 'http://localhost:8080'
         }
