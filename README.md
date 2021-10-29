@@ -18,7 +18,7 @@ mvn clean install
 <dependency>
     <groupId>pt.ist</groupId>
     <artifactId>fenixedu-id-cards</artifactId>
-    <version>{version}</version>
+    <version>DEV-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -29,6 +29,16 @@ In case you just want to compile the module without the frontend, you can do it 
 ```sh
 mvn clean install -Dexec.skip
 ```
+
+## Using the staging profile
+
+This will build the frontend differently, packaging sources with different routes and api client based on a context environment variable.
+
+```sh
+mvn clean install -Pstaging
+```
+
+The staging context variable is defined [here](https://github.com/ist-dsi/fenixedu-id-cards/blob/master/src/main/frontend/.env.staging).
 
 ## Troubleshooting
 
