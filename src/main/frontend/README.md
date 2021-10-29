@@ -1,61 +1,81 @@
-# Fenixedu Id Cards Frontend
+# FenixEdu Id Cards Frontend
 
 > The FenixEdu ID Cards frontend application
 
+### Requirements
 
-<!-- ### Running with mock
+- Node.js & NPM
 
-**Requirements**:
+### Node and NPM versions
 
-- **You must install node v10.5.0 and npm v6.1.0**. install **[nvm](https://github.com/nvm-sh/nvm)** if necessary.
-- You must install the [mockoon](https://mockoon.com/) application
- 
+FenixEdu ID Cards application works using the latest `v12.x` version of nodejs and the latest `v6.x` version of npm.
 
-**Setup**:
+Last versions tested on this project:
 
-- Copy the [mockoon.json](https://github.com/ist-dsi/fenixedu-id-cards/blob/new_tui/src/main/frontend/mockoon/mockoon.json) file to your clipboard;
-- Open mockoon app and import the environment by going to Tools -> Import environment/route from clipboard.
+- Node: `v12.18.3`
+- NPM: `v6.14.6`
 
-**Run**:
+#### Checking your Node and NPM versions
 
-Run the command related to starting with mock in the build setup. -->
-
-<!-- ### Build Setup
+**Node**:
 
 ```bash
-# install dependencies
-npm install
-
-# start with mock and hot reload at localhost:8081
-npm run mock
-
-# serve with hot reload at localhost:8080
-npm start
-
-# build for production with minification
-npm run dist
-
-# build for production with analysis
-npm run analysis
-
-# clean to remove node_modules and package-lock.json
-npm run clean
-``` -->
-
-### Build Setup
-
-```bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm start
-
-# build for production with minification
-npm run build
-
-# clean to remove node_modules and package-lock.json
-npm run clean
+# check node version
+node -v
 ```
 
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+E.g. `v12.18.3`.
+
+**NPM**:
+
+```bash
+# check npm version
+npm -v
+```
+
+E.g. `v6.14.6`.
+
+**If you're having problems with your version, try to use [nvm](https://github.com/creationix/nvm/blob/master/README.md) to install a specific version of node and npm.**
+
+**Installing using [nvm](https://github.com/creationix/nvm/blob/master/README.md)**:
+
+```bash
+# install nodejs 12.x
+nvm install 12
+```
+
+This will install the latest `12.x` node version with the latest npm `6.x` version.
+
+### Available npm scripts
+
+```bash
+# install dependencies
+npm install
+
+# serve with hot reload at localhost:8081
+npm start
+
+# serve (context mode) with hot reload at localhost:8081
+npm run serve:context
+
+# build for production with minification
+npm run package:production
+
+# build for staging with minification
+npm run package:staging
+
+# clean to remove node_modules and package-lock.json
+npm run clean:packages
+
+# clean to remove dist and build inside webapp
+npm run clean:dist
+
+# lint javascript
+npm run lint:js
+
+# lint scss
+npm run lint:scss
+
+# format (javascript + scss lint & format)
+npm run format
+```
