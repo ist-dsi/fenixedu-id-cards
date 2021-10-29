@@ -1,58 +1,57 @@
-.f-field--checkbox{
-    margin: .25rem 0;
+.f-field--checkbox {
+  margin: 0.25rem 0;
 }
-.f-field__label--checkbox{
-    display: flex;
-    align-items: center;
-    pointer-events: all;
-    font-size: 1rem;
-    line-height: 1.75rem;
-    padding-left: 1.5rem;
-    position: relative;
-    color: $slate;
-    user-select: none;
-    transform: none;
-    
-    cursor: pointer;
-    &:before{
-        content: '';
-        position: absolute;
-        left: 0;
-        width: 1rem;
-        height: 1rem;
-        border: 0.125rem solid $gray-300;
-        border-radius: 0.125rem;
-        background-color: white;
-    }
-    &:after{
-        content: '';
-        background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 13 13'%3E%3Ctitle%3Echeck%3C/title%3E%3Cpath d='M2 6.93L5.85 11l5.65-9' stroke='%232E3242' stroke-width='3' fill='none' fill-rule='evenodd' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        position: absolute;
-        left: 0.1875rem;
-        width: 0;
-        height: 0.875rem;
-        background-size: 0.625rem 0.75rem;
-        transition: width 0.3s ease;
-    }
+.f-field__label--checkbox {
+  display: flex;
+  align-items: center;
+  pointer-events: all;
+  font-size: 1rem;
+  line-height: 1.75rem;
+  padding-left: 1.5rem;
+  position: relative;
+  color: $slate;
+  user-select: none;
+  transform: none;
+  cursor: pointer;
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 1rem;
+    height: 1rem;
+    border: 0.125rem solid $gray-300;
+    border-radius: 0.125rem;
+    background-color: white;
+  }
+  &::after {
+    content: '';
+    background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 13 13'%3E%3Ctitle%3Echeck%3C/title%3E%3Cpath d='M2 6.93L5.85 11l5.65-9' stroke='%232E3242' stroke-width='3' fill='none' fill-rule='evenodd' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    position: absolute;
+    left: 0.1875rem;
+    width: 0;
+    height: 0.875rem;
+    background-size: 0.625rem 0.75rem;
+    transition: width 0.3s ease;
+  }
 }
 
-.f-field__checkbox{
-    width: 0;
-    height: 0;
-    opacity: 0;
-    padding: 0;
-    appearance: none;
-    border: none;   
-    display: block;
+.f-field__checkbox {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  padding: 0;
+  appearance: none;
+  border: none;
+  display: block;
 }
 .f-field__checkbox:checked ~ .f-field__label,
-.f-input--checkbox:checked ~ .f-label--checkbox{
-    &:after{
-        content: '';
-        width: 0.875rem;
-    }
-    &:before{
-        border-color: $dark;
-    }
+.f-input--checkbox:checked ~ .f-label--checkbox {
+  &::after {
+    content: '';
+    width: 0.875rem;
+  }
+  &::before {
+    border-color: $dark;
+  }
 }

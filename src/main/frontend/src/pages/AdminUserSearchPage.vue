@@ -1,18 +1,25 @@
 <template>
   <div
     v-if="profile && profile.admin"
-    class="layout-admin-user-search-page">
-    <h1 class="h2">{{ $t('title.admin.page') }}</h1>
+    class="layout-admin-user-search-page"
+  >
+    <h1 class="h2">
+      {{ $t('title.admin.page') }}
+    </h1>
     <div class="user-search">
-      <h2 class="h3">{{ $t('label.searchUser.admin') }}</h2>
+      <h2 class="h3">
+        {{ $t('label.searchUser.admin') }}
+      </h2>
       <div>
         <input
           v-model="username"
           :placeholder="$t('placeholder.searchUser')"
-          @keyup.enter="goToUserPage" >
+          @keyup.enter="goToUserPage"
+        >
         <button
           class="btn btn--primary btn--outline"
-          @click.prevent="goToUserPage">
+          @click.prevent="goToUserPage"
+        >
           {{ $t('btn.search') }}
         </button>
       </div>
@@ -20,39 +27,55 @@
     <div class="session-container">
       <div
         v-if="!session"
-        class="not-found-container">
+        class="not-found-container"
+      >
         <div>
           <img
             src="~@/assets/images/icon-error.svg"
-            alt="Error icon">
+            alt="Error icon"
+          >
         </div>
-        <h1 class="h3">{{ $t('label.info.session.admin') }}</h1>
+        <h1 class="h3">
+          {{ $t('label.info.session.admin') }}
+        </h1>
       </div>
       <div v-else>
         <div class="session-info-container">
-          <h2 class="h3">{{ $t('label.info.session.open.admin') }}</h2>
+          <h2 class="h3">
+            {{ $t('label.info.session.open.admin') }}
+          </h2>
           <div>
-            <p class="small">{{ $t('label.info.session.created.at.admin') }}: {{ session.createdAt }}</p>
-            <p class="small">{{ $t('label.info.session.host.admin') }}: {{ session.ipAddress }}</p>
+            <p class="small">
+              {{ $t('label.info.session.created.at.admin') }}: {{ session.createdAt }}
+            </p>
+            <p class="small">
+              {{ $t('label.info.session.host.admin') }}: {{ session.ipAddress }}
+            </p>
           </div>
         </div>
         <div
           v-if="!session.userMifare"
-          class="loading-bar">
+          class="loading-bar"
+        >
           <div class="blue-bar" />
         </div>
         <div
           v-else
-          class="session-user-info-container">
+          class="session-user-info-container"
+        >
           <div
             v-if="session.userIstId"
-            class="session-user-container">
-            <h5 class="h5">{{ $t('label.user.data.admin') }}</h5>
+            class="session-user-container"
+          >
+            <h5 class="h5">
+              {{ $t('label.user.data.admin') }}
+            </h5>
             <div class="user-info-container">
               <div class="photo-container">
                 <img
                   :src="userPhotoUrl"
-                  alt="User Photo" >
+                  alt="User Photo"
+                >
               </div>
               <div>
                 <p>Username: {{ session.userIstId }}</p>
@@ -63,15 +86,19 @@
               <figure class="figure--56 figure--icon">
                 <img
                   src="~@/assets/images/icon-check.svg"
-                  alt="Check icon">
+                  alt="Check icon"
+                >
               </figure>
               <p>{{ $t('label.info.card.delivered.admin') }}</p>
             </div>
           </div>
           <div
             v-else
-            class="user-not-found-container">
-            <h5 class="h5">{{ $t('label.info.mifare.not.found.admin') }}</h5>
+            class="user-not-found-container"
+          >
+            <h5 class="h5">
+              {{ $t('label.info.mifare.not.found.admin') }}
+            </h5>
             <p>{{ $t('label.info.mifare.not.found.insert.data.admin') }}</p>
             <div class="user-not-found">
               <div class="field">
@@ -83,11 +110,13 @@
                 <input
                   v-model="deliverUsername"
                   placeholder=""
-                  @keyup.enter="submitUserMifare" >
+                  @keyup.enter="submitUserMifare"
+                >
               </div>
               <button
                 class="btn btn--primary btn--outline"
-                @click.prevent="submitUserMifare">
+                @click.prevent="submitUserMifare"
+              >
                 {{ $t('btn.submit') }}
               </button>
             </div>
@@ -96,7 +125,7 @@
       </div>
     </div>
   </div>
-  <UnauthorizedPage v-else />
+  <unauthorized-page v-else />
 </template>
 
 <script>
@@ -254,7 +283,7 @@ export default {
 
         .user-not-found {
           display: flex;
-          align-items: end;
+          align-items: flex-end;
           justify-content: center;
 
           .field {

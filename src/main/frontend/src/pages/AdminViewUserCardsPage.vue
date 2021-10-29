@@ -1,11 +1,14 @@
 <template>
   <div
     v-if="profile && profile.admin"
-    class="layout-admin-view-user-page">
-    <h1 class="h2">{{ $t('title.admin.page') }} - {{ userInView }}</h1>
+    class="layout-admin-view-user-page"
+  >
+    <h1 class="h2">
+      {{ $t('title.admin.page') }} - {{ userInView }}
+    </h1>
     <list-cards-page :is-admin-view="true" />
   </div>
-  <UnauthorizedPage v-else />
+  <unauthorized-page v-else />
 </template>
 
 <script>

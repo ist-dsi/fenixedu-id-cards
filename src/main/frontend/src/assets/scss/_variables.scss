@@ -1,122 +1,98 @@
 //  Variables
 
-
-
 // ==================== Primary Palette
 
-$dark:		 				#2E3242;
+$dark:		 				#2e3242;
 
-$slate: 					#45555F;
+$slate: 					#45555f;
 
-$blue: 						#009DE0;
+$blue: 						#009de0;
 
-$light-blue:		 	#EEF2F5;
-
-
+$light-blue:		 	#eef2f5;
 
 // ==================== Secondary Palette
 
-$violet: 			    	#5856D6;
+$violet: 			    	#5856d6;
 
-$teal:				    	#01BFC2;
+$teal:				    	#01bfc2;
 
-$lime: 				    	#62D321;
+$lime: 				    	#62d321;
 
-$green: 			    	#199D5B;
+$green: 			    	#199d5b;
 
-$purple: 			    	#574A68;
+$purple: 			    	#574a68;
 
-$magenta: 		    	#E9374F;
+$magenta: 		    	#e9374f;
 
-$red: 				    	#FF412D;
+$red: 				    	#ff412d;
 
-$orange: 			    	#F9690E;
+$orange: 			    	#f9690e;
 
-$pink:				    	#FF4981;
+$pink:				    	#ff4981;
 
-$yellow:			    	#F6C501;
+$yellow:			    	#f6c501;
 
-$pale-gold: 	    	#D4CCBE;
-
-
+$pale-gold: 	    	#d4ccbe;
 
 // ==================== Extended Palette
 
 // Darks
 
-$dark-600:				  	#242B3D;
+$dark-600:				  	#242b3d;
 // $dark: 				  	#2E3242;	// main dark
-$dark-400:				  	#383D4C;
-
-
+$dark-400:				  	#383d4c;
 
 // Slate
 
-$slate-700: 			  	#2E3A42;
-$slate-600: 			  	#3A4952;
+$slate-700: 			  	#2e3a42;
+$slate-600: 			  	#3a4952;
 // $slate: 				  	#45555F;	// main slate gray (Tecnico gray)
-
-
 
 // Blues
 
-$blue-700: 				  	#005EC6;
-$blue-600:				  	#0076DC;
+$blue-700: 				  	#005ec6;
+$blue-600:				  	#0076dc;
 // $blue: 				  	#009DE0;	// main blue (Tecnico blue)
-
-
 
 // Light Blues
 
-$light-blue-700:		 	#D3DAE0;
-$light-blue-600:		 	#DDE4E9;
+$light-blue-700:		 	#d3dae0;
+$light-blue-600:		 	#dde4e9;
 // $light-blue:		 		#EEF2F5;		// main light-blue
-
-
 
 // Grays
 
 $gray:					    	#717782;		// main silver
-$gray-400: 				  	#8F95A1;
-$gray-300: 				  	#BFC4CC;
-
-
+$gray-400: 				  	#8f95a1;
+$gray-300: 				  	#bfc4cc;
 
 // Light Grays
 
-$light-gray: 			  	#DDD;			// main light-gray
-$light-gray-400: 			#F1F1F1;
-$light-gray-300: 			#F8F8F8;
-
-
-
+$light-gray: 			  	#ddd;			// main light-gray
+$light-gray-400: 			#f1f1f1;
+$light-gray-300: 			#f8f8f8;
 
 // $magenta: 				  #E9374F;		// main magenta
-$magenta-600: 				#D6364D;
-$magenta-700: 				#C3364C;
-
+$magenta-600: 				#d6364d;
+$magenta-700: 				#c3364c;
 
 //$green: 			    	#199D5B;        // main green
-$green: 			    	#199D5B;
-$green-600: 			    darken(#199D5B, .25);
-$green-700: 			    darken(#199D5B, .4);
-
+$green: 			    	#199d5b;
+$green-600: 			    darken(#199d5b, 0.25);
+$green-700: 			    darken(#199d5b, 0.4);
 
 // ==================== Social Network Colors
 
-$facebook:				  	#3B5998;
-$twitter:				    	#55ACEE;
-$linkedin:				  	#0077B5;
-$youtube:				    	#CD201F;
-$instagram:				  	#3F729B;
-
-
+$facebook:				  	#3b5998;
+$twitter:				    	#55acee;
+$linkedin:				  	#0077b5;
+$youtube:				    	#cd201f;
+$instagram:				  	#3f729b;
 
 // ==================== Fonts
 
 $primary-font: 'Source Sans Pro', "Helvetica Neue", Helvetica, Arial, sans-serif;
-$title-font: "Klavika", 'Source Sans Pro', "Helvetica Neue", Helvetica, Arial, sans-serif;;
-
+$title-font: "Klavika", 'Source Sans Pro', "Helvetica Neue", Helvetica, Arial, sans-serif;
 
 // fixed sizes
 $header-height: 3.5rem;
@@ -124,15 +100,13 @@ $footer-height: 6.25rem;
 $main-height: calc(100vh - #{$footer-height});
 $menu-mobile--width: 16.5rem;
 
-
-
 // ==================== Transitions
 
 @mixin mdTransition {
-	transition-duration: .2s;
-	transition-timing-function: ease-in-out;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
 }
 @mixin fastTransition {
-	transition-duration: 600ms;
-    transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+  transition-duration: 600ms;
+  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
 }

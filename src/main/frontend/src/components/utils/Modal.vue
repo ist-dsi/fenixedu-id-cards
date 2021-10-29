@@ -2,41 +2,49 @@
   <transition name="modal-slide-down">
     <div
       v-if="value"
-      class="modal">
+      class="modal"
+    >
       <button
         class="modal__close"
-        @click.prevent="close">
+        @click.prevent="close"
+      >
         <svg
           viewBox="0 0 40 40"
-          xmlns="http://www.w3.org/2000/svg">
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <g
             fill="none"
-            fill-rule="evenodd">
+            fill-rule="evenodd"
+          >
             <circle
               stroke="#DDE4E9"
               stroke-width="2.5"
               fill="#DDE4E9"
               cx="20"
               cy="20"
-              r="18.75"/>
+              r="18.75"
+            />
             <g
               opacity=".5"
               stroke="#1C172F"
               stroke-linecap="round"
               stroke-linejoin="round"
-              stroke-width="2">
-              <path d="M14.12 14.12l11.64 11.64M25.76 14.12L14.12 25.76"/>
+              stroke-width="2"
+            >
+              <path d="M14.12 14.12l11.64 11.64M25.76 14.12L14.12 25.76" />
             </g>
           </g>
         </svg>
       </button>
       <div
-        class="modal__panel">
-        <slot name="modal-panel"/>
+        class="modal__panel"
+      >
+        <slot name="modal-panel" />
       </div>
       <footer
         v-if="withfooter"
-        class="modal__footer">
+        class="modal__footer"
+      >
         <slot name="modal-footer" />
       </footer>
     </div>
@@ -64,10 +72,6 @@ export default {
 }
 </script>
 <style lang="scss">
-@import "@/assets/scss/_variables.scss";
-
-// adicionar overflow-y: hidden na tag <body>
-
 .modal {
   position: fixed;
   z-index: 1000000;
@@ -83,23 +87,19 @@ export default {
   align-items: center;
   justify-content: center;
   background-color: white;
-  box-shadow: 0 0.125rem 2.5rem 0 rgba(black,.4);
+  box-shadow: 0 0.125rem 2.5rem 0 rgba(black, 0.4);
 }
 
 .modal__close {
   position: absolute;
   z-index: 1000001;
-  top: 3rem;
-  right: 4rem;
-
   top: 24px;
   right: 32px;
-
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 1.25rem;
-  box-shadow: 0 0.125rem 1.25rem 0 rgba(black , 0);
-  transition: box-shadow  .3s   ease;
+  box-shadow: 0 0.125rem 1.25rem 0 rgba(black, 0);
+  transition: box-shadow  0.3s   ease;
 
   svg {
     width: 100%;
@@ -109,20 +109,22 @@ export default {
   circle {
     stroke: $light-blue-600;
     fill: $light-blue-600;
-    transition: stroke  .3s   ease,
-                fill    .3s   ease;
+    transition:
+      stroke  0.3s   ease,
+      fill    0.3s   ease;
   }
 
-  &:hover, &:focus{
-    circle{
+  &:hover,
+  &:focus {
+    circle {
       stroke: $light-blue-700;
       fill: $light-blue-700;
     }
   }
 
-  &:focus{
+  &:focus {
     outline: none;
-    box-shadow: 0 0.125rem 1.25rem 0 rgba(black , .4);
+    box-shadow: 0 0.125rem 1.25rem 0 rgba(black, 0.4);
   }
 }
 
@@ -132,9 +134,7 @@ export default {
   max-width: 22rem;
   display: flex;
   flex-flow: column nowrap;
-
   padding: 24px;
-
   opacity: 1;
   transform: scale(1);
 }
@@ -161,19 +161,21 @@ export default {
   justify-content: flex-start;
 
   .modal__panel {
-    padding: 8rem .5rem 18rem;
+    padding: 8rem 0.5rem 18rem;
     overflow-y: auto;
     max-height: 100vh;
-
   }
 }
-.modal-slide-down-enter-active, .modal-slide-down-leave-active {
-  transition:   opacity   0.3s  ease,
-                transform 0.3s  ease;
+.modal-slide-down-enter-active,
+.modal-slide-down-leave-active {
+  transition:
+    opacity   0.3s  ease,
+    transform 0.3s  ease;
 }
-.modal-slide-down-enter, .modal-slide-down-leave-to /* .fade-leave-active below version 2.1.8 */ {
+.modal-slide-down-enter,
+.modal-slide-down-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
-  transform: scale(.98);
+  transform: scale(0.98);
 }
 
 @media (min-width: 1200px) {
@@ -181,5 +183,4 @@ export default {
     padding: 0;
   }
 }
-
 </style>

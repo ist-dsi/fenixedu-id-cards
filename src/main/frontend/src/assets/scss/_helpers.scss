@@ -2,51 +2,48 @@
 
 .visually-hidden,
 .sr-only {
-	// /* https://snook.ca/archives/html_and_css/hiding-content-for-accessibility */
-    position: absolute !important;
-    height: 1px; width: 1px;
-    overflow: hidden;
-    clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
-    clip: rect(1px, 1px, 1px, 1px);
+  // /* https://snook.ca/archives/html_and_css/hiding-content-for-accessibility */
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px);
 }
 
 .text-center {
-	text-align: center;
+  text-align: center;
 }
 
 .flex {
-    display: flex;
+  display: flex;
 }
 
 .flex--row {
-    flex-direction: row;
+  flex-direction: row;
 }
 
 .flex--col {
-    flex-direction: column;
+  flex-direction: column;
 }
-
 
 .skip-main {
-    @extend .sr-only;
+  @extend .sr-only;
 
-    &:focus {
-        width: auto;
-        height: auto;
-        clip: auto;
-        z-index: 9999;
-        background: #FFF;
-    }
+  &:focus {
+    width: auto;
+    height: auto;
+    clip: auto;
+    z-index: 9999;
+    background: #fff;
+  }
 }
-
-
 
 // Shame ?
 .m-top--2 {
-    margin-top: 2px;
+  margin-top: 2px;
 }
 
 .m-top--3 {
-    margin-top: 3px;
+  margin-top: 3px;
 }
-

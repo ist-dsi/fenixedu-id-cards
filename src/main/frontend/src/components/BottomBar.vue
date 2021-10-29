@@ -4,7 +4,8 @@
       <ul class="app-footer__navigation">
         <a
           href="https://fenixedu.org"
-          class="app-footer__list-item">
+          class="app-footer__list-item"
+        >
           Powered by FenixEdu&trade;
         </a>
       </ul>
@@ -30,52 +31,50 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/assets/scss/_variables.scss';
-.app-footer{
+.app-footer {
   background-color: white;
   box-shadow: 0 -0.0625rem 0 0 rgba($dark, 0.1);
   font-size: 0.875rem;
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
-.app-footer-container{
+
+.app-footer-container {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  @media screen and (max-width: 750px){
-   flex-flow: column nowrap;
-   align-items: center;
+  @media screen and (max-width: 750px) {
+    flex-flow: column nowrap;
+    align-items: center;
   }
   // @media screen and (max-width: 10)
 }
-.app-footer__navigation{
+
+.app-footer__navigation {
   display: flex;
   justify-content: flex-start;
   color: $dark;
-  @media screen and (max-width: 750px){
-   flex-flow: column nowrap;
+  @media screen and (max-width: 750px) {
+    flex-flow: column nowrap;
   }
-  .app-footer__list-item:first-child{
+  .app-footer__list-item:first-child {
     padding-left: 0;
   }
-  .app-footer__list-item:last-child{
+  .app-footer__list-item:last-child {
     padding-right: 0;
   }
 }
 
-.app-footer_copyright{
+.app-footer_copyright {
   padding: 1rem 0;
   font-size: 0.875rem;
 }
-.app-footer__list-item{
+
+.app-footer__list-item {
   padding: 1rem 1rem;
   font-size: 0.875rem;
-  @media screen and (max-width: 750px){
-   padding: 1rem 0;
+  @media screen and (max-width: 750px) {
+    padding: 1rem 0;
   }
 }
-@media (min-width: 1200px) {
-
-}
-
 </style>

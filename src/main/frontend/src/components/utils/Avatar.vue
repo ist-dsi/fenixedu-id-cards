@@ -1,7 +1,8 @@
 <template>
   <figure
     :class="{ 'figure--icon': icon }"
-    class="figure figure--avatar">
+    class="figure figure--avatar"
+  >
     <img
       v-if="src"
       :src="src"

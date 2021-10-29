@@ -4,23 +4,31 @@
     :withfooter="true"
     :value="open"
     class="modal--lg"
-    @input="$emit('close')">
+    @input="$emit('close')"
+  >
     <template slot="modal-panel">
       <div>
         <loading v-if="hasPendingRequest" />
         <div
           v-if="!hasPendingRequest"
-          class="form">
-          <h1 class="h2">{{ $t('modal.title.requestNew') }}</h1>
+          class="form"
+        >
+          <h1 class="h2">
+            {{ $t('modal.title.requestNew') }}
+          </h1>
           <div
             v-if="!isFromRegistration"
-            class="f-group">
+            class="f-group"
+          >
             <p>{{ $t('label.photo') }}</p>
-            <p class="small f-field--readonly">{{ $t('modal.message.parts.first.editInfo') }} <a
-              class="u-active-link"
-              href="https://fenix.tecnico.ulisboa.pt/personal">{{ $t('modal.message.parts.second.editInfo') }}</a>. {{ $t('modal.message.parts.third.editInfo') }} <a
+            <p class="small f-field--readonly">
+              {{ $t('modal.message.parts.first.editInfo') }} <a
                 class="u-active-link"
-                href="https://fenix.tecnico.ulisboa.pt/personal">{{ $t('modal.message.parts.fourth.editInfo') }}</a>, {{ $t('modal.message.parts.fifth.editInfo') }}.
+                href="https://fenix.tecnico.ulisboa.pt/personal"
+              >{{ $t('modal.message.parts.second.editInfo') }}</a>. {{ $t('modal.message.parts.third.editInfo') }} <a
+                class="u-active-link"
+                href="https://fenix.tecnico.ulisboa.pt/personal"
+              >{{ $t('modal.message.parts.fourth.editInfo') }}</a>, {{ $t('modal.message.parts.fifth.editInfo') }}.
             </p>
           </div>
           <div class="f-group">
@@ -28,24 +36,30 @@
               <p>{{ $t('id-card.label.name') }}</p>
               <a
                 class="u-active-link small"
-                @click.prevent="resetNames">{{ $t('label.reset') }}</a>
+                @click.prevent="resetNames"
+              >{{ $t('label.reset') }}</a>
             </div>
             <tag-input
               :tags="userNamesList"
               :class="{ 'f-field--danger': userNameExceedsLength }"
-              @remove-tag="removeUserName"/>
+              @remove-tag="removeUserName"
+            />
             <p
               v-if="userNameExceedsLength"
-              class="small f-field__validation">
+              class="small f-field__validation"
+            >
               {{ $t('modal.message.editInfo.shorten.name') }}
             </p>
             <p
               v-else
-              class="small">{{ $t('modal.message.editInfo.name.requirements') }}
+              class="small"
+            >
+              {{ $t('modal.message.editInfo.name.requirements') }}
             </p>
             <p
               v-if="wasNameReplaced"
-              class="small f-field__validation">
+              class="small f-field__validation"
+            >
               {{ $t('modal.message.editInfo.name.changed') }}
             </p>
           </div>
@@ -53,18 +67,21 @@
       </div>
     </template>
     <template
-      slot="modal-footer">
+      slot="modal-footer"
+    >
       <div class="btn--group layout-list-cards__modal-footer">
         <button
           :class="{ 'btn--disabled': hasPendingRequest}"
           class="btn btn--light"
-          @click.prevent="$emit('close')">
+          @click.prevent="$emit('close')"
+        >
           {{ $t('btn.cancel') }}
         </button>
         <button
           :class="{ 'btn--disabled': userNameExceedsLength || hasPendingRequest}"
           class="btn btn--primary"
-          @click.prevent="submitCardName">
+          @click.prevent="submitCardName"
+        >
           {{ $t('btn.confirm') }}
         </button>
       </div>
@@ -182,10 +199,7 @@ export default {
 </script>
 
 <style lang="scss">
-// import variables
-@import "@/assets/scss/_variables.scss";
-
-.f-group{
+.f-group {
   text-align: left;
 
   .f-field--readonly {
@@ -211,7 +225,7 @@ export default {
     border-color: $magenta;
   }
 
-  .f-field__validation{
+  .f-field__validation {
     color: $magenta;
   }
 }

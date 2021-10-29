@@ -4,14 +4,15 @@
     class="dropdown"
     @click.prevent="toggle"
   >
-    <slot name="dropdown-trigger"/>
+    <slot name="dropdown-trigger" />
     <transition name="dropdown-slide-down">
       <div
-        v-click-outside="clickOutsideToggle"
         v-show="opened"
+        v-click-outside="clickOutsideToggle"
         :class="`dropdown--${size}`"
-        class="dropdown__panel">
-        <slot name="dropdown-panel"/>
+        class="dropdown__panel"
+      >
+        <slot name="dropdown-panel" />
       </div>
     </transition>
   </div>
@@ -69,7 +70,6 @@ export default {
 }
 </script>
 <style lang="scss">
-
 .dropdown {
   position: relative;
 }
@@ -90,58 +90,54 @@ export default {
   position: absolute;
   top: 1.5em;
   top: calc(100% + 7px);
-  right: -.5rem;
+  right: -0.5rem;
   word-wrap: none;
   white-space: nowrap;
   z-index: 10000;
   opacity: 1;
   transform: translateY(0);
-
   border-radius: 2px;
-  background: #FFF;
+  background: #fff;
   // box-shadow: 0 0.1875rem 0.4375rem 0 rgba(0, 0, 0, 0.1);
-  box-shadow: 0 0 3px 0 rgba(0,0,0,0.10), 0 5px 10px 0 rgba(0,0,0,0.15);
+  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 5px 10px 0 rgba(0, 0, 0, 0.15);
 }
 
-.dropdown__panel:before {
+.dropdown__panel::before {
   position: absolute;
-    content: "";
-    top: -0.5rem;
-    // right: 11%;
-    right: 1rem;
-    // box-shadow: 0 -0.1875rem 0.4375rem 0 rgba(0, 0, 0, 0.1);
-    filter: drop-shadow(0px -2px 1px rgba(0, 0, 0, 0.05));
-    width: 0;
-    height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 8px solid #FFF;
+  content: "";
+  top: -0.5rem;
+  // right: 11%;
+  right: 1rem;
+  // box-shadow: 0 -0.1875rem 0.4375rem 0 rgba(0, 0, 0, 0.1);
+  filter: drop-shadow(0 -2px 1px rgba(0, 0, 0, 0.05));
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 8px solid #fff;
 }
 .dropdown--dropup {
   .dropdown__panel {
     top: unset;
     bottom: calc(100% + 14px);
-    &:before{
+    &::before {
       top: unset;
       bottom: -0.5rem;
-      filter: drop-shadow(0px 2px 1px rgba(0, 0, 0, 0.05));
+      filter: drop-shadow(0 2px 1px rgba(0, 0, 0, 0.05));
       border-bottom: none;
-      border-top: 8px solid #FFF;
+      border-top: 8px solid #fff;
     }
   }
 }
-.dropdown__panel--open {
 
+.dropdown-slide-down-enter-active,
+.dropdown-slide-down-leave-active {
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
-.dropdown-slide-down-enter-active, .dropdown-slide-down-leave-active {
-  transition: transform .3s ease, opacity .3s ease;
-}
-.dropdown-slide-down-enter, .dropdown-slide-down-leave-to /* .fade-leave-active below version 2.1.8 */ {
+.dropdown-slide-down-enter,
+.dropdown-slide-down-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
-  transform: translateY(-.5rem);
-}
-.dropdown--up {
-
+  transform: translateY(-0.5rem);
 }
 
 // Global dropdown menu styles
@@ -150,7 +146,7 @@ export default {
   padding: 16px;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #EEF2F5;
+  border-bottom: 1px solid #eef2f5;
 }
 
 .dropdown-user__text {
@@ -173,13 +169,12 @@ export default {
 .dropdown-menu {
   display: flex;
   flex-direction: column;
-
   position: relative;
 }
 
 .dropdown-menu__item ~ .dropdown-menu__item a,
 .dropdown-menu__item ~ .dropdown-menu__item button {
-    border-top: 1px solid #EEF2F5;
+  border-top: 1px solid #eef2f5;
 }
 
 .dropdown-menu .link-icon {
@@ -201,20 +196,18 @@ export default {
   align-items: center;
   width: 100%;
   padding: 1rem;
-  color: #45555F;
-
-  transition: background-color .2s ease-in-out;
+  color: #45555f;
+  transition: background-color 0.2s ease-in-out;
 
   &:hover,
   &:focus {
-    background-color: #EEF2F5;
-    color: #45555F;
+    background-color: #eef2f5;
+    color: #45555f;
   }
 
   &:active {
     // background-color: #DDE4E9;
-    background-color: darken(#EEF2F5, 2%);
+    background-color: darken(#eef2f5, 2%);
   }
 }
-
 </style>

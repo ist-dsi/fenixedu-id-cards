@@ -1,22 +1,15 @@
+# Class files #
 *.class
 
-# Package Files #
+# Package files #
 *.jar
 *.war
 *.ear
-
-.project
-.classpath
-.settings/
-
-.idea/
-*.iml
 
 # Maven #
 target/
 bin/
 src/main/webapp/tecnico-card
-target/
 package-lock.json
 .DS_Store
 node_modules/
@@ -39,7 +32,8 @@ selenium-debug.log
 .classpath
 .factorypath
 .project
+.settings/
+*.iml
 
 # Analysis #
-
-src/main/frontend/build/analysis.json
+**/src/main/frontend/webpack-bundle-report.html

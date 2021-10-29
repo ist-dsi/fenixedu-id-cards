@@ -110,8 +110,25 @@
                     <skip>${exec.skip}</skip>
                 </configuration>
                 <executions>
-                    <!-- Required: The following will ensure `npm install` is called
-                         before anything else during the 'Default Lifecycle' -->
+                    <!-- The following will ensure `npm run clean:packages` is called
+                         before anything else during the pre-clean phase -->
+                    <execution>
+                        <id>npm install (clean)</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>pre-clean</phase>
+                        <configuration>
+                            <workingDirectory>src/main/frontend</workingDirectory>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>clean:packages</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <!-- The following will ensure `npm install` is called
+                         before anything else during the initialize phase -->
                     <execution>
                         <id>npm install (initialize)</id>
                         <goals>
@@ -126,27 +143,7 @@
                             </arguments>
                         </configuration>
                     </execution>
-                    <!-- Required: The following will ensure `npm install` is called
-                         before anything else during the 'Clean Lifecycle' -->
-                    <execution>
-                        <id>npm install (clean)</id>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <phase>pre-clean</phase>
-                        <configuration>
-                            <workingDirectory>src/main/frontend</workingDirectory>
-                            <executable>npm</executable>
-                            <arguments>
-                                <argument>run</argument>
-                                <argument>clean</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-
-                    <!-- Required: This following calls `npm run build` where 'build' is
-                         the script name I used in my project, change this if yours is
-                             different -->
+                    <!-- Required: The following builds the frontend and packages it -->
                     <execution>
                         <id>npm run build (compile)</id>
                         <goals>
@@ -158,7 +155,7 @@
                             <executable>npm</executable>
                             <arguments>
                                 <argument>run</argument>
-                                <argument>dist</argument>
+                                <argument>package:production</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -166,6 +163,39 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>staging</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.3.2</version>
+                        <executions>
+                            <!-- Required: This following builds the frontend -->
+                            <execution>
+                                <id>npm run build (compile)</id>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <phase>generate-sources</phase>
+                                <configuration>
+                                    <workingDirectory>src/main/frontend</workingDirectory>
+                                    <executable>npm</executable>
+                                    <arguments>
+                                        <argument>run</argument>
+                                        <argument>package:staging</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <distributionManagement>
         <repository>
