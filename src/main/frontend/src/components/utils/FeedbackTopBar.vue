@@ -6,7 +6,7 @@
   >
     <div class="feedback-top-bar-container container">
       <div class="feedback-top-bar__message">
-        <p>{{ topMessage.msg[$i18n.locale()] }}</p>
+        <p>{{ topMessage.msg[$i18n.locale] }}</p>
       </div>
       <button
         v-if="topMessage.dismiss"
