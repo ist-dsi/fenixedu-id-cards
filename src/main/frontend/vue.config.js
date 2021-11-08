@@ -8,8 +8,8 @@ module.exports = {
   ],
   outputDir: 'dist',
   publicPath: process.env.NODE_ENV === 'production'
-  ? `${process.env.VUE_APP_CTX ? process.env.VUE_APP_CTX : ''}/tecnico-card/`
-  : '/',
+    ? `${process.env.VUE_APP_CTX ? process.env.VUE_APP_CTX : ''}/tecnico-card/`
+    : '/',
   indexPath: 'index.html', // generated index file
   filenameHashing: true,
   runtimeCompiler: false,

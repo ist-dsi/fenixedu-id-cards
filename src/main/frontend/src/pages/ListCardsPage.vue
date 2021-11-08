@@ -172,7 +172,9 @@
                       v-if="getStateTransitionDate(transition) && isTransitionComplete(index)"
                       :datetime="getTransitionDateTime(transition)"
                       class="timeline__item-time p--default"
-                    >{{ getStateTransitionDate(transition) }}</time>
+                    >
+                      {{ getStateTransitionDate(transition) }}
+                    </time>
                     <p
                       v-else-if="!getStateTransitionDate(transition) && isTransitionComplete(index)"
                       class="timeline__item-time p--default"
@@ -395,7 +397,9 @@
             <label
               :for="reason.toLowerCase().split(' ')[0]"
               class="f-field__label f-field__label--radio"
-            >{{ $t(`label.requestReason.${reason.toLowerCase().split(' ')[0]}`) }}</label>
+            >
+              {{ $t(`label.requestReason.${reason.toLowerCase().split(' ')[0]}`) }}
+            </label>
           </div>
           <div
             v-if="openOtherReasonInput"
@@ -560,7 +564,6 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import Vue from 'vue'
 import Modal from '@/components/utils/Modal'
 import IdCard from '@/components/IdCard'
 import Loading from '@/components/Loading'
@@ -856,7 +859,7 @@ export default {
       } catch (err) {
         errorCallback()
         this.currentError = {
-          title: Vue.i18n.translate('error.card.preview.title'),
+          title: this.$t('error.card.preview.title'),
           message: err.response.data.error
         }
         this.displayErrorModal = true

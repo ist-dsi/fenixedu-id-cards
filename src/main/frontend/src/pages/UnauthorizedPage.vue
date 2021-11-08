@@ -1,11 +1,30 @@
 <template>
-  <main class="unauthorized-page layout-centered">
-    <h1>{{ $t('title.unauthorized') }}</h1>
-    <p>{{ $t('message.error.unauthorized') }}</p>
+  <main class="layout-centered">
+    <h1>{{ $t('header') }}</h1>
+    <p>{{ $t('description') }}</p>
   </main>
 </template>
-<style lang="scss">
-.unauthorized-page.layout-centered {
+
+<script>
+export default {
+  name: 'UnauthorizedPage',
+  i18n: {
+    messages: {
+      pt: {
+        header: 'Utilizador não autorizado',
+        description: 'De momento, não tem acesso a este serviço.'
+      },
+      en: {
+        header: 'Unauthorized user',
+        description: 'You do not have access to this service.'
+      }
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.layout-centered {
   position: absolute;
   left: 50%;
   top: 6rem;

@@ -28,7 +28,9 @@
                 <tspan
                   x="41"
                   y="21"
-                >CARD</tspan>
+                >
+                  CARD
+                </tspan>
               </text>
             </g>
           </svg>
@@ -166,17 +168,21 @@
               </li>
               <li>
                 <a
-                  v-if="$i18n.locale() === 'en'"
+                  v-if="$i18n.locale === 'en'"
                   href
                   @click.prevent="closeMobileMenu() + setLocale('pt')"
-                >Português</a>
+                >
+                  Português
+                </a>
               </li>
               <li>
                 <a
-                  v-if="$i18n.locale() === 'pt'"
+                  v-if="$i18n.locale === 'pt'"
                   href
                   @click.prevent="closeMobileMenu() + setLocale('en')"
-                >English</a>
+                >
+                  English
+                </a>
               </li>
             </ul>
           </li>
@@ -214,7 +220,7 @@
               <div slot="dropdown-panel">
                 <ul class="dropdown-menu">
                   <li
-                    v-if="$i18n.locale() === 'pt'"
+                    v-if="$i18n.locale === 'pt'"
                     class="dropdown-menu__item"
                   >
                     <a
@@ -226,7 +232,7 @@
                     </a>
                   </li>
                   <li
-                    v-if="$i18n.locale() === 'en'"
+                    v-if="$i18n.locale === 'en'"
                     class="dropdown-menu__item"
                   >
                     <a
