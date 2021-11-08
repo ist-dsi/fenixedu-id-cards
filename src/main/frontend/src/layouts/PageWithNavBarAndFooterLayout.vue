@@ -20,8 +20,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import TopNavBar from '@/components/TopNavBar'
-import BottomBar from '@/components/BottomBar'
+import TopNavBar from '@/components/TopNavBar.vue'
+import BottomBar from '@/components/BottomBar.vue'
 
 export default {
   components: {

@@ -1,13 +1,21 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import store from '@/store'
+
+// Layouts
 import PageWithNavBarAndFooterLayout from '@/layouts/PageWithNavBarAndFooterLayout'
-import ListCardsPage from '@/pages/ListCardsPage'
-import PageNotFoundPage from '@/pages/PageNotFoundPage'
-import AdminUserSearchPage from '@/pages/AdminUserSearchPage'
-import AdminViewUserCardsPage from '@/pages/AdminViewUserCardsPage'
-import UnauthorizedPage from '@/pages/UnauthorizedPage'
-import CardReviewPage from '@/pages/CardReviewPage'
+
+// Main pages
+const ListCardsPage = () => import(/* webpackChunkName: "main" */ '@/pages/ListCardsPage')
+const CardReviewPage = () => import(/* webpackChunkName: "main" */ '@/pages/CardReviewPage')
+
+// Admin pages
+const AdminUserSearchPage = () => import(/* webpackChunkName: "admin" */ '@/pages/AdminUserSearchPage')
+const AdminViewUserCardsPage = () => import(/* webpackChunkName: "admin" */ '@/pages/AdminViewUserCardsPage')
+
+// Standard pages
+const UnauthorizedPage = () => import(/* webpackChunkName: "common" */ '@/pages/UnauthorizedPage')
+const PageNotFoundPage = () => import(/* webpackChunkName: "common" */ '@/pages/PageNotFoundPage')
 
 Vue.use(Router)
 

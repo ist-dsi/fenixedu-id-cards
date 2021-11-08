@@ -1,4 +1,4 @@
-import * as pickupLocations from './PickupLocations'
+import * as pickupLocations from './pickup-locations'
 
 export default {
   [pickupLocations.ALAMEDA_SANTANDER]: 'text.pickupLocations.alameda.santander.schedule',

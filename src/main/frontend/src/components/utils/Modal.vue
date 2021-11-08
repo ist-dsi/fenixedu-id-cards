@@ -50,6 +50,7 @@
     </div>
   </transition>
 </template>
+
 <script>
 export default {
   name: 'Dropdown',
@@ -71,6 +72,7 @@ export default {
   }
 }
 </script>
+
 <style lang="scss">
 .modal {
   position: fixed;

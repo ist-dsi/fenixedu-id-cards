@@ -1,4 +1,4 @@
-import * as pickupLocations from './PickupLocations'
+import * as pickupLocations from './pickup-locations'
 
 export default {
   [pickupLocations.ALAMEDA_SANTANDER]: 'https://goo.gl/maps/dC4k68TZ9xuy6zAVA',

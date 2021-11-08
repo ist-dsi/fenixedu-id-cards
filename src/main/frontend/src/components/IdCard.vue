@@ -80,7 +80,7 @@
 </template>
 
 <script>
-import * as cardStates from '@/utils/cards/CardStates'
+import * as cardStates from '@/utils/cards/card-states'
 
 export default {
   name: 'IdCard',

@@ -62,7 +62,6 @@
 <script>
 export default {
   name: 'CardPreviewPage',
-  components: {},
   props: {
     value: {
       type: String,

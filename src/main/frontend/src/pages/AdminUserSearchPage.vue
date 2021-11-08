@@ -130,7 +130,7 @@
 
 <script>
 import CardsAPI from '@/api/cards'
-import UnauthorizedPage from '@/pages/UnauthorizedPage'
+import UnauthorizedPage from '@/pages/UnauthorizedPage.vue'
 import { mapState } from 'vuex'
 
 export default {
