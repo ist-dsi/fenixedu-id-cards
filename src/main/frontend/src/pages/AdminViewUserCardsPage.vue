@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import ListCardsPage from '@/pages/ListCardsPage'
-import UnauthorizedPage from '@/pages/UnauthorizedPage'
+import ListCardsPage from '@/pages/ListCardsPage.vue'
+import UnauthorizedPage from '@/pages/UnauthorizedPage.vue'
 import { mapState } from 'vuex'
 
 export default {

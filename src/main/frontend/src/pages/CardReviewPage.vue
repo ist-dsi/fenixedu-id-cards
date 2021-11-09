@@ -70,8 +70,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import IdCard from '@/components/IdCard'
-import EditInfo from '@/components/EditInfo'
+import IdCard from '@/components/IdCard.vue'
+import EditInfo from '@/components/EditInfo.vue'
 
 export default {
   name: 'CardPreviewPage',

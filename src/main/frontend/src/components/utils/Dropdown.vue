@@ -17,8 +17,10 @@
     </transition>
   </div>
 </template>
+
 <script>
 import ClickOutside from 'vue-click-outside'
+
 export default {
   name: 'Dropdown',
   directives: {
@@ -69,6 +71,7 @@ export default {
   }
 }
 </script>
+
 <style lang="scss">
 .dropdown {
   position: relative;

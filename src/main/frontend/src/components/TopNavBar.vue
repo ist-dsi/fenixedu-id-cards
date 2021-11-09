@@ -368,9 +368,9 @@
 <script>
 import { mapState } from 'vuex'
 import ClickOutside from 'vue-click-outside'
-import Dropdown from '@/components/utils/Dropdown'
-import Avatar from '@/components/utils/Avatar'
-import FeedbackTopBar from '@/components/utils/FeedbackTopBar'
+import Dropdown from '@/components/utils/Dropdown.vue'
+import Avatar from '@/components/utils/Avatar.vue'
+import FeedbackTopBar from '@/components/utils/FeedbackTopBar.vue'
 
 export default {
   components: {

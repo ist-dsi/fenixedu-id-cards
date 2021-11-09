@@ -564,15 +564,15 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import Modal from '@/components/utils/Modal'
-import IdCard from '@/components/IdCard'
-import Loading from '@/components/Loading'
-import EditInfo from '@/components/EditInfo'
-import * as cardStates from '@/utils/cards/CardStates'
-import * as requestReasons from '@/utils/reasons/RequestReasons'
-import pickupLocationsDisplay from '@/utils/pickup/PickupLocationsDisplay'
-import pickupLocationsSchedule from '@/utils/pickup/PickupLocationsSchedule'
-import pickupLocationsUrls from '@/utils/pickup/PickupLocationsURLs'
+import Modal from '@/components/utils/Modal.vue'
+import IdCard from '@/components/IdCard.vue'
+import Loading from '@/components/Loading.vue'
+import EditInfo from '@/components/EditInfo.vue'
+import * as cardStates from '@/utils/cards/card-states'
+import * as requestReasons from '@/utils/reasons/request-reasons'
+import pickupLocationsDisplay from '@/utils/pickup/pickup-locations-display'
+import pickupLocationsSchedule from '@/utils/pickup/pickup-locations-schedule'
+import pickupLocationsUrls from '@/utils/pickup/pickup-locations-urls'
 
 export default {
   name: 'ListCardsPage',

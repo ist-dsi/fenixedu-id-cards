@@ -92,9 +92,9 @@
 <script>
 import { mapActions } from 'vuex'
 import CardsAPI from '@/api/cards'
-import Loading from '@/components/Loading'
-import Modal from '@/components/utils/Modal'
-import TagInput from '@/components/utils/TagInput'
+import Loading from '@/components/Loading.vue'
+import Modal from '@/components/utils/Modal.vue'
+import TagInput from '@/components/utils/TagInput.vue'
 
 export default {
   name: 'EditInfo',

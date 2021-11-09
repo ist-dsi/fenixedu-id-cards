@@ -53,5 +53,6 @@ export default {
 .page-not-found__icon {
   display: flex;
   justify-content: center;
+  margin-bottom: 2rem;
 }
 </style>
