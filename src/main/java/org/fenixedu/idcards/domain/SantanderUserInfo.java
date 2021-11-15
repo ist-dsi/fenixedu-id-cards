@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 public class SantanderUserInfo extends SantanderUserInfo_Base {
-    private static List<String> excludedNames = new ArrayList<String>(){{
+
+    private static final List<String> excludedNames = new ArrayList<String>(){{
         add("da");
         add("das");
         add("do");
@@ -32,7 +33,7 @@ public class SantanderUserInfo extends SantanderUserInfo_Base {
         super.setCardName(cardName);
     }
 
-    public static boolean isCardNameValid(User user, String cardName) {
+    public static boolean isCardNameValid(final User user, final String cardName) {
 
         if (Strings.isNullOrEmpty(cardName)) {
             return false;
@@ -41,7 +42,7 @@ public class SantanderUserInfo extends SantanderUserInfo_Base {
         final String normalizedFullName = getNormalizedSantanderUserFullName(user);
 
         final List<String> normalizedFullNameParts = new ArrayList<>(Arrays.asList(normalizedFullName.toLowerCase().trim().split(" ")));
-        List<String> cardNameParts = new ArrayList<>(Arrays.asList(cardName.toLowerCase().split(" ")));
+        final List<String> cardNameParts = new ArrayList<>(Arrays.asList(cardName.toLowerCase().split(" ")));
 
         // All card names must be in normalized fullName
         if (!normalizedFullNameParts.containsAll(cardNameParts)) {
@@ -49,7 +50,7 @@ public class SantanderUserInfo extends SantanderUserInfo_Base {
         }
 
         // Card names must not appear in higher frequency that in fullName
-        for(String name: new HashSet<>(cardNameParts)) {
+        for(final String name: new HashSet<>(cardNameParts)) {
             if (Collections.frequency(normalizedFullNameParts, name) < Collections.frequency(cardNameParts, name)) {
                 return false;
             }
@@ -57,12 +58,12 @@ public class SantanderUserInfo extends SantanderUserInfo_Base {
 
         // Names must appear in the same order as in fullName
         for (int i = 0; i < cardNameParts.size() - 1; i++) {
-            String currentCardName = cardNameParts.get(i);
-            String nextCardName = cardNameParts.get(i + 1);
+            final String currentCardName = cardNameParts.get(i);
+            final String nextCardName = cardNameParts.get(i + 1);
             boolean currentFound = false;
             boolean orderSatisfied = false;
 
-            for (String currentName : normalizedFullNameParts) {
+            for (final String currentName : normalizedFullNameParts) {
                 if (currentName.equals(currentCardName)) {
                     currentFound = true;
                 }
@@ -121,4 +122,5 @@ public class SantanderUserInfo extends SantanderUserInfo_Base {
 
         return name;
     }
+
 }

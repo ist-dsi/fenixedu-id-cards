@@ -10,10 +10,10 @@ public class SantanderStateDto {
     public SantanderCardState state;
     public String when;
 
-    public SantanderStateDto(SantanderCardStateTransition transition) {
+    public SantanderStateDto(final SantanderCardStateTransition transition) {
         this.state = transition.getState();
 
-        DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+        final DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("dd/MM/yyyy");
         DateTime transitionDate = transition.getTransitionDate();
 
         // Date of arrival at pickup location

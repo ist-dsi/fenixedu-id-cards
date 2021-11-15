@@ -18,7 +18,7 @@ public class SantanderCardStateTransition extends SantanderCardStateTransition_B
         super();
     }
 
-    public SantanderCardStateTransition(SantanderCardInfo card, SantanderCardState state, DateTime transitionDate) {
+    public SantanderCardStateTransition(final SantanderCardInfo card, final SantanderCardState state, final DateTime transitionDate) {
         setSantanderCard(card);
         setState(state);
         setTransitionDate(transitionDate);

@@ -8,7 +8,7 @@ public class SantanderCardNoPermissionException extends SantanderValidationExcep
         super();
     }
 
-    public SantanderCardNoPermissionException(String msg) {
+    public SantanderCardNoPermissionException(final String msg) {
         super(msg);
     }
 }

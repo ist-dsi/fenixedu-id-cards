@@ -1,6 +1,7 @@
 package org.fenixedu.idcards.dto;
 
 public class DeliverSessionMifareRequest {
+
     private String mifare;
     private String istId;
 
@@ -8,7 +9,7 @@ public class DeliverSessionMifareRequest {
         return mifare;
     }
 
-    public void setMifare(String mifare) {
+    public void setMifare(final String mifare) {
         this.mifare = mifare;
     }
 
@@ -16,7 +17,8 @@ public class DeliverSessionMifareRequest {
         return istId;
     }
 
-    public void setIstId(String istId) {
+    public void setIstId(final String istId) {
         this.istId = istId;
     }
+
 }

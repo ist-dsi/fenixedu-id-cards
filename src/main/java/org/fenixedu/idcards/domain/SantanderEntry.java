@@ -36,16 +36,16 @@ public class SantanderEntry extends SantanderEntry_Base {
     public static Comparator<SantanderEntry> REVERSE_COMPARATOR_BY_CREATED_DATE = COMPARATOR_BY_CREATED_DATE.reversed();
 
     @Atomic(mode = TxMode.WRITE)
-    public static SantanderEntry importEntry(User user, RequestedCardBean requestedCardBean) {
+    public static SantanderEntry importEntry(final User user, final RequestedCardBean requestedCardBean) {
         if (hasMifare(user, requestedCardBean.getMifare()))
             return null;
 
         return new SantanderEntry(user, requestedCardBean);
     }
 
-    private SantanderEntry(User user, RequestedCardBean requestedCardBean) {
+    private SantanderEntry(final User user, final RequestedCardBean requestedCardBean) {
         setBennu(Bennu.getInstance());
-        SantanderEntry currentEntry = user.getCurrentSantanderEntry();
+        final SantanderEntry currentEntry = user.getCurrentSantanderEntry();
         if (currentEntry != null) {
             setPrevious(currentEntry);
             currentEntry.setNext(this);
@@ -56,7 +56,8 @@ public class SantanderEntry extends SantanderEntry_Base {
         setResponseLine("");
         setErrorDescription("");
         setWasPickupNotified(true);
-        SantanderCardInfo cardInfo = new SantanderCardInfo();
+
+        final SantanderCardInfo cardInfo = new SantanderCardInfo();
         cardInfo.setIdentificationNumber(requestedCardBean.getIdentificationNumber());
         cardInfo.setCardName(requestedCardBean.getCardName());
         cardInfo.setMifareNumber(requestedCardBean.getMifare());
@@ -64,16 +65,16 @@ public class SantanderEntry extends SantanderEntry_Base {
         cardInfo.setSerialNumber(requestedCardBean.getCardSerialNumber());
         cardInfo.setPickupLocation(PickupLocation.ALAMEDA_SANTANDER);
 
-        DateTime cardExpiryTime = requestedCardBean.getExpiryDate();
+        final DateTime cardExpiryTime = requestedCardBean.getExpiryDate();
         cardInfo.setExpiryDate(cardExpiryTime);
 
-        String photo = requestedCardBean.getPhoto();
+        final String photo = requestedCardBean.getPhoto();
         if (photo != null && photo.length() > 0)
             cardInfo.setPhoto(BaseEncoding.base64().decode(photo));
 
         setSantanderCardInfo(cardInfo);
 
-        DateTime requestDate = requestedCardBean.getRequestDate();
+        final DateTime requestDate = requestedCardBean.getRequestDate();
 
         updateState(SantanderCardState.PENDING, requestDate);
         updateState(SantanderCardState.NEW, requestDate);
@@ -85,12 +86,12 @@ public class SantanderEntry extends SantanderEntry_Base {
         } else {
             setWasExpiringNotified(false);
         }
-
     }
 
-    public SantanderEntry(User user, CardPreviewBean cardPreviewBean, PickupLocation pickupLocation, String requestReason) {
+    public SantanderEntry(final User user, final CardPreviewBean cardPreviewBean, final PickupLocation pickupLocation,
+                          final String requestReason) {
         setBennu(Bennu.getInstance());
-        SantanderEntry currentEntry = user.getCurrentSantanderEntry();
+        final SantanderEntry currentEntry = user.getCurrentSantanderEntry();
         if (currentEntry != null) {
             setPrevious(currentEntry);
             currentEntry.setNext(this);
@@ -104,8 +105,8 @@ public class SantanderEntry extends SantanderEntry_Base {
     }
 
     public CardPreviewBean getCardPreviewBean() {
-        CardPreviewBean cardPreviewBean = new CardPreviewBean();
-        SantanderCardInfo card = getSantanderCardInfo();
+        final CardPreviewBean cardPreviewBean = new CardPreviewBean();
+        final SantanderCardInfo card = getSantanderCardInfo();
         cardPreviewBean.setCardName(card.getCardName());
         cardPreviewBean.setExpiryDate(card.getExpiryDate());
         cardPreviewBean.setRole(card.getRole());
@@ -119,7 +120,7 @@ public class SantanderEntry extends SantanderEntry_Base {
         return getSantanderCardInfo().getFirstTransitionDate();
     }
 
-    public void reset(CardPreviewBean cardPreviewBean, PickupLocation pickupLocation, String requestReason) {
+    public void reset(final CardPreviewBean cardPreviewBean, final PickupLocation pickupLocation, final String requestReason) {
         setRequestReason(requestReason);
         setRequestLine(cardPreviewBean.getRequestLine());
         setResponseLine("");
@@ -131,14 +132,13 @@ public class SantanderEntry extends SantanderEntry_Base {
     }
     
     @Atomic(mode = TxMode.WRITE)
-    public void saveResponse(CreateRegisterResponse response) {
-
+    public void saveResponse(final CreateRegisterResponse response) {
         if (response.wasRegisterSuccessful()) {
             update(SantanderCardState.NEW, response, true);
             return;
         }
 
-        ErrorType errorType = response.getErrorType();
+        final ErrorType errorType = response.getErrorType();
         switch (errorType) {
             case REQUEST_REFUSED:
                 update(SantanderCardState.IGNORED, response, false);
@@ -152,35 +152,39 @@ public class SantanderEntry extends SantanderEntry_Base {
         setLastUpdate(DateTime.now());
     }
 
-    private void update(SantanderCardState state, CreateRegisterResponse response, boolean notify) {
+    private void update(final SantanderCardState state, final CreateRegisterResponse response, final boolean notify) {
         updateState(state, DateTime.now(), notify);
         setResponseLine(Strings.isNullOrEmpty(response.getResponseLine()) ? "" : response.getResponseLine());
         setErrorDescription(Strings.isNullOrEmpty(response.getErrorDescription()) ? "" : response.getErrorDescription());
     }
 
     @Atomic(mode = TxMode.WRITE)
-    public void updateIssued(GetRegisterResponse registerData) {
-        SantanderCardInfo cardInfo = getSantanderCardInfo();
+    public void updateIssued(final GetRegisterResponse registerData) {
+        final SantanderCardInfo cardInfo = getSantanderCardInfo();
+        final DateTime expeditionDate = registerData.getExpeditionDate() == null ? DateTime.now() : registerData.getExpeditionDate();
+
         cardInfo.setMifareNumber(registerData.getMifare());
         cardInfo.setSerialNumber(registerData.getSerialNumber());
-        if (cardInfo.getExpiryDate() == null)
+
+        if (cardInfo.getExpiryDate() == null) {
             cardInfo.setExpiryDate(registerData.getExpiryDate());
-        DateTime expeditionDate = registerData.getExpeditionDate() == null ? DateTime.now() : registerData.getExpeditionDate();
+        }
+
         updateState(SantanderCardState.ISSUED, expeditionDate);
     }
 
     @Atomic(mode = TxMode.WRITE)
-    public void updateState(SantanderCardState state) {
+    public void updateState(final SantanderCardState state) {
         updateState(state, DateTime.now(), false);
     }
 
 
     @Atomic(mode = TxMode.WRITE)
-    private void updateState(SantanderCardState state, DateTime time) {
+    private void updateState(final SantanderCardState state, final DateTime time) {
         updateState(state, time, false);
     }
 
-    private void updateState(SantanderCardState state, DateTime time, boolean notify) {
+    private void updateState(final SantanderCardState state, final DateTime time, final boolean notify) {
         if (getSantanderCardInfo().getSantanderCardStateTransitionsSet().stream()
                 .noneMatch(t -> state.equals(t.getState()))) {
             createSantanderCardStateTransition(state, time);
@@ -191,10 +195,10 @@ public class SantanderEntry extends SantanderEntry_Base {
         setLastUpdate(time);
     }
 
-    private void createSantanderCardStateTransition(SantanderCardState state, DateTime date) {
-        SantanderCardInfo cardInfo = getSantanderCardInfo();
-        SantanderCardStateTransition lastTransition = cardInfo.getLastTransition();
-        DateTime lastTransitionTime = lastTransition != null ? lastTransition.getTransitionDate() : null;
+    private void createSantanderCardStateTransition(final SantanderCardState state, final DateTime date) {
+        final SantanderCardInfo cardInfo = getSantanderCardInfo();
+        final SantanderCardStateTransition lastTransition = cardInfo.getLastTransition();
+        final DateTime lastTransitionTime = lastTransition != null ? lastTransition.getTransitionDate() : null;
 
         if (lastTransition != null && SantanderCardState.EXPIRED.equals(lastTransition.getState()) &&
                 SantanderCardState.DELIVERED.equals(state)) {
@@ -208,22 +212,21 @@ public class SantanderEntry extends SantanderEntry_Base {
         }
     }
 
-    public static List<SantanderEntry> getSantanderEntryHistory(User user) {
-        LinkedList<SantanderEntry> history = new LinkedList<>();
-
+    public static List<SantanderEntry> getSantanderEntryHistory(final User user) {
+        final LinkedList<SantanderEntry> history = new LinkedList<>();
         for(SantanderEntry entry = user.getCurrentSantanderEntry(); entry != null; entry = entry.getPrevious()) {
             if (entry.getState() != SantanderCardState.WAITING_INFO) {
                 history.add(entry);
             }
         }
-
         return history;
     }
 
     @Deprecated
-    public static List<SantanderCardInfo> getSantanderCardHistory(User user) {
+    public static List<SantanderCardInfo> getSantanderCardHistory(final User user) {
         return getSantanderEntryHistory(user).stream()
-                .filter(e -> e.getSantanderCardInfo() != null && e.getState() != SantanderCardState.IGNORED && e.getState() != SantanderCardState.PENDING)
+                .filter(e -> e.getSantanderCardInfo() != null && e.getState() != SantanderCardState.IGNORED
+                        && e.getState() != SantanderCardState.PENDING)
                 .sorted(REVERSE_COMPARATOR_BY_CREATED_DATE)
                 .map(SantanderEntry::getSantanderCardInfo)
                 .collect(Collectors.toList());
@@ -240,22 +243,21 @@ public class SantanderEntry extends SantanderEntry_Base {
         } else {
             return super.getErrorDescription();
         }
-
     }
 
     public boolean isCardIssued() {
-        SantanderCardState state = getState();
+        final SantanderCardState state = getState();
         return state == SantanderCardState.ISSUED || state == SantanderCardState.DELIVERED || state == SantanderCardState.EXPIRED;
     }
 
     public boolean canRegisterNew() {
-        SantanderCardState state = getState();
+        final SantanderCardState state = getState();
         return (state == SantanderCardState.WAITING_INFO) || (state == SantanderCardState.IGNORED && getPrevious() == null);
     }
     
     public boolean canReemitCard() {
-        SantanderCardState state = getState();
-        SantanderEntry previous = getPrevious();
+        final SantanderCardState state = getState();
+        final SantanderEntry previous = getPrevious();
         return isCardIssued() || (state == SantanderCardState.IGNORED && previous != null && previous.isCardIssued());
     }
 
@@ -263,14 +265,14 @@ public class SantanderEntry extends SantanderEntry_Base {
         if (getState() == SantanderCardState.IGNORED && getPrevious() == null)
             return false;
 
-        DateTime expiryDate = getState() == SantanderCardState.IGNORED ? getPrevious().getSantanderCardInfo()
+        final DateTime expiryDate = getState() == SantanderCardState.IGNORED ? getPrevious().getSantanderCardInfo()
                 .getExpiryDate() : getSantanderCardInfo().getExpiryDate();
 
         return canReemitCard() && expiryDate != null
                 && Days.daysBetween(DateTime.now().withTimeAtStartOfDay(), expiryDate.withTimeAtStartOfDay()).getDays() <= 60;
     }
 
-    public static boolean hasMifare(User user, String mifare) {
+    public static boolean hasMifare(final User user, final String mifare) {
         if (Strings.isNullOrEmpty(mifare)) {
             return false;
         }
@@ -279,7 +281,7 @@ public class SantanderEntry extends SantanderEntry_Base {
                 && e.getSantanderCardInfo().getMifareNumber().equals(mifare));
     }
 
-    public static String getLastMifareNumber(User user) {
+    public static String getLastMifareNumber(final User user) {
         return SantanderEntry.getSantanderEntryHistory(user).stream()
                 .filter(e -> e.getSantanderCardInfo().getMifareNumber() != null
                         && e.getSantanderCardInfo().isDelivered())
@@ -288,18 +290,18 @@ public class SantanderEntry extends SantanderEntry_Base {
                 .orElse(null);
     }
 
-    public static SantanderEntry readByUsernameAndRoleCode(String username, String roleCode) {
-        User user = User.findByUsername(username);
+    public static SantanderEntry readByUsernameAndRoleCode(final String username, final String roleCode) {
+        final User user = User.findByUsername(username);
         if (user == null) {
             return null;
         }
 
-        SantanderEntryValidator entryValidator = new SantanderEntryValidator();
-
+        final SantanderEntryValidator entryValidator = new SantanderEntryValidator();
         return SantanderEntry.getSantanderEntryHistory(user).stream()
                 .filter(e -> e.getSantanderCardInfo().isDelivered() &&
                         roleCode.equals(entryValidator.getValue(e.getRequestLine(), 21)))
                 .min(REVERSE_COMPARATOR_BY_CREATED_DATE)
                 .orElse(null);
     }
+
 }

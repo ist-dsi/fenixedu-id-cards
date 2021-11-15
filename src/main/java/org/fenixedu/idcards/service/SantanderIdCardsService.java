@@ -47,39 +47,38 @@ public class SantanderIdCardsService {
      */
     private static final int SANTANDER_SYNC_DAYS = 1;
 
-    private SantanderSdkService santanderCardService;
-    private IUserInfoService userInfoService;
+    private final SantanderSdkService santanderCardService;
+    private final IUserInfoService userInfoService;
 
     @Autowired
-    public SantanderIdCardsService(SantanderSdkService santanderCardService, IUserInfoService userInfoService) {
+    public SantanderIdCardsService(final SantanderSdkService santanderCardService, final IUserInfoService userInfoService) {
         this.santanderCardService = santanderCardService;
         this.userInfoService = userInfoService;
 
         Signal.register(SantanderEntry.STATE_CHANGED, CardNotifications::notifyStateTransition);
     }
 
-    public SantanderCardDto generateCardPreview(User user) throws SantanderValidationException {
-        SantanderUser santanderUser = new SantanderUser(user, userInfoService);
-        // Action doesnt matter
-        CreateRegisterRequest createRegisterRequest = santanderUser.toCreateRegisterRequest(RegisterAction.NOVO);
-        CardPreviewBean cardPreviewBean = santanderCardService.generateCardRequest(createRegisterRequest);
+    public SantanderCardDto generateCardPreview(final User user) throws SantanderValidationException {
+        final SantanderUser santanderUser = new SantanderUser(user, userInfoService);
+        // Action doesn't matter
+        final CreateRegisterRequest createRegisterRequest = santanderUser.toCreateRegisterRequest(RegisterAction.NOVO);
+        final CardPreviewBean cardPreviewBean = santanderCardService.generateCardRequest(createRegisterRequest);
         return new SantanderCardDto(cardPreviewBean);
     }
 
-    public List<SantanderCardDto> getUserSantanderCards(User user) {
-
+    public List<SantanderCardDto> getUserSantanderCards(final User user) {
         return SantanderEntry.getSantanderEntryHistory(user).stream()
-                .map(entry -> new SantanderCardDto(entry.getSantanderCardInfo())).collect(Collectors.toList());
+                .map(entry -> new SantanderCardDto(entry.getSantanderCardInfo()))
+                .collect(Collectors.toList());
     }
 
-    public List<RegisterAction> getPersonAvailableActions(User user) {
-        SantanderEntry personEntry = getOrUpdateState(user);
+    public List<RegisterAction> getPersonAvailableActions(final User user) {
+        final SantanderEntry personEntry = getOrUpdateState(user);
         return getPersonAvailableActions(personEntry);
     }
 
-    public List<RegisterAction> getPersonAvailableActions(SantanderEntry personEntry) {
-
-        List<RegisterAction> actions = new LinkedList<>();
+    public List<RegisterAction> getPersonAvailableActions(final SantanderEntry personEntry) {
+        final List<RegisterAction> actions = new LinkedList<>();
 
         if (personEntry == null || personEntry.canRegisterNew()) {
             actions.add(RegisterAction.NOVO);
@@ -97,15 +96,14 @@ public class SantanderIdCardsService {
         return actions;
     }
 
-    public SantanderEntry getOrUpdateState(User user) {
-        SantanderEntry entry = user.getCurrentSantanderEntry();
+    public SantanderEntry getOrUpdateState(final User user) {
+        final SantanderEntry entry = user.getCurrentSantanderEntry();
 
         if (entry == null) {
             return null;
         }
 
-        SantanderCardState cardState = entry.getState();
-
+        final SantanderCardState cardState = entry.getState();
         switch (cardState) {
             case IGNORED:
             case EXPIRED:
@@ -130,17 +128,17 @@ public class SantanderIdCardsService {
         }
     }
 
-    private SantanderEntry checkAndUpdateState(SantanderEntry entry) {
-        GetRegisterResponse registerData = getRegister(entry.getUser());
+    private SantanderEntry checkAndUpdateState(final SantanderEntry entry) {
+        final GetRegisterResponse registerData = getRegister(entry.getUser());
         return checkAndUpdateState(entry, registerData);
     }
 
-    private SantanderEntry checkAndUpdateState(SantanderEntry entry, GetRegisterResponse registerData) {
+    private SantanderEntry checkAndUpdateState(final SantanderEntry entry, final GetRegisterResponse registerData) {
         if (registerData == null) {
             return entry;
         }
 
-        GetRegisterStatus status = registerData.getStatus();
+        final GetRegisterStatus status = registerData.getStatus();
 
         switch (status) {
             case REJECTED_REQUEST:
@@ -179,16 +177,15 @@ public class SantanderIdCardsService {
         return entry;
     }
 
-    private SantanderEntry synchronizeFenixAndSantanderStates(User user, SantanderEntry entry) {
-        GetRegisterResponse registerData = getRegister(user);
+    private SantanderEntry synchronizeFenixAndSantanderStates(final User user, final SantanderEntry entry) {
+        final GetRegisterResponse registerData = getRegister(user);
 
         if (registerData == null) {
             return entry;
         }
 
-        GetRegisterStatus status = registerData.getStatus();
-
-        SantanderEntry previousEntry = entry.getPrevious();
+        final GetRegisterStatus status = registerData.getStatus();
+        final SantanderEntry previousEntry = entry.getPrevious();
 
         if (previousEntry == null) {
             if (status.equals(GetRegisterStatus.NO_RESULT) && entry.getLastUpdate().plusDays(SANTANDER_SYNC_DAYS).isBeforeNow()) {
@@ -199,33 +196,28 @@ public class SantanderIdCardsService {
             }
         }
 
-        String newMifare = registerData.getMifare();
-
+        final String newMifare = registerData.getMifare();
         if (Strings.isNullOrEmpty(newMifare) || !SantanderEntry.hasMifare(user, newMifare)) {
-
             return checkAndUpdateState(entry, registerData);
         } else if (entry.getLastUpdate().plusDays(SANTANDER_SYNC_DAYS).isBeforeNow()) {
             entry.updateState(SantanderCardState.IGNORED);
         }
+
         return entry;
     }
 
-    private GetRegisterResponse getRegister(User user) {
+    private GetRegisterResponse getRegister(final User user) {
         final String userName = user.getUsername();
-
         try {
-            GetRegisterResponse statusInformation = santanderCardService.getRegister(userName);
-            return statusInformation;
-
-        } catch (Throwable t) {
+            return santanderCardService.getRegister(userName);
+        } catch (final Throwable t) {
             LOGGER.error(String.format("Something went wrong getting info of user %s", user.getUsername()), t);
             return null;
         }
     }
 
-    public SantanderEntry createRegister(User user, String requestReason) throws SantanderValidationException {
-        List<RegisterAction> availableActions = getPersonAvailableActions(user);
-
+    public SantanderEntry createRegister(final User user, final String requestReason) throws SantanderValidationException {
+        final List<RegisterAction> availableActions = getPersonAvailableActions(user);
         if (availableActions.contains(RegisterAction.NOVO)) {
             return createRegister(user, RegisterAction.NOVO, requestReason);
         } else if (availableActions.contains(RegisterAction.RENU)) {
@@ -235,28 +227,25 @@ public class SantanderIdCardsService {
         } else {
             throw new SantanderValidationException("santander.id.cards.error.user.cannot.request.card");
         }
-
     }
 
-    public SantanderEntry createRegister(User user, RegisterAction action, String requestReason)
-            throws SantanderValidationException {
+    public SantanderEntry createRegister(final User user, final RegisterAction action, final String requestReason)
+                                         throws SantanderValidationException {
         if (!getPersonAvailableActions(user.getCurrentSantanderEntry()).contains(action)) {
             LOGGER.debug("Action (" + action.name() + ") not available for user " + user.getUsername());
             throw new SantanderValidationException("santander.id.cards.error.wrong.request.action");
         }
 
-        SantanderUser santanderUser = new SantanderUser(user, userInfoService);
-        CreateRegisterRequest createRegisterRequest = santanderUser.toCreateRegisterRequest(action);
-
-        CardPreviewBean cardPreviewBean = santanderCardService.generateCardRequest(createRegisterRequest);
+        final SantanderUser santanderUser = new SantanderUser(user, userInfoService);
+        final CreateRegisterRequest createRegisterRequest = santanderUser.toCreateRegisterRequest(action);
+        final CardPreviewBean cardPreviewBean = santanderCardService.generateCardRequest(createRegisterRequest);
         return createOrResetEntry(user, cardPreviewBean, santanderUser.getUserPickupLocation(), requestReason);
     }
 
     @Atomic(mode = TxMode.READ)
-    public void sendRegister(User user, SantanderEntry santanderEntry) throws SantanderValidationException {
-
-        CardPreviewBean cardPreviewBean = santanderEntry.getCardPreviewBean();
-        CreateRegisterResponse response = santanderCardService.createRegister(cardPreviewBean);
+    public void sendRegister(final User user, final SantanderEntry santanderEntry) throws SantanderValidationException {
+        final CardPreviewBean cardPreviewBean = santanderEntry.getCardPreviewBean();
+        final CreateRegisterResponse response = santanderCardService.createRegister(cardPreviewBean);
 
         santanderEntry.saveResponse(response);
 
@@ -266,16 +255,15 @@ public class SantanderIdCardsService {
     }
 
     @Atomic(mode = TxMode.WRITE)
-    private SantanderEntry createOrResetEntry(User user, CardPreviewBean cardPreviewBean, PickupLocation pickupLocation,
-            String requestReason) throws SantanderValidationException {
-        SantanderEntry entry = user.getCurrentSantanderEntry();
-
+    private SantanderEntry createOrResetEntry(final User user, final CardPreviewBean cardPreviewBean,
+                                              final PickupLocation pickupLocation, final String requestReason)
+                                              throws SantanderValidationException {
+        final SantanderEntry entry = user.getCurrentSantanderEntry();
         if (entry == null) {
             return new SantanderEntry(user, cardPreviewBean, pickupLocation, requestReason);
         }
 
-        SantanderCardState cardState = entry.getState();
-
+        final SantanderCardState cardState = entry.getState();
         switch (cardState) {
             case IGNORED:
             case WAITING_INFO:
@@ -296,36 +284,30 @@ public class SantanderIdCardsService {
         if (user == null) {
             return false;
         }
-
-        SantanderEntry currentSantanderEntry = user.getCurrentSantanderEntry();
-
+        final SantanderEntry currentSantanderEntry = user.getCurrentSantanderEntry();
         if (currentSantanderEntry == null) {
             return true;
         }
-
         return !getPersonAvailableActions(currentSantanderEntry).isEmpty();
     }
 
-    public String getErrorMessage(Locale locale, String errorLabels) {
+    public String getErrorMessage(Locale locale, final String errorLabels) {
         if (locale == null) {
             locale = Locale.getDefault();
         }
-
-        String[] errorMessages = errorLabels.split("\n");
-        StringBuilder errorDescription = new StringBuilder();
-
-        for (String errorMessage : errorMessages) {
+        final String[] errorMessages = errorLabels.split("\n");
+        final StringBuilder errorDescription = new StringBuilder();
+        for (final String errorMessage : errorMessages) {
             errorDescription.append(BundleUtil.getString("resources.CardGenerationResources", locale, errorMessage));
         }
-
         return errorDescription.toString();
     }
 
     public JsonObject getUserNames(final User user) {
         final String normalizedGivenNames = SantanderUserInfo.getNormalizedSantanderUserGivenNames(user);
         final String normalizedFamilyNames = SantanderUserInfo.getNormalizedSantanderUserFamilyNames(user);
-        JsonObject response = new JsonObject();
-        JsonObject userNames = new JsonObject();
+        final JsonObject response = new JsonObject();
+        final JsonObject userNames = new JsonObject();
 
         userNames.addProperty("givenNames", normalizedGivenNames);
         userNames.addProperty("familyNames", normalizedFamilyNames);

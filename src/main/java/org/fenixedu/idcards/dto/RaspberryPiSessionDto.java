@@ -17,22 +17,20 @@ public class RaspberryPiSessionDto {
     private RaspberryPiSessionDto() {
     }
 
-    public static RaspberryPiSessionDto create(RaspberryPiSession raspberryPiSession) {
-        RaspberryPiSessionDto dto = new RaspberryPiSessionDto();
+    public static RaspberryPiSessionDto create(final RaspberryPiSession raspberryPiSession) {
+        final RaspberryPiSessionDto dto = new RaspberryPiSessionDto();
+        final DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("HH:mm dd/MM/YYYY");
 
-        DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("HH:mm dd/MM/YYYY");
         dto.setCreatedAt(dateFormatter.print(raspberryPiSession.getCreatedAt()));
-
         dto.setUserMifare(raspberryPiSession.getUserMifare());
 
-        SantanderCardInfo cardInfo = raspberryPiSession.getUserCardInfo();
+        final SantanderCardInfo cardInfo = raspberryPiSession.getUserCardInfo();
         if (cardInfo != null) {
             dto.setUserIstId(cardInfo.getIdentificationNumber());
             dto.setUserPhoto(BaseEncoding.base64().encode(cardInfo.getPhoto()));
         }
 
         dto.setIpAddress(raspberryPiSession.getIpAddress());
-
         return dto;
     }
 
@@ -40,7 +38,7 @@ public class RaspberryPiSessionDto {
         return userMifare;
     }
 
-    public void setUserMifare(String userMifare) {
+    public void setUserMifare(final String userMifare) {
         this.userMifare = userMifare;
     }
 
@@ -48,7 +46,7 @@ public class RaspberryPiSessionDto {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(final String createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -56,7 +54,7 @@ public class RaspberryPiSessionDto {
         return ipAddress;
     }
 
-    public void setIpAddress(String ipAddress) {
+    public void setIpAddress(final String ipAddress) {
         this.ipAddress = ipAddress;
     }
 
@@ -64,7 +62,7 @@ public class RaspberryPiSessionDto {
         return userPhoto;
     }
 
-    public void setUserPhoto(String userPhoto) {
+    public void setUserPhoto(final String userPhoto) {
         this.userPhoto = userPhoto;
     }
 
@@ -72,7 +70,8 @@ public class RaspberryPiSessionDto {
         return userIstId;
     }
 
-    public void setUserIstId(String userIstId) {
+    public void setUserIstId(final String userIstId) {
         this.userIstId = userIstId;
     }
+
 }

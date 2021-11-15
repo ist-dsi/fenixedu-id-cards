@@ -15,7 +15,7 @@ public class SantanderCardInfo extends SantanderCardInfo_Base {
         super();
     }
     
-    public SantanderCardInfo(CardPreviewBean cardPreviewBean, PickupLocation pickupLocation) {
+    public SantanderCardInfo(final CardPreviewBean cardPreviewBean, final PickupLocation pickupLocation) {
         setBennu(Bennu.getInstance());
         setIdentificationNumber(cardPreviewBean.getIdentificationNumber());
         setCardName(cardPreviewBean.getCardName());
@@ -26,30 +26,32 @@ public class SantanderCardInfo extends SantanderCardInfo_Base {
     }
 
     public DateTime getFirstTransitionDate() {
-        SantanderCardStateTransition stateTransition = getSantanderCardStateTransitionsSet().stream()
-                .min(SantanderCardStateTransition.COMPARATOR_BY_TRANSITION_DATE).orElse(null);
+        final SantanderCardStateTransition stateTransition = getSantanderCardStateTransitionsSet().stream()
+                .min(SantanderCardStateTransition.COMPARATOR_BY_TRANSITION_DATE)
+                .orElse(null);
         return stateTransition == null ? null : stateTransition.getTransitionDate();
     }
 
     public List<SantanderCardStateTransition> getOrderedTransitions() {
         return getSantanderCardStateTransitionsSet().stream()
-                .sorted(SantanderCardStateTransition.COMPARATOR_BY_TRANSITION_DATE).collect(Collectors.toList());
+                .sorted(SantanderCardStateTransition.COMPARATOR_BY_TRANSITION_DATE)
+                .collect(Collectors.toList());
     }
 
     public SantanderCardStateTransition getLastTransition() {
         return getSantanderCardStateTransitionsSet().stream()
-                .min(SantanderCardStateTransition.REVERSED_COMPARATOR_BY_TRANSITION_DATE).orElse(null);
+                .min(SantanderCardStateTransition.REVERSED_COMPARATOR_BY_TRANSITION_DATE)
+                .orElse(null);
     }
 
     public SantanderCardState getCurrentState() {
-        SantanderCardStateTransition stateTransition = getSantanderCardStateTransitionsSet().stream()
+        final SantanderCardStateTransition stateTransition = getSantanderCardStateTransitionsSet().stream()
                 .min(SantanderCardStateTransition.REVERSED_COMPARATOR_BY_TRANSITION_DATE)
                 .orElse(null);
 
         if (stateTransition == null) {
             return null;
         }
-
         return stateTransition.getState();
     }
 
@@ -60,7 +62,7 @@ public class SantanderCardInfo extends SantanderCardInfo_Base {
 
     @Atomic
     public void deleteTransitions() {
-        for (SantanderCardStateTransition transition: getSantanderCardStateTransitionsSet()) {
+        for (final SantanderCardStateTransition transition: getSantanderCardStateTransitionsSet()) {
             transition.setSantanderCard(null);
         }
     }

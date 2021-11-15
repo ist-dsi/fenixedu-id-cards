@@ -40,21 +40,19 @@ public class IdCardsController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IdCardsController.class);
 
-    private SantanderIdCardsService cardService;
+    private final SantanderIdCardsService cardService;
 
     @Autowired
-    public IdCardsController(SantanderIdCardsService cardService) {
+    public IdCardsController(final SantanderIdCardsService cardService) {
         this.cardService = cardService;
     }
 
     @RequestMapping(value = "{username}", method = RequestMethod.GET)
-    public ResponseEntity<?> getUserCards(@PathVariable String username, User user) {
-        User usernameUser = User.findByUsername(username);
-
+    public ResponseEntity<?> getUserCards(final @PathVariable String username, final User user) {
+        final User usernameUser = User.findByUsername(username);
         if (usernameUser == null || (!isIdCardManager(user) && user != usernameUser)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
         return getUserCardsResponse(usernameUser);
     }
 
@@ -67,8 +65,8 @@ public class IdCardsController {
     }
 
     @RequestMapping(value = "user-info", method = RequestMethod.GET)
-    public ResponseEntity<?> userInfo(User user) {
-        JsonObject response = new JsonObject();
+    public ResponseEntity<?> userInfo(final User user) {
+        final JsonObject response = new JsonObject();
         response.addProperty("admin", isIdCardManager(user));
         response.addProperty("canRequestCard", cardService.canRequestCard(user));
         response.addProperty("language", I18N.getLocale().getLanguage());
@@ -76,34 +74,33 @@ public class IdCardsController {
     }
 
     @RequestMapping(value = "user-names", method = RequestMethod.GET)
-    public ResponseEntity<?> userNames(User user) {
+    public ResponseEntity<?> userNames(final User user) {
         final JsonObject response = cardService.getUserNames(user);
         return ResponseEntity.ok(response.toString());
     }
 
     @SkipCSRF
     @RequestMapping(value = "change-card-name", method = RequestMethod.POST)
-    public ResponseEntity<?> changeCardName(User user, @RequestBody String cardName) {
+    public ResponseEntity<?> changeCardName(final User user, final @RequestBody String cardName) {
         if (updateCardName(user, cardName)) {
             return ResponseEntity.noContent().build();
         }
-
         return ResponseEntity.badRequest().build();
     }
 
     @SkipCSRF
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<?> requestCard(@RequestHeader("X-Requested-With") String requestedWith, User user,
-            @RequestBody(required = false) String requestReason) {
+    public ResponseEntity<?> requestCard(final @RequestHeader("X-Requested-With") String requestedWith,
+                                         final User user, final @RequestBody(required = false) String requestReason) {
 
         if (!cardService.canRequestCard(user)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         try {
-            SantanderEntry entry = cardService.createRegister(user, requestReason);
+            final SantanderEntry entry = cardService.createRegister(user, requestReason);
             cardService.sendRegister(user, entry);
-        } catch (SantanderValidationException e) {
+        } catch (final SantanderValidationException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(cardService.getErrorMessage(user.getProfile().getPreferredLocale(), e.getMessage()));
         }
@@ -112,25 +109,23 @@ public class IdCardsController {
     }
 
     @RequestMapping(value = "preview", method = RequestMethod.GET)
-    public ResponseEntity<?> previewCard(User user) {
+    public ResponseEntity<?> previewCard(final User user) {
         try {
             return ResponseEntity.ok(cardService.generateCardPreview(user));
-        } catch (SantanderValidationException e) {
-            JsonObject error = new JsonObject();
+        } catch (final SantanderValidationException e) {
+            final JsonObject error = new JsonObject();
             error.addProperty("error", cardService.getErrorMessage(user.getProfile().getPreferredLocale(), e.getMessage()));
             return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(error.toString());
         }
     }
 
     @RequestMapping(value = "deliver/admin-session", method = RequestMethod.GET)
-    public ResponseEntity<?> getAdminSession(User user) {
+    public ResponseEntity<?> getAdminSession(final User user) {
         if (isIdCardManager(user)) {
-            RaspberryPiSession raspberryPiSession = user.getRaspberryPiSession();
-
+            final RaspberryPiSession raspberryPiSession = user.getRaspberryPiSession();
             if (raspberryPiSession == null) {
                 return ResponseEntity.notFound().build();
             }
-
             return ResponseEntity.ok(RaspberryPiSessionDto.create(raspberryPiSession));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -138,23 +133,19 @@ public class IdCardsController {
 
     @SkipCSRF
     @RequestMapping(value = "deliver/admin-session", method = RequestMethod.PUT)
-    public ResponseEntity<?> deliverMifare(@RequestHeader("X-Requested-With") String requestedWith,
-            @RequestBody DeliverSessionMifareRequest request, User user) {
+    public ResponseEntity<?> deliverMifare(final @RequestHeader("X-Requested-With") String requestedWith,
+                                           final @RequestBody DeliverSessionMifareRequest request, final User user) {
         if (isIdCardManager(user)) {
-            User userToDeliver = User.findByUsername(request.getIstId());
-
+            final User userToDeliver = User.findByUsername(request.getIstId());
             if (userToDeliver == null) {
                 return ResponseEntity.notFound().build();
             }
-
             FenixFramework.atomic(() -> {
-                SantanderCardInfo card = userToDeliver.getCurrentSantanderEntry().getSantanderCardInfo();
-
+                final SantanderCardInfo card = userToDeliver.getCurrentSantanderEntry().getSantanderCardInfo();
                 card.setMifareNumber(request.getMifare());
                 card.getSantanderEntry().updateState(SantanderCardState.DELIVERED);
                 registerMifareSession(user.getRaspberryPiSession().getIpAddress(), request.getMifare(), card);
             });
-
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -162,8 +153,8 @@ public class IdCardsController {
 
     @SkipCSRF
     @RequestMapping(value = "deliver/{mifare}", method = RequestMethod.PUT)
-    public ResponseEntity<?> deliver(@PathVariable String mifare, @RequestHeader("X-Requested-With") String requestedWith,
-            HttpServletRequest request) {
+    public ResponseEntity<?> deliver(final @RequestHeader("X-Requested-With") String requestedWith,
+                                     final @PathVariable String mifare, final HttpServletRequest request) {
         try {
             final Long mifareNumber = Long.parseLong(mifare);
             return Bennu.getInstance().getSantanderCardInfoSet().stream()
@@ -171,13 +162,15 @@ public class IdCardsController {
                         try {
                             final Long cardMifareNumber = Long.parseLong(card.getMifareNumber());
                             return cardMifareNumber.equals(mifareNumber);
-                        } catch (NumberFormatException nfe) {
+                        } catch (final NumberFormatException nfe) {
                             LOGGER.error("Error parsing >{}< for card {}", card.getMifareNumber(), card.getExternalId());
                             return false;
                         }
-                    }).findAny().map(card -> {
+                    })
+                    .findAny()
+                    .map(card -> {
                         FenixFramework.atomic(() -> {
-                            User user = User.findByUsername(card.getIdentificationNumber());
+                            final User user = User.findByUsername(card.getIdentificationNumber());
                                 if (isIdCardManager(user) && card.getSantanderCardStateTransitionsSet().stream()
                                     .anyMatch(t -> t.getState().equals(SantanderCardState.DELIVERED))) {
                                 RaspberryPiSession.init(request.getRemoteAddr(), user);
@@ -187,21 +180,22 @@ public class IdCardsController {
                             }
                         });
                         return ResponseEntity.ok().build();
-                    }).orElseGet(() -> {
+                    })
+                    .orElseGet(() -> {
                         registerMifareSession(request.getRemoteAddr(), mifare, null);
                         return ResponseEntity.notFound().build();
                     });
-        } catch (NumberFormatException nfe) {
+        } catch (final NumberFormatException nfe) {
             LOGGER.error("Error parsing number", nfe);
-            JsonObject error = new JsonObject();
+            final JsonObject error = new JsonObject();
             error.addProperty("error", nfe.getMessage());
             return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(error.toString());
         }
     }
 
     @Atomic(mode = Atomic.TxMode.WRITE)
-    private void registerMifareSession(String ipAddress, String mifare, SantanderCardInfo cardInfo) {
-        RaspberryPiSession raspberryPiSession = RaspberryPiSession.getSessionByIpAddress(ipAddress);
+    private void registerMifareSession(final String ipAddress, final String mifare, final SantanderCardInfo cardInfo) {
+        final RaspberryPiSession raspberryPiSession = RaspberryPiSession.getSessionByIpAddress(ipAddress);
         if (raspberryPiSession != null) {
             raspberryPiSession.setUserMifare(mifare);
             raspberryPiSession.setUserCardInfo(cardInfo);
@@ -210,8 +204,8 @@ public class IdCardsController {
 
     @SkipCSRF
     @RequestMapping(value = "/{card}/deliver", method = RequestMethod.PUT)
-    public ResponseEntity<?> deliverCard(@PathVariable SantanderCardInfo card, User user,
-            @RequestHeader("X-Requested-With") String requestedWith) {
+    public ResponseEntity<?> deliverCard(final @PathVariable SantanderCardInfo card, final User user,
+                                         final @RequestHeader("X-Requested-With") String requestedWith) {
         if (isIdCardManager(user)) {
             FenixFramework.atomic(() -> {
                 card.getSantanderEntry().updateState(SantanderCardState.DELIVERED);
@@ -223,22 +217,19 @@ public class IdCardsController {
     }
 
     @Atomic
-    private boolean updateCardName(User user, String cardName) {
+    private boolean updateCardName(final User user, final String cardName) {
         SantanderUserInfo userInfo = user.getSantanderUserInfo();
-
         if (SantanderUserInfo.isCardNameValid(user, cardName)) {
             if (userInfo == null) {
                 userInfo = new SantanderUserInfo();
             }
-
             userInfo.setCardName(cardName);
             return true;
         }
-
         return false;
     }
 
-    private boolean isIdCardManager(User user) {
+    private boolean isIdCardManager(final User user) {
         return Group.dynamic("idCardManager").isMember(user);
     }
 }

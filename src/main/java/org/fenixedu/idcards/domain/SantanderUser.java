@@ -11,16 +11,17 @@ import org.fenixedu.santandersdk.dto.RegisterAction;
 import pt.ist.fenixframework.Atomic;
 
 public class SantanderUser {
-    private User user;
-    private IUserInfoService userInfoService;
 
-    public SantanderUser(User user, IUserInfoService userInfoService) {
+    private final User user;
+    private final IUserInfoService userInfoService;
+
+    public SantanderUser(final User user, final IUserInfoService userInfoService) {
         this.user = user;
         this.userInfoService = userInfoService;
     }
 
-    public CreateRegisterRequest toCreateRegisterRequest(RegisterAction action) throws SantanderCardNoPermissionException {
-        CreateRegisterRequest createRegisterRequest = new CreateRegisterRequest();
+    public CreateRegisterRequest toCreateRegisterRequest(final RegisterAction action) throws SantanderCardNoPermissionException {
+        final CreateRegisterRequest createRegisterRequest = new CreateRegisterRequest();
 
         createRegisterRequest.setRole(getRole());
         createRegisterRequest.setPhoto(getPhoto());
@@ -36,7 +37,7 @@ public class SantanderUser {
     }
 
     public String getRole() throws SantanderCardNoPermissionException {
-        List<String> roles = userInfoService.getUserRoles(user);
+        final List<String> roles = userInfoService.getUserRoles(user);
 
         if (roles.contains("EMPLOYEE")) {
             return "EMPLOYEE";
@@ -78,11 +79,10 @@ public class SantanderUser {
     }
 
     public String getCampus() throws SantanderCardNoPermissionException {
-        String userCampus = userInfoService.getCampus(user);
-
-        if (userCampus == null)
+        final String userCampus = userInfoService.getCampus(user);
+        if (userCampus == null) {
             throw new SantanderCardNoPermissionException("santander.id.cards.missing.permission");
-
+        }
         return userCampus;
     }
 
@@ -94,7 +94,6 @@ public class SantanderUser {
         if (user.getSantanderUserInfo() == null) {
             setUserInfo();
         }
-
         return user.getSantanderUserInfo().getCardName();
     }
 
@@ -104,7 +103,7 @@ public class SantanderUser {
         final String[] fullNameParts = fullName.trim().split(" ");
         final String cardName = fullNameParts[0] + " " + fullNameParts[fullNameParts.length - 1];
 
-        SantanderUserInfo santanderUserInfo = new SantanderUserInfo();
+        final SantanderUserInfo santanderUserInfo = new SantanderUserInfo();
         santanderUserInfo.setCardName(cardName);
         user.setSantanderUserInfo(santanderUserInfo);
     }

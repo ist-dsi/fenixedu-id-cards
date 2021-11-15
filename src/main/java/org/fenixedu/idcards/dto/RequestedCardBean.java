@@ -15,9 +15,9 @@ public class RequestedCardBean {
     private DateTime requestDate;
     private String cardSerialNumber;
 
-    public RequestedCardBean(String requestLine, String identificationNumber, String cardName, DateTime expiryDate, String role,
-            String photo, String mifare, DateTime productionDate, DateTime requestDate, String cardSerialNumber) {
-
+    public RequestedCardBean(final String requestLine, final String identificationNumber, final String cardName,
+                             final DateTime expiryDate, final String role, final String photo, final String mifare,
+                             final DateTime productionDate, final DateTime requestDate, final String cardSerialNumber) {
         this.requestLine = requestLine;
         this.identificationNumber = identificationNumber;
         this.cardName = cardName;
@@ -34,7 +34,7 @@ public class RequestedCardBean {
         return requestLine;
     }
 
-    public void setRequestLine(String requestLine) {
+    public void setRequestLine(final String requestLine) {
         this.requestLine = requestLine;
     }
 
@@ -42,7 +42,7 @@ public class RequestedCardBean {
         return identificationNumber;
     }
 
-    public void setIdentificationNumber(String identificationNumber) {
+    public void setIdentificationNumber(final String identificationNumber) {
         this.identificationNumber = identificationNumber;
     }
 
@@ -50,7 +50,7 @@ public class RequestedCardBean {
         return cardName;
     }
 
-    public void setCardName(String cardName) {
+    public void setCardName(final String cardName) {
         this.cardName = cardName;
     }
 
@@ -58,7 +58,7 @@ public class RequestedCardBean {
         return expiryDate;
     }
 
-    public void setExpiryDate(DateTime expiryDate) {
+    public void setExpiryDate(final DateTime expiryDate) {
         this.expiryDate = expiryDate;
     }
 
@@ -66,7 +66,7 @@ public class RequestedCardBean {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(final String role) {
         this.role = role;
     }
 
@@ -74,7 +74,7 @@ public class RequestedCardBean {
         return photo;
     }
 
-    public void setPhoto(String photo) {
+    public void setPhoto(final String photo) {
         this.photo = photo;
     }
 
@@ -82,7 +82,7 @@ public class RequestedCardBean {
         return mifare;
     }
 
-    public void setMifare(String mifare) {
+    public void setMifare(final String mifare) {
         this.mifare = mifare;
     }
 
@@ -90,7 +90,7 @@ public class RequestedCardBean {
         return productionDate;
     }
 
-    public void setProductionDate(DateTime productionDate) {
+    public void setProductionDate(final DateTime productionDate) {
         this.productionDate = productionDate;
     }
 
@@ -98,7 +98,7 @@ public class RequestedCardBean {
         return requestDate;
     }
 
-    public void setRequestDate(DateTime requestDate) {
+    public void setRequestDate(final DateTime requestDate) {
         this.requestDate = requestDate;
     }
 
@@ -106,14 +106,13 @@ public class RequestedCardBean {
         return cardSerialNumber;
     }
 
-    public void setCardSerialNumber(String cardSerialNumber) {
+    public void setCardSerialNumber(final String cardSerialNumber) {
         this.cardSerialNumber = cardSerialNumber;
     }
 
     public String toString() {
-        String template =
-                "requestLine: %s| identificationNumber: %s| cardName: %s| expiryDate: %s| role: %s| photo: %s| mifare: %s| productionDate: %s| requestDate: %s| cardSerialNumber %s";
-
+        final String template = "requestLine: %s| identificationNumber: %s| cardName: %s| expiryDate: %s| role: %s| photo: %s| "
+                + "mifare: %s| productionDate: %s| requestDate: %s| cardSerialNumber %s";
         return String.format(template, getRequestLine(), getIdentificationNumber(), getCardName(), getExpiryDate(), getRole(),
                 getPhoto(), getMifare(), getProductionDate(), getRequestDate(), getCardSerialNumber());
     }

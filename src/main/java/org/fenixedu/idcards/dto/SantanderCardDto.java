@@ -33,15 +33,15 @@ public class SantanderCardDto {
     public PickupAddress pickupAddress;
     public List<SantanderStateDto> history;
 
-    public SantanderCardDto(SantanderCardInfo cardInfo) {
+    public SantanderCardDto(final SantanderCardInfo cardInfo) {
         DateTime expiryDate = cardInfo.getExpiryDate();
         this.currentState = cardInfo.getCurrentState();
         if (expiryDate != null) {
-            DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("yyyy/MM");
+            final DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("yyyy/MM");
             this.expiryDate = dateFormatter.print(expiryDate);
             expiryDate = expiryDate.withTimeAtStartOfDay();
-            DateTime today = DateTime.now().withTimeAtStartOfDay();
 
+            final DateTime today = DateTime.now().withTimeAtStartOfDay();
             if (today.isAfter(expiryDate.minusDays(DAYS_TO_EXPIRE + 31)) && today
                     .isBefore(expiryDate.minusDays(DAYS_TO_EXPIRE - 1))) {
                 this.daysBeforeRequest = Days.daysBetween(today, expiryDate.minusDays(DAYS_TO_EXPIRE)).getDays();
@@ -65,14 +65,16 @@ public class SantanderCardDto {
         this.pickupAddress = cardInfo.getPickupLocation().toPickupAddress();
     }
 
-    public SantanderCardDto(CardPreviewBean cardPreviewBean) {
+    public SantanderCardDto(final CardPreviewBean cardPreviewBean) {
         this.istId = cardPreviewBean.getIdentificationNumber();
         this.role = cardPreviewBean.getRole();
-        DateTime expiryDate = cardPreviewBean.getExpiryDate();
+
+        final DateTime expiryDate = cardPreviewBean.getExpiryDate();
         if (expiryDate != null) {
-            DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("yyyy/MM");
+            final DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("yyyy/MM");
             this.expiryDate = dateFormatter.print(expiryDate);
         }
+
         this.name = cardPreviewBean.getCardName();
         this.photo = BaseEncoding.base64().encode(cardPreviewBean.getPhoto());
     }

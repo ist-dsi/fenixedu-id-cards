@@ -53,15 +53,15 @@ public enum PickupLocation {
     );
 
 
-    private String pickupLocation;
-    private String address1;
-    private String address2;
-    private String zipCode;
-    private String zipDescriptive;
-    private String campus;
+    private final String pickupLocation;
+    private final String address1;
+    private final String address2;
+    private final String zipCode;
+    private final String zipDescriptive;
+    private final String campus;
 
-    PickupLocation(String pickupLocation, String address1, String address2, String zipCode,
-            String zipDescriptive, String campus) {
+    PickupLocation(final String pickupLocation, final String address1, final String address2, final String zipCode,
+                   final String zipDescriptive, final String campus) {
         this.pickupLocation = pickupLocation;
         this.address1 = address1;
         this.address2 = address2;
@@ -95,12 +95,11 @@ public enum PickupLocation {
     }
 
     public PickupAddress toPickupAddress() {
-        PickupAddress pickupAddress = new PickupAddress();
+        final PickupAddress pickupAddress = new PickupAddress();
         pickupAddress.setAddress1(getAddress1());
         pickupAddress.setAddress2(String.format("%s, %s", getPickupLocation(), getAddress2()));
         pickupAddress.setZipCode(getZipCode());
         pickupAddress.setZipDescriptive(getZipDescriptive());
-
         return pickupAddress;
     }
 }

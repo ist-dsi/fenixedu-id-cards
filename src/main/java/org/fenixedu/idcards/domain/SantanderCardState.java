@@ -26,8 +26,9 @@ public enum SantanderCardState {
 
     EXPIRED;
 
-    public String getLocalizedName(Locale locale) {
-        return BundleUtil.getString("resources.FenixEduIdCardsResources", locale, this.getClass().getName() + "." + name());
+    public String getLocalizedName(final Locale locale) {
+        return BundleUtil.getString("resources.FenixEduIdCardsResources", locale,
+                this.getClass().getName() + "." + name());
     }
 }
 

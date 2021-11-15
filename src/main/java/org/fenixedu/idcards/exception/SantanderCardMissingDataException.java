@@ -6,7 +6,7 @@ public class SantanderCardMissingDataException extends Exception {
         super();
     }
 
-    public SantanderCardMissingDataException(String msg) {
+    public SantanderCardMissingDataException(final String msg) {
         super(msg);
     }
 }
