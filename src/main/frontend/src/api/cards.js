@@ -11,11 +11,17 @@ async function getPreview () {
 }
 
 async function requestNew ({ requestReason }) {
-  await client.post('/idcards', requestReason, { headers: { 'X-Requested-With': 'fenixedu-id-cards-frontend', 'Content-Type': 'text/plain' } })
+  const response = await client.post('/idcards', requestReason, {
+    headers: {
+      'Content-Type': 'text/plain'
+    }
+  })
+  return response.data
 }
 
 async function deliverCard (id) {
-  await client.put(`/idcards/${id}/deliver`, null, { headers: { 'X-Requested-With': 'fenixedu-id-cards-frontend' } })
+  const response = await client.put(`/idcards/${id}/deliver`)
+  return response.data
 }
 
 async function getUserNames () {
@@ -24,7 +30,12 @@ async function getUserNames () {
 }
 
 async function changeCardName (cardName) {
-  await client.post('/idcards/change-card-name', cardName, { headers: { 'X-Requested-With': 'fenixedu-id-cards-frontend', 'Content-Type': 'text/plain' } })
+  const response = await client.post('/idcards/change-card-name', cardName, {
+    headers: {
+      'Content-Type': 'text/plain'
+    }
+  })
+  return response.data
 }
 
 async function getAdminSession () {
@@ -33,7 +44,8 @@ async function getAdminSession () {
 }
 
 async function submitUserMifare (request) {
-  await client.put('/idcards/deliver/admin-session', request, { headers: { 'X-Requested-With': 'fenixedu-id-cards-frontend' } })
+  const response = await client.put('/idcards/deliver/admin-session', request)
+  return response.data
 }
 
 export default {

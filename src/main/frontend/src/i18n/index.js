@@ -4,7 +4,8 @@ import translationsEn from '@/i18n/en.json'
 
 import VueI18n from 'vue-i18n'
 import axios from 'axios'
-import store from '@/store'
+
+import { changeLocale } from '@/api/profile'
 
 Vue.use(VueI18n)
 
@@ -12,16 +13,15 @@ Vue.use(VueI18n)
  * Sets the requested language
  *
  * @param {string} lang Language to set (eg. 'pt', 'en')
- * @param {object} auth Authentication data provided by the auth mixin (this.$auth)
  */
-export async function setLocale (lang, auth) {
+export async function setLocale (lang) {
   // If the same language
   if (i18n.locale === lang) {
     return setI18nLanguage(lang)
   }
 
   // Update lang in profile
-  await store.dispatch('changeLocale', { language: lang })
+  await changeLocale(lang)
 
   return setI18nLanguage(lang)
 }

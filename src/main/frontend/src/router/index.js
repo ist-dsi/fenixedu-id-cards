@@ -92,7 +92,7 @@ const router = new Router({
         },
         {
           path: '*',
-          name: 'PageNotFound',
+          name: 'PageNotFoundPage',
           component: PageNotFoundPage
         }
       ]

@@ -34,7 +34,6 @@
                 <id-card
                   :key="card.cardId"
                   :card-info="card"
-                  :cardtype="'idtecnico'"
                   class="slideshow__card"
                 />
               </template>
@@ -48,7 +47,6 @@
             <template v-if="selectedCard">
               <id-card
                 :card-info="selectedCard"
-                :cardtype="'idtecnico'"
                 class="slideshow__card"
               />
             </template>
@@ -88,17 +86,8 @@
             <h1 class="h5 h5--ssp">
               {{ $t('label.card.emptyState.title') }}
             </h1>
-            <p
-              v-if="!isAdminView"
-              class=""
-            >
-              {{ $t('label.card.emptyState.message') }}
-            </p>
-            <p
-              v-else
-              class=""
-            >
-              {{ $t('label.card.emptyState.message.admin') }}
+            <p>
+              {{ !isAdminView ? $t('label.card.emptyState.message') : $t('label.card.emptyState.message.admin') }}
             </p>
           </template>
         </id-card>
@@ -271,7 +260,6 @@
             v-if="cardPreview"
             :key="cardPreview.cardId"
             :card-info="cardPreview"
-            :cardtype="'idtecnico'"
             :is-preview="true"
           />
           <p>{{ $t('modal.message.second.requestNew') }}</p>
@@ -345,7 +333,6 @@
             v-if="cardPreview"
             :key="cardPreview.cardId"
             :card-info="cardPreview"
-            :cardtype="'idtecnico'"
             :is-preview="true"
           />
         </template>
@@ -687,13 +674,11 @@ export default {
     },
     filteredHistory () {
       const { history } = this.selectedCard
-
       history.forEach(transition => {
         if (transition.state === this.cardStates.PENDING || transition.state === this.cardStates.IGNORED) {
           transition.state = this.cardStates.REQUESTED
         }
       })
-
       return history.filter(t => t.state !== this.cardStates.EXPIRED)
     },
     hasPrevious () {
@@ -705,7 +690,6 @@ export default {
     },
     isSelectedCardDelivered () {
       const { history } = this.selectedCard
-
       return history.findIndex(t => t.state === this.cardStates.DELIVERED) !== -1
     },
     hasAllCardsExpired () {
@@ -786,7 +770,6 @@ export default {
     isTransitionComplete (transitionIndex) {
       const history = this.filteredHistory
       const lastState = history[history.length - 1].state
-
       return transitionIndex <= this.stateTransitions.indexOf(lastState)
     },
     getStateTransitionDate (transitionState) {
@@ -976,10 +959,8 @@ export default {
     getSelectedCardPickupLocation () {
       if (this.availableCards.length > 0) {
         const { pickupAddress } = this.selectedCard
-
         return `${pickupAddress.address2.trim()}, ${pickupAddress.zipCode.trim()}`
       }
-
       return undefined
     },
     getSelectedCardDisplayPickupLocation () {

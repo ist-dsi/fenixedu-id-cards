@@ -33,18 +33,11 @@ export const fetchCards = async ({ commit }) => {
 
 export const fetchPreview = async ({ commit }) => {
   const cardPreview = await CardsAPI.getPreview()
-
   commit(types.RECEIVE_PREVIEW, { cardPreview })
 }
 
 export const requestNewCard = async ({ commit }, { requestReason }) => {
   await CardsAPI.requestNew({ requestReason })
-}
-
-export const changeLocale = async ({ commit }, { language }) => {
-  await ProfileAPI.changeLocale(language)
-
-  commit(types.CHANGE_LOCALE, { language })
 }
 
 export const changeCurrentUser = async ({ commit }, { username }) => {

@@ -138,8 +138,7 @@ export default {
       if (this.isPreview || !this.cardInfo.serialNumber) {
         return undefined
       }
-
-      return this.cardInfo.serialNumber.match(/.{1,4}/g).reduce((accumulator, part) => `${accumulator} ${part}`)
+      return this.cardInfo.serialNumber.match(/.{1,4}/g).reduce((acc, part) => `${acc} ${part}`)
     }
   }
 }

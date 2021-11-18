@@ -14,7 +14,6 @@
     </p>
     <id-card
       :card-info="cardPreview"
-      :cardtype="'idtecnico'"
       :is-preview="true"
     />
     <p

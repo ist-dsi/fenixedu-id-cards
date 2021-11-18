@@ -23,12 +23,9 @@ async function get () {
   }
 }
 
-async function changeLocale (language) {
+export async function changeLocale (language) {
   const localeTag = language === 'pt' ? 'pt-PT' : 'en-GB'
-
-  await client.post(`api/bennu-core/profile/locale/${localeTag}`, null, {
-    headers: { 'X-Requested-With': 'fenixedu-id-cards-frontend' }
-  })
+  await client.post(`api/bennu-core/profile/locale/${localeTag}`)
 }
 
 export default {
