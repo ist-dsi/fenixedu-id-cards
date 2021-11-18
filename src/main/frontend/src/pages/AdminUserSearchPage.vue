@@ -163,10 +163,10 @@ export default {
   },
   methods: {
     goToUserPage () {
-      const lowerUsername = this.username.toLowerCase().trim()
-
-      if (lowerUsername && lowerUsername !== this.profile.username) {
-        this.$router.push({ name: 'AdminViewUserCardsPage', params: { username: lowerUsername } })
+      const username = this.username?.toLowerCase().trim()
+      const normalizedUsername = username?.normalize('NFKD').replace(/[^\w]/g, '')
+      if (normalizedUsername && normalizedUsername !== this.profile.username) {
+        this.$router.push({ name: 'AdminViewUserCardsPage', params: { username: normalizedUsername } })
       } else {
         this.$router.push({ name: 'ListCardsPage' })
       }

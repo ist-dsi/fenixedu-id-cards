@@ -4,6 +4,7 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.security.SkipCSRF;
+import org.fenixedu.bennu.spring.BaseController;
 import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.idcards.domain.RaspberryPiSession;
 import org.fenixedu.idcards.domain.SantanderCardInfo;
@@ -50,7 +51,10 @@ public class IdCardsController {
     @RequestMapping(value = "{username}", method = RequestMethod.GET)
     public ResponseEntity<?> getUserCards(final @PathVariable String username, final User user) {
         final User usernameUser = User.findByUsername(username);
-        if (usernameUser == null || (!isIdCardManager(user) && user != usernameUser)) {
+        if (usernameUser == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if (!isIdCardManager(user) && user != usernameUser) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         return getUserCardsResponse(usernameUser);

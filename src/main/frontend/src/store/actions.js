@@ -2,6 +2,7 @@ import * as types from './mutation-types'
 import ProfileAPI from '@/api/profile'
 import CardsAPI from '@/api/cards'
 import store from '@/store'
+import router from '@/router'
 
 export const setTopMessage = ({ commit }, { active, msg, dismiss, type }) => {
   commit(types.SET_TOP_MESSAGE, { active, msg, dismiss, type })
@@ -19,10 +20,15 @@ export const fetchProfile = async ({ commit }) => {
 
 export const fetchCards = async ({ commit }) => {
   const username = store.state.currentUser || store.state.profile.username
-
   return CardsAPI.getCards(username)
     .then(cards => commit(types.RECEIVE_CARDS, cards))
-    .catch(err => console.error(err))
+    .catch(err => {
+      if (err.response?.status === 404) {
+        return router.push('/404')
+      } else {
+        console.error(err)
+      }
+    })
 }
 
 export const fetchPreview = async ({ commit }) => {
