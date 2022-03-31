@@ -75,8 +75,8 @@ public class CardNotifications {
     public static void notifyCardPickup(final User user) {
         final SantanderEntry entry = user.getCurrentSantanderEntry();
         final PickupLocation pickupLocation = entry.getSantanderCardInfo().getPickupLocation();
-        final String template = PickupLocation.ALAMEDA_SANTANDER.equals(pickupLocation) ?
-                "message.template.santander.card.state.transition.pickup.alameda.santander" :
+        final String template = hasWorkingHours(pickupLocation) ?
+                "message.template.santander.card.state.transition.pickup.with.working.hours" :
                 "message.template.santander.card.state.transition.pickup";
 
         Message.TemplateMessageBuilder builder = Message.fromSystem()
@@ -88,6 +88,9 @@ public class CardNotifications {
         if (PickupLocation.ALAMEDA_SANTANDER.equals(pickupLocation)) {
             builder = builder.parameter("morningHours", "11:00 - 12:00")
                     .parameter("afternoonHours", "15:00 - 16:00");
+        } else if (PickupLocation.TAGUS_AGRHA.equals(pickupLocation)) {
+            builder = builder.parameter("morningHours", "10:00h - 12:00h")
+                    .parameter("afternoonHours", "14:00h - 16:00h");
         }
 
         builder.and().wrapped().send();
@@ -114,6 +117,11 @@ public class CardNotifications {
             .template("message.template.santander.card.first")
             .parameter("waitingDays", waitingDays)
             .and().wrapped().send();
+    }
+
+    private static boolean hasWorkingHours(final PickupLocation pickupLocation) {
+        return PickupLocation.ALAMEDA_SANTANDER.equals(pickupLocation)
+                || PickupLocation.TAGUS_AGRHA.equals(pickupLocation);
     }
 
 }
