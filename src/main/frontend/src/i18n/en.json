@@ -93,7 +93,7 @@
   "modal.message.readyForPickup": "Your card is ready to be delivered to you. You can pick it up at",
   "modal.message.confirmDeliver": "This action cannot be reversed. Are you sure you want to deliver this card?",
   "text.pickupLocations.alameda.santander": "Técnico Santander Agency (Central Pavillion)",
-  "text.pickupLocations.alameda.santander.schedule": "Pickup schedule: 11:00h until 12:00h and 15:00h until 16:00h (workdays).",
+  "text.pickupLocations.alameda.santander.schedule": "Pickup schedule: 10:00h until 13:00h (workdays).",
   "text.pickupLocations.alameda.drh": "DRH, Instituto Superior Técnico - Alameda (Central Pavillion)",
   "text.pickupLocations.tagus.nagt": "NAGT, Instituto Superior Técnico - TagusPark",
   "text.pickupLocations.tagus.drh": "DRH, Instituto Superior Técnico - TagusPark",
