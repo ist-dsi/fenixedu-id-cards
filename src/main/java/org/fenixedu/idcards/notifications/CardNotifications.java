@@ -86,8 +86,8 @@ public class CardNotifications {
                 .parameter("campus", pickupLocation.getCampus());
 
         if (PickupLocation.ALAMEDA_SANTANDER.equals(pickupLocation)) {
-            builder = builder.parameter("morningHours", "11:00 - 12:00")
-                    .parameter("afternoonHours", "15:00 - 16:00");
+            builder = builder.parameter("morningHours", "10:00h")
+                    .parameter("afternoonHours", "13:00h");
         } else if (PickupLocation.TAGUS_AGRHA.equals(pickupLocation)) {
             builder = builder.parameter("morningHours", "10:00h - 12:00h")
                     .parameter("afternoonHours", "14:00h - 16:00h");
