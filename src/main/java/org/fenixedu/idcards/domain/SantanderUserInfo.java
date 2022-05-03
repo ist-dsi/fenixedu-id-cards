@@ -87,7 +87,7 @@ public class SantanderUserInfo extends SantanderUserInfo_Base {
         // At least one given name must be present
         final boolean givenNamePresent = givenNames.stream()
                 .filter(n -> !excludedNames.contains(n))
-                .anyMatch(n -> cardNameParts.contains(n) && cardNameParts.remove(n)); // Remove so the same name isnt matched in family name
+                .anyMatch(n -> cardNameParts.contains(n) && cardNameParts.remove(n)); // Remove so the same name isn't matched in family name
 
         // At least one family name must be present
         final boolean familyNamePresent = familyNames.stream()
@@ -112,6 +112,7 @@ public class SantanderUserInfo extends SantanderUserInfo_Base {
 
     private static String normalizeSantanderUserName(String name) {
         final Map<String, String> replacementMap = new HashMap<String, String>() {{
+            put("--", " ");
             put("-", " ");
             put("'", "");
         }};
@@ -120,7 +121,7 @@ public class SantanderUserInfo extends SantanderUserInfo_Base {
             name = name.replaceAll(replacement, replacementMap.get(replacement));
         }
 
-        return name;
+        return name.trim();
     }
 
 }
